@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vm="using:ImageComparisonGUI.ViewModels"
+             x:DataType="vm:AboutPageViewModel"
+             x:Class="ImageComparisonGUI.Pages.AboutPage">
+  <StackPanel>
+    <StackPanel.Styles>
+      <Style Selector="StackPanel">
+        <Setter Property="Margin" Value="0 0 0 40"/>
+      </Style>
+    </StackPanel.Styles>
+
+    <StackPanel>
+      <TextBlock Text="Image Comparison" FontSize="30" FontWeight="Black" />
+    </StackPanel>
+    
+    <StackPanel>
+      <StackPanel.Styles>
+        <Style Selector="TextBlock">
+          <Setter Property="HorizontalAlignment" Value="Left"/>
+          <Setter Property="MaxWidth" Value="400"/>
+          <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+      </StackPanel.Styles>
+      <TextBlock Text="Application for comparing a large number of images within or between folders to find duplicates and similar images." />
+    </StackPanel>
+
+    <StackPanel>
+      <TextBlock Text="Underlying Algorithm for Image Analysis by Jakob Farian Krarup" />
+      <Button Classes="hyperlink" Name="btn_algorythm_homepage">
+        <TextBlock Text="https://github.com/xnafan/Simple-image-comparison" />
+      </Button>
+    </StackPanel>
+
+    <StackPanel>
+      <TextBlock Text="{Binding VersionText}" />
+      <TextBlock Text="Open Source Application - Feel free to share and contribute:" />
+
+      <Button Classes="hyperlink" Name="btn_project_homepage">
+        <TextBlock Text="https://github.com/DerEffi/image-comparison" Classes="hyperlink"/>
+      </Button>
+    </StackPanel>
+    
+    <StackPanel>
+      <TextBlock Text="Developed by" />
+      <TextBlock Text="DerEffi" />
+      <Button Classes="hyperlink" Name="btn_author_homepage">
+        <TextBlock Text="www.dereffi.de" />        
+      </Button>
+    </StackPanel>
+  </StackPanel>
+</UserControl>
