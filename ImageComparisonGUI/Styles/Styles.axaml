@@ -1,0 +1,36 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <StackPanel Spacing="5">        
+        <TextBlock Text="Code Font Family" FontFamily="{StaticResource CodeFontFamily}" />
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+  <Styles.Resources>
+    <Thickness x:Key="PageMargin">40 0 40 0</Thickness>    
+    <FontFamily x:Key="CodeFontFamily">avares://XamlControlsGallery/Assets/Fonts#Source Code Pro</FontFamily>     
+  </Styles.Resources>
+
+  <Style Selector="TextBlock.code">
+    <Setter Property="FontFamily" Value="{StaticResource CodeFontFamily}" />
+  </Style>
+
+  <Style Selector="TabControl.sidebar > TabItem > :is(UserControl)">
+    <Setter Property="Margin" Value="40 30 40 0" />
+  </Style>
+
+  <Style Selector="Button.hyperlink">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Padding" Value="0" />
+  </Style>
+
+  <Style Selector="Button.hyperlink /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+
+  <Style Selector="Button.hyperlink > TextBlock">
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="TextDecorations" Value="Underline" />
+  </Style>
+</Styles>
