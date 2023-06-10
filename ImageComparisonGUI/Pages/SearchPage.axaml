@@ -7,5 +7,52 @@
              x:DataType="vm:SearchPageViewModel"
              x:Class="ImageComparisonGUI.Pages.SearchPage">
 
-  <TextBlock Text="Hello World!"/>
+  <Grid RowDefinitions="*, Auto, Auto">
+    <Grid Grid.Row="0" ColumnDefinitions="*, *" RowDefinitions="*, Auto" Name="image0_grid">
+      <Image Source="D:\Bilder\Allgemein\Avatar64.jpg" />
+      <Image Grid.Column="1" Source="D:\Bilder\Allgemein\Avatar.png" />
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 10 0 0" Grid.Row="1" Height="40">
+        <StackPanel.Styles>
+          <Style Selector="Button">
+            <Setter Property="Margin" Value="5 0"/>
+          </Style>
+        </StackPanel.Styles>
+        <Button Content="Delete" />
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 10 0 0" Grid.Row="1" Grid.Column="1" Height="40">
+        <StackPanel.Styles>
+          <Style Selector="Button">
+            <Setter Property="Margin" Value="5 0"/>
+          </Style>
+        </StackPanel.Styles>
+        <Button Content="Delete" />
+      </StackPanel>
+    </Grid>
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 5 0 0" Grid.Row="1" Height="40">
+      <StackPanel.Styles>
+        <Style Selector="Button">
+          <Setter Property="Margin" Value="5 0"/>
+        </Style>
+      </StackPanel.Styles>
+      <Button Content="Both" />
+      <Button Content="Auto" />
+      <Button Content="Next" />
+    </StackPanel>
+    <StackPanel Grid.Row="2" HorizontalAlignment="Right" Margin="20 0" Orientation="Horizontal" Height="40">
+      <StackPanel.Styles>
+        <Style Selector="Button, TextBlock">
+          <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button, ProgressBar">
+          <Setter Property="Margin" Value="5 0"/>
+        </Style>
+      </StackPanel.Styles>
+      <TextBlock Text="Analysing Images:" />
+      <TextBlock Margin="10 0 0 0" Text="107" />
+      <TextBlock Text=" / " />
+      <TextBlock Margin="0 0 10 0" Text="328" />
+      <ProgressBar IsIndeterminate="False" Value="33" />
+      <Button Content="Search" />
+    </StackPanel>
+  </Grid>
 </UserControl>

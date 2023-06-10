@@ -3,21 +3,13 @@
   <Design.PreviewWith>
     <Border Padding="20">
       <StackPanel Spacing="5">        
-        <TextBlock Text="Code Font Family" FontFamily="{StaticResource CodeFontFamily}" />
+        <TextBlock Text="Textbox" />
       </StackPanel>
     </Border>
   </Design.PreviewWith>
-  <Styles.Resources>
-    <Thickness x:Key="PageMargin">40 0 40 0</Thickness>    
-    <FontFamily x:Key="CodeFontFamily">avares://XamlControlsGallery/Assets/Fonts#Source Code Pro</FontFamily>     
-  </Styles.Resources>
-
-  <Style Selector="TextBlock.code">
-    <Setter Property="FontFamily" Value="{StaticResource CodeFontFamily}" />
-  </Style>
-
+  
   <Style Selector="TabControl.sidebar > TabItem > :is(UserControl)">
-    <Setter Property="Margin" Value="40 30 40 0" />
+    <Setter Property="Margin" Value="30 30 30 0" />
   </Style>
 
   <Style Selector="Button.hyperlink">

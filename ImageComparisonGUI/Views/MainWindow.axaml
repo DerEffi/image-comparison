@@ -10,6 +10,9 @@
 				Icon="/Assets/gallery.ico"
 				Title="Image Comparison"
         WindowStartupLocation="CenterScreen"
+        FontSize="14"
+        MinHeight="400"
+        MinWidth="700"
 				
 				TransparencyLevelHint="AcrylicBlur"
 				Background="Transparent"
@@ -22,7 +25,47 @@
 		</Design.DataContext>
 
 		<Panel>
-      <local:MainView/>
+        <DockPanel HorizontalAlignment="Stretch">
+          <ExperimentalAcrylicBorder DockPanel.Dock="Left" Width="240">
+            <ExperimentalAcrylicBorder.Material>
+              <ExperimentalAcrylicMaterial TintColor="Black" MaterialOpacity=".7" TintOpacity="1" />
+            </ExperimentalAcrylicBorder.Material>
+            <TextBlock Text="%Icon%" HorizontalAlignment="Center" Margin="0 40 0 0" />
+          </ExperimentalAcrylicBorder>
+          <ExperimentalAcrylicBorder IsHitTestVisible="False">
+            <ExperimentalAcrylicBorder.Material>
+              <ExperimentalAcrylicMaterial TintColor="#222222" MaterialOpacity="0.4" TintOpacity=".4" />
+            </ExperimentalAcrylicBorder.Material>
+            <TextBlock Text="{Binding #TabControl.SelectedItem.Header}" Margin="40 20" FontSize="32" FontWeight="Light" />
+          </ExperimentalAcrylicBorder>
+        </DockPanel>
+
+        <TabControl x:Name="TabControl" Classes="sidebar" Margin="0 40 0 15">
+          <TabItem Header="Tmp">
+            <pages:SearchPage Width="{Binding TabWidth}" Height="{Binding TabHeight}" />
+          </TabItem>
+          <TabItem Header="Search">
+            <pages:SearchPage Width="{Binding TabWidth}" Height="{Binding TabHeight}" />
+          </TabItem>
+          <TabItem Header="Locations">
+            <pages:LocationsPage/>
+          </TabItem>
+          <TabItem Header="Threasholds">
+            <pages:ThreasholdsPage/>
+          </TabItem>
+          <TabItem Header="Profiles">
+            <pages:ProfilesPage/>
+          </TabItem>
+          <TabItem Header="Keybindings">
+            <pages:KeybindingsPage/>
+          </TabItem>
+          <TabItem Header="Cache">
+            <pages:CachePage/>
+          </TabItem>
+          <TabItem Header="About">
+            <pages:AboutPage/>
+          </TabItem>
+        </TabControl>
 		</Panel>
 
 </Window>
