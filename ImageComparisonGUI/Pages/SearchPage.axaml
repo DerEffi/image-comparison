@@ -2,31 +2,76 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              xmlns:vm="clr-namespace:ImageComparisonGUI.ViewModels"
+             xmlns:sv="clr-namespace:ImageComparisonGUI.Services"
              x:DataType="vm:SearchPageViewModel"
              x:Class="ImageComparisonGUI.Pages.SearchPage">
 
+  <UserControl.Resources>
+    <sv:BitmapAssetValueConverter x:Key="variableImage" />
+  </UserControl.Resources>
+
   <Grid RowDefinitions="*, Auto, Auto">
-    <Grid Grid.Row="0" ColumnDefinitions="*, *" RowDefinitions="*, Auto" Name="image0_grid">
-      <Image Source="D:\Bilder\Allgemein\Avatar64.jpg" />
-      <Image Grid.Column="1" Source="D:\Bilder\Allgemein\Avatar.png" />
-      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 10 0 0" Grid.Row="1" Height="40">
+    <Grid Grid.Row="0" ColumnDefinitions="*, *" RowDefinitions="*, Auto, Auto" Name="image0_grid">
+      
+      <Image Name="LeftImageBox" Source="{Binding LeftImage, Converter={StaticResource variableImage}}" IsVisible="{Binding Displaying}" />
+      <Image Name="RightImageBox" Grid.Column="1" Source="{Binding RightImage, Converter={StaticResource variableImage}}" IsVisible="{Binding Displaying}" />
+
+      <TextBlock Grid.Row="1" Text="{Binding LeftImage}" FontSize="12" HorizontalAlignment="Center" />
+      <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding RightImage}" FontSize="12" HorizontalAlignment="Center" />
+
+      <Grid Grid.Row="2" ColumnDefinitions="*, *">
+        <StackPanel Orientation="Horizontal">
+          <TextBlock Text="Dimensions: " />
+          <TextBlock Text="{Binding #LeftImageBox.Source.Size.Height}"/>
+          <TextBlock Text="x" />
+          <TextBlock Text="{Binding #LeftImageBox.Source.Size.Width}"/>
+          <TextBlock Text="px" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Column="1">
+          <TextBlock Text="{Binding LeftImageSize}" />
+        </StackPanel>
+      </Grid>
+      <Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="*, *">
+        <StackPanel Orientation="Horizontal">
+          <TextBlock Text="Dimensions: " />
+          <TextBlock Text="{Binding #RightImageBox.Source.Size.Height}"/>
+          <TextBlock Text="x" />
+          <TextBlock Text="{Binding #RightImageBox.Source.Size.Width}"/>
+          <TextBlock Text="px" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Column="1">
+          <TextBlock Text="{Binding RightImageSize}" />
+        </StackPanel>
+      </Grid>
+      
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 10 0 0" Grid.Row="3" Height="40">
         <StackPanel.Styles>
           <Style Selector="Button">
             <Setter Property="Margin" Value="5 0"/>
           </Style>
         </StackPanel.Styles>
-        <Button Content="Delete" />
+        <Button Content="Delete" Command="{Binding DeleteImageCommand}" IsVisible="{Binding Displaying}">
+          <Button.CommandParameter>
+            <sys:Int32>-1</sys:Int32>
+          </Button.CommandParameter>
+        </Button>
       </StackPanel>
-      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 10 0 0" Grid.Row="1" Grid.Column="1" Height="40">
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 10 0 0" Grid.Row="3" Grid.Column="1" Height="40">
         <StackPanel.Styles>
           <Style Selector="Button">
             <Setter Property="Margin" Value="5 0"/>
           </Style>
         </StackPanel.Styles>
-        <Button Content="Delete" />
+        <Button Content="Delete" Command="{Binding DeleteImageCommand}" IsVisible="{Binding Displaying}">
+          <Button.CommandParameter>
+            <sys:Int32>1</sys:Int32>
+          </Button.CommandParameter>
+        </Button>
       </StackPanel>
+    
     </Grid>
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 5 0 0" Grid.Row="1" Height="40">
       <StackPanel.Styles>
@@ -34,9 +79,13 @@
           <Setter Property="Margin" Value="5 0"/>
         </Style>
       </StackPanel.Styles>
-      <Button Content="Both" />
-      <Button Content="Auto" />
-      <Button Content="Next" />
+      <Button Content="Delete Both" Command="{Binding DeleteImageCommand}" IsVisible="{Binding Displaying}">
+        <Button.CommandParameter>
+          <sys:Int32>0</sys:Int32>
+        </Button.CommandParameter>
+      </Button>
+      <Button Content="Auto" Command="{Binding AutoProcessCommand}" IsVisible="{Binding Displaying}" />
+      <Button Content="Next" Command="{Binding NoMatchCommand}" IsVisible="{Binding Displaying}" />
     </StackPanel>
     <StackPanel Grid.Row="2" HorizontalAlignment="Right" Margin="20 0" Orientation="Horizontal" Height="40">
       <StackPanel.Styles>
@@ -47,12 +96,11 @@
           <Setter Property="Margin" Value="5 0"/>
         </Style>
       </StackPanel.Styles>
-      <TextBlock Text="Analysing Images:" />
-      <TextBlock Margin="10 0 0 0" Text="107" />
-      <TextBlock Text=" / " />
-      <TextBlock Margin="0 0 10 0" Text="328" />
-      <ProgressBar IsIndeterminate="False" Value="33" />
-      <Button Content="Search" />
+      <TextBlock Text="{Binding StatusText}" IsVisible="{Binding !Idle}" />
+      <TextBlock Margin="8 0 10 0" Text="{Binding ImageCountText}" IsVisible="{Binding !Idle}" />
+      <ProgressBar IsIndeterminate="{Binding Searching}" Value="{Binding PercentComplete}" IsVisible="{Binding !Idle}" />
+      <Button Content="Search" Command="{Binding SearchCommand}" IsVisible="{Binding Idle}" />
+      <Button Content="Abort" Command="{Binding AbortCommand}" IsVisible="{Binding !Idle}" />
     </StackPanel>
   </Grid>
 </UserControl>

@@ -8,8 +8,10 @@
     </Border>
   </Design.PreviewWith>
   
-  <Style Selector="TabControl.sidebar > TabItem > :is(UserControl)">
+  <Style Selector="TabControl.sidebar > TabItem > :is(Panel)">
     <Setter Property="Margin" Value="30 30 30 0" />
+    <Setter Property="Height" Value="{Binding TabHeight}" />
+    <Setter Property="Width" Value="{Binding TabWidth}" />
   </Style>
 
   <Style Selector="Button.hyperlink">
