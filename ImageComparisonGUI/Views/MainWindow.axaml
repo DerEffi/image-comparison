@@ -18,12 +18,6 @@
 				Background="Transparent"
         ExtendClientAreaToDecorationsHint="True">
 
-		<Design.DataContext>
-				<!-- This only sets the DataContext for the previewer in an IDE,
-						 to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-				<vm:MainWindowViewModel/>
-		</Design.DataContext>
-
 		<Panel>
         <DockPanel HorizontalAlignment="Stretch">
           <ExperimentalAcrylicBorder DockPanel.Dock="Left" Width="240">
@@ -41,29 +35,40 @@
         </DockPanel>
 
         <TabControl x:Name="TabControl" Classes="sidebar" Margin="0 40 0 15">
-          <TabItem Header="Tmp">
-            <pages:SearchPage Width="{Binding TabWidth}" Height="{Binding TabHeight}" />
-          </TabItem>
           <TabItem Header="Search">
-            <pages:SearchPage Width="{Binding TabWidth}" Height="{Binding TabHeight}" />
+            <Panel>
+              <pages:SearchPage />
+            </Panel>
           </TabItem>
           <TabItem Header="Locations">
-            <pages:LocationsPage/>
+            <Panel>
+              <pages:LocationsPage />
+            </Panel>
           </TabItem>
           <TabItem Header="Threasholds">
-            <pages:ThreasholdsPage/>
+            <Panel>
+              <pages:ThreasholdsPage />
+            </Panel>
           </TabItem>
           <TabItem Header="Profiles">
-            <pages:ProfilesPage/>
+            <Panel>
+              <pages:ProfilesPage />
+            </Panel>
           </TabItem>
           <TabItem Header="Keybindings">
-            <pages:KeybindingsPage/>
+            <Panel>
+              <pages:KeybindingsPage />
+            </Panel>
           </TabItem>
           <TabItem Header="Cache">
-            <pages:CachePage/>
+            <Panel>
+              <pages:CachePage />
+            </Panel>
           </TabItem>
           <TabItem Header="About">
-            <pages:AboutPage/>
+            <Panel>
+              <pages:AboutPage/>
+            </Panel>
           </TabItem>
         </TabControl>
 		</Panel>

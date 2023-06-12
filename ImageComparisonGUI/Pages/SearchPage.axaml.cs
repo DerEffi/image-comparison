@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using ImageComparisonGUI.ViewModels;
 
 namespace ImageComparisonGUI.Pages
 {
@@ -7,6 +8,7 @@ namespace ImageComparisonGUI.Pages
         public SearchPage()
         {
             InitializeComponent();
+            DataContext = new SearchPageViewModel();
         }
     }
 }
