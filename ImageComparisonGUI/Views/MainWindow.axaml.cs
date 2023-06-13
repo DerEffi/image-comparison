@@ -9,8 +9,12 @@ namespace ImageComparisonGUI.Views;
 
 public partial class MainWindow : Window
 {
+    private static MainWindow instance;
+    public static MainWindow Instance { get => instance; }
+
     public MainWindow()
     {
+        instance = this;
         InitializeComponent();
         DataContext = new MainWindowViewModel(ClientSize.Width, ClientSize.Height);
         ClientSizeProperty.Changed.Subscribe(size => Resize(size.NewValue.Value.Width, size.NewValue.Value.Height));
