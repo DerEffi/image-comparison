@@ -1,8 +1,9 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Avalonia.Controls;
+using Avalonia.Interactivity;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ImageComparisonGUI.Models;
 using ImageComparisonGUI.Services;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace ImageComparisonGUI.ViewModels;
@@ -11,25 +12,21 @@ public partial class SearchPageViewModel : ViewModelBase
 {
     #region Observables
 
-    [ObservableProperty] private string? leftImage;
-    [ObservableProperty] private string? leftImageSize;
-    [ObservableProperty] private string? rightImage;
-    [ObservableProperty] private string? rightImageSize;
+    [ObservableProperty] private FileInfo? leftImage;
+    [ObservableProperty] private FileInfo? rightImage;
     [ObservableProperty] private bool idle = true;
     [ObservableProperty] private bool searching = false;
-    [ObservableProperty] private bool displaying = true;
+    [ObservableProperty] private bool displaying = false;
     [ObservableProperty] private string statusText = "Showing Results: ";
     [ObservableProperty] private string imageCountText = "107 / 328";
     [ObservableProperty] private int percentComplete = 33;
 
     #endregion
 
-    public SearchPageViewModel()
+    public SearchPageViewModel(Button leftImageButton, Button rightImageButton)
     {
-        LeftImage = "D:\\Bilder\\Coding Projects\\ImageComparison\\Avatar64.jpg";
-        LeftImageSize = FileService.GetReadableFilesize(LeftImage);
-        RightImage = "D:\\Bilder\\Coding Projects\\ImageComparison\\Profile Transparent.png";
-        RightImageSize = FileService.GetReadableFilesize(RightImage);
+        leftImageButton.DoubleTapped += (object? sender, RoutedEventArgs e) => OpenImage(LeftImage != null ? LeftImage.FullName : null);
+        rightImageButton.DoubleTapped += (object? sender, RoutedEventArgs e) => OpenImage(RightImage != null ? RightImage.FullName : null);
     }
 
     #region Commands
@@ -40,37 +37,57 @@ public partial class SearchPageViewModel : ViewModelBase
         try
         {
             if (side <= 0 && LeftImage != null)
-                FileService.DeleteFile(LeftImage);
+                FileService.DeleteFile(LeftImage.FullName);
 
             if (side >= 0 && RightImage != null)
-                FileService.DeleteFile(RightImage);
+                FileService.DeleteFile(RightImage.FullName);
         } catch { }
 
         NextPair();
     }
 
     [RelayCommand]
-    private void NoMatch()
+    public void NoMatch()
     {
         NextPair();
     }
 
     [RelayCommand]
-    private void Search()
+    public void Search()
     {
 
     }
 
     [RelayCommand]
-    private void Abort()
+    public void Abort()
     {
 
     }
 
     [RelayCommand]
-    private void AutoProcess()
+    public void AutoProcess()
     {
     
+    }
+
+    [RelayCommand]
+    public void OpenExplorer(string path)
+    {
+        if(File.Exists(path))
+        {
+            Process.Start("explorer.exe", $"/select, \"{path}\"");
+        } else
+        {
+            string? directory = Path.GetDirectoryName(path);
+            if (directory != null && Directory.Exists(directory))
+                Process.Start("explorer", directory);
+        }
+    }
+
+    public void OpenImage(string? path)
+    {
+        if (File.Exists(path))
+            Process.Start("explorer", $"\"{path}\"");
     }
 
     #endregion

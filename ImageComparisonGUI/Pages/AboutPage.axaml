@@ -30,7 +30,7 @@
 
     <StackPanel>
       <TextBlock Text="Underlying Algorithm for Image Analysis by Jakob Farian Krarup" />
-      <Button Classes="hyperlink" Command="{Binding OpenHyperlink}" CommandParameter="https://github.com/xnafan/Simple-image-comparison">
+      <Button Classes="Hyperlink" Command="{Binding OpenHyperlink}" CommandParameter="https://github.com/xnafan/Simple-image-comparison">
         <TextBlock Text="https://github.com/xnafan/Simple-image-comparison" />
       </Button>
     </StackPanel>
@@ -39,15 +39,15 @@
       <TextBlock Text="{Binding VersionText}" />
       <TextBlock Text="Open Source Application - Feel free to share and contribute:" />
 
-      <Button Classes="hyperlink" Command="{Binding OpenHyperlink}" CommandParameter="https://github.com/DerEffi/image-comparison">
-        <TextBlock Text="https://github.com/DerEffi/image-comparison" Classes="hyperlink"/>
+      <Button Classes="Hyperlink" Command="{Binding OpenHyperlink}" CommandParameter="https://github.com/DerEffi/image-comparison">
+        <TextBlock Text="https://github.com/DerEffi/image-comparison" />
       </Button>
     </StackPanel>
     
     <StackPanel>
       <TextBlock Text="Developed by" />
       <TextBlock Text="DerEffi" />
-      <Button Classes="hyperlink" Command="{Binding OpenHyperlink}" CommandParameter="https://dereffi.de">
+      <Button Classes="Hyperlink" Command="{Binding OpenHyperlink}" CommandParameter="https://dereffi.de">
         <TextBlock Text="https://dereffi.de" />        
       </Button>
     </StackPanel>
