@@ -14,17 +14,21 @@
     <Setter Property="Width" Value="{Binding TabWidth}" />
   </Style>
 
-  <Style Selector="Button.hyperlink">
+  <Style Selector="Button.Hyperlink">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="Padding" Value="0" />
   </Style>
 
-  <Style Selector="Button.hyperlink /template/ ContentPresenter#PART_ContentPresenter">
+  <Style Selector="Button.Hyperlink /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="Transparent" />
   </Style>
 
-  <Style Selector="Button.hyperlink > TextBlock">
+  <Style Selector="Button.Hyperlink > TextBlock">
     <Setter Property="Cursor" Value="Hand" />
     <Setter Property="TextDecorations" Value="Underline" />
+  </Style>
+
+  <Style Selector="Button.NoAnimation:pressed">
+    <Setter Property="RenderTransform" Value="scale(1)" />
   </Style>
 </Styles>

@@ -48,27 +48,6 @@ namespace ImageComparisonGUI.Services
             }
         }
 
-        public static string GetReadableFilesize(string path)
-        {
-            long size = (new FileInfo(path)).Length;
-            if(size < 1000)
-            {
-                return $"{size} B";
-            } else if (size < 1000000)
-            {
-                return $"{size >> 10} KB";
-            } else if (size < 10000000)
-            {
-                return $"{decimal.Divide(size, 1000000):0.00} MB";
-            } else if (size < 100000000)
-            {
-                return $"{(decimal.Divide(size, 1000000)):0.0} MB";
-            } else
-            {
-                return $"{size >> 20} MB";
-            }
-        }
-
         public static List<SearchFolder> GetProcessableFiles(string[] searchFolders)
         {
             List<SearchFolder> result = new();
