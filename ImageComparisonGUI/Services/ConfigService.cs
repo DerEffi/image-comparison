@@ -7,12 +7,23 @@ namespace ImageComparisonGUI.Services
 {
     public static class ConfigService
     {
-        private static string[] supportedFileTypes = { ".jpg", ".jpeg", ".png" };
+        //Predefined variables
+        private readonly static string[] supportedFileTypes = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff" };
         public static string[] SupportedFileTypes { get => supportedFileTypes; }
 
-        private static List<string> searchLocations = new();
+        public static event EventHandler OnUpdate = delegate { };
+
+        //Location settings
+        private static List<string> searchLocations = new() { };
         public static List<string> SearchLocations { get => searchLocations; }
 
+        private static SearchMode searchMode = SearchMode.All;
+        public static SearchMode SearchMode { get => searchMode; }
+
+        private static bool searchSubdirectories = true;
+        public static bool SearchSubdirectories { get => searchSubdirectories; }
+
+        //Deletion settings
         private static DeleteAction deleteAction = DeleteAction.RecycleBin;
         public static DeleteAction DeleteAction { get => deleteAction; }
 
@@ -22,14 +33,15 @@ namespace ImageComparisonGUI.Services
         private static bool relativeDeleteTarget = true;
         public static bool RelativeDeleteTarget { get => relativeDeleteTarget; }
 
-        public static void UpdateDeleteAction(DeleteAction deleteAction, string? target, bool? relativeTarget)
+
+        public static void UpdateDeleteAction(DeleteAction action, string? target, bool? relativeTarget)
         {
-            if(deleteAction == DeleteAction.Move)
+            if(action == DeleteAction.Move)
             {
                 if(target == null)
                     throw new ArgumentNullException(nameof(target));
 
-                bool targetIsRelative = relativeTarget.HasValue ? relativeTarget.Value : ConfigService.RelativeDeleteTarget;
+                bool targetIsRelative = relativeTarget.HasValue ? relativeTarget.Value : RelativeDeleteTarget;
                 if (targetIsRelative)
                 {
                     while (target.StartsWith("."))
@@ -41,11 +53,22 @@ namespace ImageComparisonGUI.Services
                 else if (!Path.IsPathRooted(target))
                     throw new DirectoryNotFoundException();
 
-                ConfigService.deleteTarget = target;
-                ConfigService.relativeDeleteTarget = targetIsRelative;
+                deleteTarget = target;
+                relativeDeleteTarget = targetIsRelative;
             }
 
-            ConfigService.deleteAction = deleteAction;
+            deleteAction = action;
+
+            OnUpdate.Invoke(null, EventArgs.Empty);
+        }
+
+        public static void UpdateSearchLocations(SearchMode mode, List<string> locations, bool recursive) 
+        {
+            searchMode = mode;
+            searchLocations = locations;
+            searchSubdirectories = recursive;
+
+            OnUpdate.Invoke(null, EventArgs.Empty);
         }
     }
 }

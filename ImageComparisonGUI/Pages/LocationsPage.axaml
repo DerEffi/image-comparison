@@ -3,6 +3,43 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="ImageComparisonGUI.Pages.LocationsPage">
-  Locations
+             x:Class="ImageComparisonGUI.Pages.LocationsPage"
+             xmlns:vm="using:ImageComparisonGUI.ViewModels"
+             xmlns:sv="clr-namespace:ImageComparisonGUI.Services"
+             xmlns:m="clr-namespace:ImageComparisonGUI.Models"
+             x:DataType="vm:LocationsPageViewModel">
+
+  <UserControl.Resources>
+    <sv:EnumToBooleanConverter x:Key="variableEnum" />
+  </UserControl.Resources>
+  
+  <Grid RowDefinitions="*, Auto, Auto, Auto">
+    <Grid.Styles>
+      <Style Selector="StackPanel, Panel">
+        <Setter Property="Margin" Value="10 5 10 10" />
+      </Style>
+    </Grid.Styles>
+    <ListBox Items="{Binding SearchFolders}" ScrollViewer.VerticalScrollBarVisibility="Auto" Selection="{Binding SearchFoldersSelection}" />
+    <TextBlock IsVisible="{Binding !SearchFolders.Count}" Text="No Search Locations" HorizontalAlignment="Center" VerticalAlignment="Center" />
+    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+      <StackPanel.Styles>
+        <Style Selector="Button">
+          <Setter Property="Margin" Value="5 0" />
+        </Style>
+      </StackPanel.Styles>
+      <Button Content="Remove" IsEnabled="{Binding !!SelectedSearchFolder}" Command="{Binding RemoveSearchFolderCommand}" />
+      <Button Content="Add" Command="{Binding AddSearchFolderCommand}" />
+    </StackPanel>
+    <Panel HorizontalAlignment="Center" Grid.Row="2">
+      <StackPanel HorizontalAlignment="Left">
+        <RadioButton Content="Compare all images" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.All}}" />
+        <RadioButton Content="Compare images only within directories" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.Inclusive}}" />
+        <RadioButton Content="Compare images only in different directories" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.Exclusive}}" />
+        <ToggleSwitch Margin="0 15 0 0" OnContent="Search in all subdirectories" OffContent="{Binding $self.OnContent}" IsChecked="{Binding Recursive}" />
+      </StackPanel>
+    </Panel>
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="3">
+      <Button Content="Save" Command="{Binding SaveCommand}" />
+    </StackPanel>
+  </Grid>
 </UserControl>
