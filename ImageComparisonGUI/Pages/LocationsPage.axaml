@@ -6,7 +6,7 @@
              x:Class="ImageComparisonGUI.Pages.LocationsPage"
              xmlns:vm="using:ImageComparisonGUI.ViewModels"
              xmlns:sv="clr-namespace:ImageComparisonGUI.Services"
-             xmlns:m="clr-namespace:ImageComparisonGUI.Models"
+             xmlns:m="clr-namespace:ImageComparison.Models;assembly=ImageComparison"
              x:DataType="vm:LocationsPageViewModel">
 
   <UserControl.Resources>
@@ -27,7 +27,7 @@
           <Setter Property="Margin" Value="5 0" />
         </Style>
       </StackPanel.Styles>
-      <Button Content="Remove" IsEnabled="{Binding !!SelectedSearchFolder}" Command="{Binding RemoveSearchFolderCommand}" />
+      <Button Content="Remove" IsEnabled="{Binding SelectedSearchFolder, Converter={x:Static ObjectConverters.IsNotNull}}" Command="{Binding RemoveSearchFolderCommand}" />
       <Button Content="Add" Command="{Binding AddSearchFolderCommand}" />
     </StackPanel>
     <Panel HorizontalAlignment="Center" Grid.Row="2">

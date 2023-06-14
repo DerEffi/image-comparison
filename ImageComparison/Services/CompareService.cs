@@ -1,9 +1,6 @@
-﻿using ImageComparisonGUI.Models;
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using ImageComparison.Models;
 
-namespace ImageComparisonGUI.Services
+namespace ImageComparison.Services
 {
     public class ImageComparerEventArgs
     {
@@ -15,9 +12,9 @@ namespace ImageComparisonGUI.Services
     {
         public static event EventHandler<ImageComparerEventArgs> OnProgress = delegate {};
 
-        public static List<ImageComparison> GetMatches(List<List<FileInfo>> folders, SearchMode mode)
+        public static List<Comparison> GetMatches(List<List<FileInfo>> folders, SearchMode mode)
         {
-            List<ImageComparison> comparisons = new();
+            List<Comparison> comparisons = new();
 
             if (mode == SearchMode.ListInclusive || mode == SearchMode.Inclusive)
             {

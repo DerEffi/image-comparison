@@ -1,13 +1,11 @@
-﻿using ImageComparisonGUI.Models;
+﻿using ImageComparison.Models;
 using Microsoft.VisualBasic.FileIO;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
-namespace ImageComparisonGUI.Services
+namespace ImageComparison.Services
 {
     public static class FileService
     {
+        private readonly static string[] supportedFileTypes = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff" };
 
         public static void DeleteFile(string path, DeleteAction deleteAction = DeleteAction.Delete, string target = "Duplicates\\", bool relativeTarget = true)
         {
@@ -61,7 +59,7 @@ namespace ImageComparisonGUI.Services
                 {
                     List<FileInfo> current = Directory
                         .GetFiles(folder, $"*.*", System.IO.SearchOption.TopDirectoryOnly)
-                        .Where(path => ConfigService.SupportedFileTypes.Any(ext => path.ToLower().EndsWith(ext)))
+                        .Where(path => supportedFileTypes.Any(ext => path.ToLower().EndsWith(ext)))
                         .Select(path => new FileInfo(path))
                         .ToList();
 
