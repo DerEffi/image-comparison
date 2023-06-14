@@ -1,4 +1,4 @@
-﻿using ImageComparisonGUI.Models;
+﻿using ImageComparison.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,10 +7,6 @@ namespace ImageComparisonGUI.Services
 {
     public static class ConfigService
     {
-        //Predefined variables
-        private readonly static string[] supportedFileTypes = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff" };
-        public static string[] SupportedFileTypes { get => supportedFileTypes; }
-
         public static event EventHandler OnUpdate = delegate { };
 
         //Location settings

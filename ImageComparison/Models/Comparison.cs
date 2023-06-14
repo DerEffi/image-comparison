@@ -1,8 +1,6 @@
-﻿using System.IO;
-
-namespace ImageComparisonGUI.Models
+﻿namespace ImageComparison.Models
 {
-    public class ImageComparison
+    public class Comparison
     {
         public FileInfo BaseImage { get; set; }
         public FileInfo CompareImage { get; set; }
