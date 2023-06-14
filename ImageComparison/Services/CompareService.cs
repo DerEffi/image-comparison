@@ -1,4 +1,8 @@
 ﻿using ImageComparison.Models;
+using Emgu.CV.ImgHash;
+using Emgu.CV.CvEnum;
+using Emgu.CV;
+using System.Runtime.InteropServices;
 
 namespace ImageComparison.Services
 {
@@ -10,23 +14,60 @@ namespace ImageComparison.Services
 
     public static class CompareService
     {
+        public readonly static string[] SupportedFileTypes = { ".bmp", ".dib", ".jpg", ".jpeg", ".jpe", ".png", ".pbm", ".pgm", ".ppm", ".sr", ".ras", ".tiff", ".tif", ".exr", ".jp2" };
+        
         public static event EventHandler<ImageComparerEventArgs> OnProgress = delegate {};
 
-        public static List<Comparison> GetMatches(List<List<FileInfo>> folders, SearchMode mode)
+        public static void GetMatches(List<List<FileInfo>> searchLocations, SearchMode mode, CancellationToken? token)
         {
-            List<Comparison> comparisons = new();
+            List<ImageAnalysis> comparisons = new();
+            int target = searchLocations.SelectMany(i => i).Count();
+            int counter = 0;
 
-            if (mode == SearchMode.ListInclusive || mode == SearchMode.Inclusive)
+            searchLocations.ForEach(location =>
             {
-                folders.ForEach(folder =>
+                location.ForEach(file =>
                 {
-                    comparisons.AddRange(GetMatches(new() { folder }, mode == SearchMode.Inclusive ? mode : SearchMode.All));
+                    if(token.HasValue && token.Value.IsCancellationRequested)
+                        return;
+
+                    try
+                    {
+                        comparisons.Add(new()
+                        {
+                            Image = file,
+                            Hash = ComputeHash<PHash>(file.FullName)
+                        });
+                    }
+                    catch (Exception) { }
+
+                    if((++counter & 7) == 0) {
+                        OnProgress.Invoke(null, new ImageComparerEventArgs()
+                        {
+                            Current = counter,
+                            Target = target
+                        });
+                    }
                 });
-            } else {
-                
+            });
+        }
+
+        private static byte[] ComputeHash<HashAlgorithm>(string file) where HashAlgorithm : ImgHashBase, new()
+        {
+            byte[] data;
+
+            using (HashAlgorithm aHash = new())
+            using (Mat result = new())
+            using (Mat image = CvInvoke.Imread(file, ImreadModes.Color))
+            {
+                aHash.Compute(image, result);
+
+                int hashLength = result.Width * result.Height;
+                data = new byte[hashLength];
+                Marshal.Copy(result.DataPointer, data, 0, hashLength);
             }
 
-            return comparisons;
+            return data;
         }
     }
 }

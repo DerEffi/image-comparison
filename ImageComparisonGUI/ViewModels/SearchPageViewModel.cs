@@ -10,12 +10,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ImageComparisonGUI.ViewModels;
 
 public partial class SearchPageViewModel : ViewModelBase
 {
+    private CancellationTokenSource ComparerTaskToken = new();
+
     #region Observables
 
     [ObservableProperty] private FileInfo? leftImage;
@@ -62,26 +65,37 @@ public partial class SearchPageViewModel : ViewModelBase
     [RelayCommand]
     public void Search()
     {
-        Task.Run(() =>
-        {
-            Idle = false;
-            Searching = true;
-            StatusText = "Searching";
+        try {
+            Task.Run(() =>
+            {
+                Idle = false;
+                Searching = true;
+                StatusText = "Searching";
 
-            List<List<FileInfo>> folders = FileService.GetProcessableFiles(ConfigService.SearchLocations, ConfigService.SearchSubdirectories);
+                List<List<FileInfo>> searchLocations = FileService.GetProcessableFiles(ConfigService.SearchLocations, ConfigService.SearchSubdirectories);
 
-            Searching = false;
-            StatusText = "Analysing";
-            PercentComplete = 0;
+                Searching = false;
+                StatusText = "Analysing";
+                PercentComplete = 0;
 
-            var matches = CompareService.GetMatches(folders, SearchMode.All);
-        });
+                CompareService.GetMatches(searchLocations, SearchMode.All, ComparerTaskToken.Token);
+
+                ComparerTaskToken.Dispose();
+                ComparerTaskToken = new();
+            });
+        } catch (Exception) { }
     }
 
     [RelayCommand]
     public void Abort()
     {
+        Searching = false;
+        StatusText = "";
+        ImageCountText = "";
+        PercentComplete = 0;
+        Idle = true;
 
+        ComparerTaskToken.Cancel();
     }
 
     [RelayCommand]

@@ -5,8 +5,6 @@ namespace ImageComparison.Services
 {
     public static class FileService
     {
-        private readonly static string[] supportedFileTypes = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff" };
-
         public static void DeleteFile(string path, DeleteAction deleteAction = DeleteAction.Delete, string target = "Duplicates\\", bool relativeTarget = true)
         {
             if (path == null || !File.Exists(path))
@@ -46,32 +44,37 @@ namespace ImageComparison.Services
             }
         }
 
-        public static List<List<FileInfo>> GetProcessableFiles(string[] searchFolders, bool searchSubdirectories)
+        public static List<List<FileInfo>> GetProcessableFiles(string[] searchLocations, bool searchSubdirectories)
         {
-            List<List<FileInfo>> files = new();
+            List<List<FileInfo>> directories = new();
 
-            foreach(string folder in searchFolders)
+            foreach(string location in searchLocations)
             {
-                if (string.IsNullOrEmpty(folder) || !Directory.Exists(folder))
+                List<FileInfo> directory = new();
+
+                if (string.IsNullOrEmpty(location) || !Directory.Exists(location))
                     continue;
                 
                 try
                 {
                     List<FileInfo> current = Directory
-                        .GetFiles(folder, $"*.*", System.IO.SearchOption.TopDirectoryOnly)
-                        .Where(path => supportedFileTypes.Any(ext => path.ToLower().EndsWith(ext)))
+                        .GetFiles(location, $"*.*", System.IO.SearchOption.TopDirectoryOnly)
+                        .Where(path => CompareService.SupportedFileTypes.Any(ext => path.ToLower().EndsWith(ext)))
                         .Select(path => new FileInfo(path))
                         .ToList();
 
                     if(current.Count != 0)
-                        files.Add(current);
+                        directory.AddRange(current);
 
                     if(searchSubdirectories)
-                        files.AddRange(GetProcessableFiles(Directory.GetDirectories(folder), true));
+                        directory.AddRange(GetProcessableFiles(Directory.GetDirectories(location), true).SelectMany(i => i));
                 } catch { }
+
+                if (directory.Count != 0)
+                    directories.Add(directory);
             }
 
-            return files;
+            return directories;
         }
     }
 }

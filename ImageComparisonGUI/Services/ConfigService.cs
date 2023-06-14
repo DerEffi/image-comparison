@@ -10,7 +10,7 @@ namespace ImageComparisonGUI.Services
         public static event EventHandler OnUpdate = delegate { };
 
         //Location settings
-        private static string[] searchLocations = new string[] { "D:\\Bilder\\Allgemein" };
+        private static string[] searchLocations = new string[] { "D:\\Bilder" };
         public static string[] SearchLocations { get => searchLocations; }
 
         private static SearchMode searchMode = SearchMode.All;
