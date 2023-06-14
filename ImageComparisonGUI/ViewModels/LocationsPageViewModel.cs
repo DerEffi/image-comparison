@@ -52,7 +52,7 @@ public partial class LocationsPageViewModel : ViewModelBase
     [RelayCommand]
     public void Save()
     {
-        ConfigService.UpdateSearchLocations(SelectedSearchMode, SearchFolders.ToList(), recursive);
+        ConfigService.UpdateSearchLocations(SelectedSearchMode, SearchFolders.ToArray(), recursive);
     }
 
     public void OnConfigUpdate(object? sender, EventArgs e)

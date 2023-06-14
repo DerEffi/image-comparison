@@ -5,7 +5,7 @@
 				xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ImageComparisonGUI.Views"
         xmlns:pages="clr-namespace:ImageComparisonGUI.Pages"
-				mc:Ignorable="d" d:DesignWidth="950" d:DesignHeight="500"
+				mc:Ignorable="d" d:DesignWidth="950" d:DesignHeight="550"
 				x:Class="ImageComparisonGUI.Views.MainWindow"
 				Icon="/Assets/gallery.ico"
 				Title="Image Comparison"
