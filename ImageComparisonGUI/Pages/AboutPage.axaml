@@ -25,13 +25,13 @@
           <Setter Property="TextWrapping" Value="Wrap"/>
         </Style>
       </StackPanel.Styles>
-      <TextBlock Text="Application for comparing a large number of images within or between folders to find duplicates and similar images." />
+      <TextBlock Text="Application for comparing a large number of images within or between directories to find duplicates and similar images." />
     </StackPanel>
 
     <StackPanel>
-      <TextBlock Text="Underlying Algorithm for Image Analysis by Jakob Farian Krarup" />
-      <Button Classes="Hyperlink" Command="{Binding OpenHyperlink}" CommandParameter="https://github.com/xnafan/Simple-image-comparison">
-        <TextBlock Text="https://github.com/xnafan/Simple-image-comparison" />
+      <TextBlock Text="Underlying Algorithms for Image Analysis from Emgu.CV:" />
+      <Button Classes="Hyperlink" Command="{Binding OpenHyperlink}" CommandParameter="https://www.emgu.com">
+        <TextBlock Text="https://www.emgu.com" />
       </Button>
     </StackPanel>
 

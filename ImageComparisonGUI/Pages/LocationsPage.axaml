@@ -19,16 +19,16 @@
         <Setter Property="Margin" Value="10 5 10 10" />
       </Style>
     </Grid.Styles>
-    <ListBox Items="{Binding SearchFolders}" ScrollViewer.VerticalScrollBarVisibility="Auto" Selection="{Binding SearchFoldersSelection}" />
-    <TextBlock IsVisible="{Binding !SearchFolders.Count}" Text="No Search Locations" HorizontalAlignment="Center" VerticalAlignment="Center" />
+    <ListBox Items="{Binding SearchLocations}" ScrollViewer.VerticalScrollBarVisibility="Auto" Selection="{Binding SearchLocationsSelection}" />
+    <TextBlock IsVisible="{Binding !SearchLocations.Count}" Text="No Search Locations" HorizontalAlignment="Center" VerticalAlignment="Center" />
     <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
       <StackPanel.Styles>
         <Style Selector="Button">
           <Setter Property="Margin" Value="5 0" />
         </Style>
       </StackPanel.Styles>
-      <Button Content="Remove" IsEnabled="{Binding SelectedSearchFolder, Converter={x:Static ObjectConverters.IsNotNull}}" Command="{Binding RemoveSearchFolderCommand}" />
-      <Button Content="Add" Command="{Binding AddSearchFolderCommand}" />
+      <Button Content="Remove" IsEnabled="{Binding SelectedSearchLocation, Converter={x:Static ObjectConverters.IsNotNull}}" Command="{Binding RemoveSearchLocationCommand}" />
+      <Button Content="Add" Command="{Binding AddSearchLocationCommand}" />
     </StackPanel>
     <Panel HorizontalAlignment="Center" Grid.Row="2">
       <StackPanel HorizontalAlignment="Left">
