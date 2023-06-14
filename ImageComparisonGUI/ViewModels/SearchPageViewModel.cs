@@ -2,9 +2,14 @@
 using Avalonia.Interactivity;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ImageComparisonGUI.Models;
 using ImageComparisonGUI.Services;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ImageComparisonGUI.ViewModels;
 
@@ -17,14 +22,15 @@ public partial class SearchPageViewModel : ViewModelBase
     [ObservableProperty] private bool idle = true;
     [ObservableProperty] private bool searching = false;
     [ObservableProperty] private bool displaying = false;
-    [ObservableProperty] private string statusText = "Showing Results: ";
-    [ObservableProperty] private string imageCountText = "107 / 328";
-    [ObservableProperty] private int percentComplete = 33;
+    [ObservableProperty] private string statusText = "";
+    [ObservableProperty] private string imageCountText = "";
+    [ObservableProperty] private int percentComplete = 0;
 
     #endregion
 
     public SearchPageViewModel(Button leftImageButton, Button rightImageButton)
     {
+        CompareService.OnProgress += OnProgress;
         leftImageButton.DoubleTapped += (object? sender, RoutedEventArgs e) => OpenImage(LeftImage != null ? LeftImage.FullName : null);
         rightImageButton.DoubleTapped += (object? sender, RoutedEventArgs e) => OpenImage(RightImage != null ? RightImage.FullName : null);
     }
@@ -55,7 +61,20 @@ public partial class SearchPageViewModel : ViewModelBase
     [RelayCommand]
     public void Search()
     {
+        Task.Run(() =>
+        {
+            Idle = false;
+            Searching = true;
+            StatusText = "Searching";
 
+            List<List<FileInfo>> folders = FileService.GetProcessableFiles(ConfigService.SearchLocations, ConfigService.SearchSubdirectories);
+
+            Searching = false;
+            StatusText = "Analysing";
+            PercentComplete = 0;
+
+            var matches = CompareService.GetMatches(folders, SearchMode.All);
+        });
     }
 
     [RelayCommand]
@@ -88,6 +107,12 @@ public partial class SearchPageViewModel : ViewModelBase
     {
         if (File.Exists(path))
             Process.Start("explorer", $"\"{path}\"");
+    }
+
+    public void OnProgress(object? sender, ImageComparerEventArgs e)
+    {
+        PercentComplete = Convert.ToInt32((decimal.Divide(e.Current, e.Target) * 100));
+        ImageCountText = $"{e.Current} / {e.Target}";
     }
 
     #endregion

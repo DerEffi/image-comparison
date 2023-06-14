@@ -35,6 +35,8 @@
         <RadioButton Content="Compare all images" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.All}}" />
         <RadioButton Content="Compare images only within directories" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.Inclusive}}" />
         <RadioButton Content="Compare images only in different directories" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.Exclusive}}" />
+        <RadioButton Content="Compare images only in the same Search Location (top directory)" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.ListInclusive}}" />
+        <RadioButton Content="Compare images only in different Search Locations (top directories)" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.ListExclusive}}" />
         <ToggleSwitch Margin="0 15 0 0" OnContent="Search in all subdirectories" OffContent="{Binding $self.OnContent}" IsChecked="{Binding Recursive}" />
       </StackPanel>
     </Panel>

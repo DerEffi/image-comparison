@@ -14,8 +14,8 @@ namespace ImageComparisonGUI.Services
         public static event EventHandler OnUpdate = delegate { };
 
         //Location settings
-        private static List<string> searchLocations = new() { };
-        public static List<string> SearchLocations { get => searchLocations; }
+        private static string[] searchLocations = new string[] { "D:\\Bilder\\Allgemein" };
+        public static string[] SearchLocations { get => searchLocations; }
 
         private static SearchMode searchMode = SearchMode.All;
         public static SearchMode SearchMode { get => searchMode; }
@@ -62,7 +62,7 @@ namespace ImageComparisonGUI.Services
             OnUpdate.Invoke(null, EventArgs.Empty);
         }
 
-        public static void UpdateSearchLocations(SearchMode mode, List<string> locations, bool recursive) 
+        public static void UpdateSearchLocations(SearchMode mode, string[] locations, bool recursive) 
         {
             searchMode = mode;
             searchLocations = locations;

@@ -48,9 +48,9 @@ namespace ImageComparisonGUI.Services
             }
         }
 
-        public static List<SearchFolder> GetProcessableFiles(string[] searchFolders)
+        public static List<List<FileInfo>> GetProcessableFiles(string[] searchFolders, bool searchSubdirectories)
         {
-            List<SearchFolder> result = new();
+            List<List<FileInfo>> files = new();
 
             foreach(string folder in searchFolders)
             {
@@ -59,22 +59,21 @@ namespace ImageComparisonGUI.Services
                 
                 try
                 {
-                    SearchFolder current = new()
-                    {
-                        Path = folder,
-                        Files = Directory
-                            .GetFiles(folder, $"*.*", System.IO.SearchOption.TopDirectoryOnly)
-                            .Where(name => ConfigService.SupportedFileTypes.Any(ext => name.ToLower().EndsWith(ext)))
-                            .ToList(),
-                        Folders = GetProcessableFiles(Directory.GetDirectories(folder))
-                    };
+                    List<FileInfo> current = Directory
+                        .GetFiles(folder, $"*.*", System.IO.SearchOption.TopDirectoryOnly)
+                        .Where(path => ConfigService.SupportedFileTypes.Any(ext => path.ToLower().EndsWith(ext)))
+                        .Select(path => new FileInfo(path))
+                        .ToList();
 
-                    if(current.Files.Count != 0 || current.Folders.Count != 0)
-                        result.Add(current);
+                    if(current.Count != 0)
+                        files.Add(current);
+
+                    if(searchSubdirectories)
+                        files.AddRange(GetProcessableFiles(Directory.GetDirectories(folder), true));
                 } catch { }
             }
 
-            return result;
+            return files;
         }
     }
 }

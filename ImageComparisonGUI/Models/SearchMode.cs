@@ -10,6 +10,8 @@ namespace ImageComparisonGUI.Models
     {
         All,
         Inclusive,
-        Exclusive
+        Exclusive,
+        ListInclusive,
+        ListExclusive
     }
 }

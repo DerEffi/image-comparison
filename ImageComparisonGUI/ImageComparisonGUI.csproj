@@ -32,4 +32,8 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
     <PackageReference Include="XamlNameReferenceGenerator" Version="1.5.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleImageComparisonClassLibrary\SimpleImageComparisonClassLibrary.csproj" />
+  </ItemGroup>
 </Project>
