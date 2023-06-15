@@ -2,6 +2,7 @@
 using Avalonia.Interactivity;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Emgu.CV.Dnn;
 using ImageComparison.Models;
 using ImageComparison.Services;
 using ImageComparisonGUI.Services;
@@ -74,11 +75,18 @@ public partial class SearchPageViewModel : ViewModelBase
 
                 List<List<FileInfo>> searchLocations = FileService.GetProcessableFiles(ConfigService.SearchLocations, ConfigService.SearchSubdirectories);
 
-                Searching = false;
+                Searching = true;
                 StatusText = "Analysing";
                 PercentComplete = 0;
 
-                CompareService.GetMatches(searchLocations, SearchMode.All, ComparerTaskToken.Token);
+                List<List<ImageAnalysis>> analysedImages = CompareService.AnalyseImages(searchLocations, ComparerTaskToken.Token);
+
+                Searching = true;
+                StatusText = "Comparing";
+                imageCountText = "";
+                PercentComplete = 0;
+
+                List<ImageMatch> matches = CompareService.SearchForDuplicates(analysedImages, ConfigService.SearchMode, ComparerTaskToken.Token);
 
                 ComparerTaskToken.Dispose();
                 ComparerTaskToken = new();
@@ -126,8 +134,10 @@ public partial class SearchPageViewModel : ViewModelBase
 
     public void OnProgress(object? sender, ImageComparerEventArgs e)
     {
-        PercentComplete = Convert.ToInt32((decimal.Divide(e.Current, e.Target) * 100));
+        if(e.Target > 0)
+            PercentComplete = Convert.ToInt32((decimal.Divide(e.Current, e.Target) * 100));
         ImageCountText = $"{e.Current} / {e.Target}";
+        Searching = false;
     }
 
     #endregion
