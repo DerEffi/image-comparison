@@ -2,7 +2,7 @@
 using Avalonia.Interactivity;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Emgu.CV.Dnn;
+using Emgu.CV.Ocl;
 using ImageComparison.Models;
 using ImageComparison.Services;
 using ImageComparisonGUI.Services;
@@ -19,11 +19,13 @@ namespace ImageComparisonGUI.ViewModels;
 public partial class SearchPageViewModel : ViewModelBase
 {
     private CancellationTokenSource ComparerTaskToken = new();
+    private Task? ComparerTask = null;
+    private List<ImageMatch> Matches = new();
+    private int displayedMatchIndex = 0;
 
     #region Observables
 
-    [ObservableProperty] private FileInfo? leftImage;
-    [ObservableProperty] private FileInfo? rightImage;
+    [ObservableProperty] private ImageMatch displayedMatch = new();
     [ObservableProperty] private bool idle = true;
     [ObservableProperty] private bool searching = false;
     [ObservableProperty] private bool displaying = false;
@@ -36,8 +38,8 @@ public partial class SearchPageViewModel : ViewModelBase
     public SearchPageViewModel(Button leftImageButton, Button rightImageButton)
     {
         CompareService.OnProgress += OnProgress;
-        leftImageButton.DoubleTapped += (object? sender, RoutedEventArgs e) => OpenImage(LeftImage != null ? LeftImage.FullName : null);
-        rightImageButton.DoubleTapped += (object? sender, RoutedEventArgs e) => OpenImage(RightImage != null ? RightImage.FullName : null);
+        leftImageButton.DoubleTapped += (object? sender, RoutedEventArgs e) => OpenImage(DisplayedMatch.Image1?.Image.FullName);
+        rightImageButton.DoubleTapped += (object? sender, RoutedEventArgs e) => OpenImage(DisplayedMatch.Image2?.Image.FullName);
     }
 
     #region Commands
@@ -47,11 +49,11 @@ public partial class SearchPageViewModel : ViewModelBase
     {
         try
         {
-            if (side <= 0 && LeftImage != null)
-                FileService.DeleteFile(LeftImage.FullName);
+            if (side <= 0 && DisplayedMatch.Image1 != null)
+                FileService.DeleteFile(DisplayedMatch.Image1.Image.FullName);
 
-            if (side >= 0 && RightImage != null)
-                FileService.DeleteFile(RightImage.FullName);
+            if (side >= 0 && DisplayedMatch.Image1 != null)
+                FileService.DeleteFile(DisplayedMatch.Image1.Image.FullName);
         } catch { }
 
         NextPair();
@@ -67,11 +69,15 @@ public partial class SearchPageViewModel : ViewModelBase
     public void Search()
     {
         try {
-            Task.Run(() =>
+            if (ComparerTask != null && !ComparerTask.IsCompleted)
+                throw new InvalidOperationException();
+
+            ComparerTask = Task.Run(() =>
             {
                 Idle = false;
                 Searching = true;
                 StatusText = "Searching";
+                ImageCountText = "";
 
                 List<List<FileInfo>> searchLocations = FileService.GetProcessableFiles(ConfigService.SearchLocations, ConfigService.SearchSubdirectories);
 
@@ -83,27 +89,46 @@ public partial class SearchPageViewModel : ViewModelBase
 
                 Searching = true;
                 StatusText = "Comparing";
-                imageCountText = "";
+                ImageCountText = "";
                 PercentComplete = 0;
 
-                List<ImageMatch> matches = CompareService.SearchForDuplicates(analysedImages, ConfigService.SearchMode, ComparerTaskToken.Token);
+                Matches = CompareService.SearchForDuplicates(analysedImages, ConfigService.MatchThreashold, ConfigService.SearchMode, ComparerTaskToken.Token);
+                
+                displayedMatchIndex = 0;
+                if (Matches != null && Matches.Count > 0)
+                {
+                    DisplayedMatch = Matches.First();
+                    StatusText = "Showing Matches: ";
+                    ImageCountText = $"1 / {Matches.Count}";
+                    Displaying = true;
+                } else
+                {
+                    ResetUI();
+                }
+                Searching = false;
+
+            }, ComparerTaskToken.Token)
+            .ContinueWith(task =>
+            {
+                ResetUI();
 
                 ComparerTaskToken.Dispose();
                 ComparerTaskToken = new();
-            });
+                GC.Collect();
+            }, TaskContinuationOptions.OnlyOnCanceled);
         } catch (Exception) { }
     }
 
     [RelayCommand]
     public void Abort()
     {
-        Searching = false;
-        StatusText = "";
-        ImageCountText = "";
-        PercentComplete = 0;
-        Idle = true;
-
-        ComparerTaskToken.Cancel();
+        if(ComparerTask != null && !ComparerTask.IsCompleted)
+        {
+            ComparerTaskToken.Cancel();
+        } else
+        {
+            ResetUI();
+        }
     }
 
     [RelayCommand]
@@ -140,13 +165,34 @@ public partial class SearchPageViewModel : ViewModelBase
         Searching = false;
     }
 
+    public void ResetUI()
+    {
+        Matches = new();
+        DisplayedMatch = new();
+        displayedMatchIndex = 0;
+        Searching = false;
+        Displaying = false;
+        StatusText = "";
+        ImageCountText = "";
+        PercentComplete = 0;
+        Idle = true;
+    }
+
     #endregion
 
     #region Data Functions
 
     private void NextPair()
     {
-
+        if(Matches.Count > displayedMatchIndex)
+        {
+            displayedMatchIndex++;
+            DisplayedMatch = Matches[displayedMatchIndex];
+            ImageCountText = $"{displayedMatchIndex + 1} / {Matches.Count}";
+        } else
+        {
+            ResetUI();
+        }
     }
 
     #endregion
