@@ -1,8 +1,4 @@
 ﻿using ImageComparison.Models;
-using Emgu.CV.ImgHash;
-using Emgu.CV.CvEnum;
-using Emgu.CV;
-using System.Runtime.InteropServices;
 using System.Timers;
 using System.Collections.Concurrent;
 using CoenM.ImageHash;
@@ -27,7 +23,6 @@ namespace ImageComparison.Services
             List<ConcurrentBag<ImageAnalysis>> analysed = new();
 
             using (System.Timers.Timer ProgressTimer = new())
-            //using (PHash algorithm = new()) //EmguCV - when in use comment out ImageHash
             {
                 DifferenceHash algorithm = new(); //ImageHash - when in use comment out EmguCV Hash
                 int target = searchLocations.SelectMany(i => i).Count();
@@ -83,49 +78,110 @@ namespace ImageComparison.Services
             return analysed.Select(a => a.ToList()).ToList();
         }
 
-        public static List<ImageMatch> SearchForDuplicates(List<List<ImageAnalysis>> analysedLocations, SearchMode mode, CancellationToken token = new())
+        public static List<ImageMatch> SearchForDuplicates(List<List<ImageAnalysis>> analysedLocations, int matchThreashold, SearchMode mode, CancellationToken token = new())
+        {
+            switch(mode)
+            {
+                case SearchMode.ListExclusive:
+                    //calculate if many locations or many files within each location given
+                    double filesPerLocation = ((double)analysedLocations.Count * analysedLocations.SelectMany(i => i).Count()) / analysedLocations.Count;
+
+                    //dont overload cpu with too many threads, leave one core free
+                    int threadCount = Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1;
+
+                    ConcurrentBag<ImageMatch> comparisons = new();
+                    
+                    //Run in parallel if more locations than file per location, else run files within locations in parallel
+                    Parallel.ForEach(analysedLocations, new() { MaxDegreeOfParallelism = filesPerLocation <= analysedLocations.Count ? threadCount : 1 }, (images, state, currentLocation) =>
+                    {
+                        if (token.IsCancellationRequested)
+                            return;
+
+                        Parallel.ForEach(images, new() { MaxDegreeOfParallelism = filesPerLocation > analysedLocations.Count ? threadCount : 1 }, (image) =>
+                        {
+                            for(int location = (int)currentLocation + 1; location < analysedLocations.Count; location++)
+                            {
+
+                                analysedLocations[location].ForEach(comparer =>
+                                {
+                                    if (token.IsCancellationRequested)
+                                        return;
+
+                                    short similarity = Convert.ToInt16(Math.Floor(CompareHash.Similarity(image.Hash, comparer.Hash)));
+                                    if (similarity >= matchThreashold)
+                                    {
+                                        comparisons.Add(new()
+                                        {
+                                            Image1 = image,
+                                            Image2 = comparer,
+                                            Similarity = similarity
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    });
+
+                    return comparisons.OrderByDescending(m => m.Similarity).ToList();
+                case SearchMode.ListInclusive:
+                    return analysedLocations
+                        .SelectMany(location => SearchForDuplicates(location, matchThreashold, token))
+                        .ToList();
+                case SearchMode.Exclusive:
+                    return SearchForDuplicates(
+                        analysedLocations
+                            .SelectMany(location =>
+                                location
+                                    .GroupBy(directory => directory.Image.DirectoryName)
+                                    .Select(image => image.ToList())
+                                    .ToList()
+                            )
+                        .ToList(),
+                    matchThreashold,
+                    SearchMode.ListExclusive,
+                    token);
+                case SearchMode.Inclusive:
+                    return analysedLocations
+                        .SelectMany(images => {
+                            return images
+                                .GroupBy(image => image.Image.DirectoryName)
+                                .SelectMany(directory => SearchForDuplicates(directory.ToList(), matchThreashold, token));
+                        })
+                        .ToList();
+                default:
+                    return SearchForDuplicates(analysedLocations.SelectMany(images => images).ToList(), matchThreashold, token);
+            }
+        }
+
+        public static List<ImageMatch> SearchForDuplicates(List<ImageAnalysis> images, int matchThreashold, CancellationToken token = new())
         {
             ConcurrentBag<ImageMatch> comparisons = new();
 
             //dont overload cpu with too many threads, leave one core free
             int threadCount = Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1;
 
-            analysedLocations.ForEach(location =>
+            Parallel.ForEach(images, new() { MaxDegreeOfParallelism = threadCount }, (image, state, index) =>
             {
-                Parallel.ForEach(location, new(){ MaxDegreeOfParallelism = threadCount },  (image, state, index) =>
+                for (int i = Convert.ToInt32(index) + 1; i < images.Count; i++)
                 {
-                    for(int i = Convert.ToInt32(index) + 1; i < location.Count; i++)
+
+                    if (token.IsCancellationRequested)
+                        return;
+
+                    short similarity = Convert.ToInt16(Math.Floor(CompareHash.Similarity(image.Hash, images[i].Hash)));
+                    if (similarity >= matchThreashold)
                     {
-
-                        if (token.IsCancellationRequested)
-                            return;
-
-                        comparisons.Add(new(){
+                        comparisons.Add(new()
+                        {
                             Image1 = image,
-                            Image2 = location[i],
-                            Distance = Convert.ToInt16(Math.Floor(CompareHash.Similarity(image.Hash, location[i].Hash)))
+                            Image2 = images[i],
+                            Similarity = similarity
                         });
                     }
-                });
+                }
             });
 
-            return comparisons.ToList();
-        }
-
-        //Calculate Hash Values by EmguCV (OpenCV algorithms)
-        private static byte[] ComputeHash(string file, ImgHashBase algorithm)
-        {
-            using (Mat result = new())
-            using (Mat image = CvInvoke.Imread(file, ImreadModes.Color))
-            {
-                algorithm.Compute(image, result);
-
-                int hashLength = result.Width * result.Height;
-                byte[] data = new byte[hashLength];
-                Marshal.Copy(result.DataPointer, data, 0, hashLength);
-
-                return data;
-            }
+            return comparisons.OrderByDescending(m => m.Similarity).ToList();
         }
 
         //Calculate Hash Values by ImageHash (Dr. Neal Krawetz algorithms)

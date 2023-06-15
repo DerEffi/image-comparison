@@ -1,6 +1,5 @@
 ﻿using ImageComparison.Models;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace ImageComparisonGUI.Services
@@ -9,25 +8,18 @@ namespace ImageComparisonGUI.Services
     {
         public static event EventHandler OnUpdate = delegate { };
 
+        //Processing settings
+        public static int MatchThreashold { get; private set; } = 75;
+
         //Location settings
-        private static string[] searchLocations = new string[] { "D:\\Bilder\\Eigene Aufnahmen\\2017" };
-        public static string[] SearchLocations { get => searchLocations; }
-
-        private static SearchMode searchMode = SearchMode.All;
-        public static SearchMode SearchMode { get => searchMode; }
-
-        private static bool searchSubdirectories = true;
-        public static bool SearchSubdirectories { get => searchSubdirectories; }
+        public static string[] SearchLocations { get; private set; } = new string[] { };
+        public static SearchMode SearchMode { get; private set; } = SearchMode.All;
+        public static bool SearchSubdirectories { get; private set; } = true;
 
         //Deletion settings
-        private static DeleteAction deleteAction = DeleteAction.RecycleBin;
-        public static DeleteAction DeleteAction { get => deleteAction; }
-
-        private static string deleteTarget = "Duplicates\\";
-        public static string DeleteTarget { get => deleteTarget; }
-        
-        private static bool relativeDeleteTarget = true;
-        public static bool RelativeDeleteTarget { get => relativeDeleteTarget; }
+        public static DeleteAction DeleteAction { get; private set; } = DeleteAction.RecycleBin;
+        public static string DeleteTarget { get; private set; } = "Duplicates\\";
+        public static bool RelativeDeleteTarget { get; private set; }
 
 
         public static void UpdateDeleteAction(DeleteAction action, string? target, bool? relativeTarget)
@@ -49,20 +41,20 @@ namespace ImageComparisonGUI.Services
                 else if (!Path.IsPathRooted(target))
                     throw new DirectoryNotFoundException();
 
-                deleteTarget = target;
-                relativeDeleteTarget = targetIsRelative;
+                DeleteTarget = target;
+                RelativeDeleteTarget = targetIsRelative;
             }
 
-            deleteAction = action;
+            DeleteAction = action;
 
             OnUpdate.Invoke(null, EventArgs.Empty);
         }
 
         public static void UpdateSearchLocations(SearchMode mode, string[] locations, bool recursive) 
         {
-            searchMode = mode;
-            searchLocations = locations;
-            searchSubdirectories = recursive;
+            SearchMode = mode;
+            SearchLocations = locations;
+            SearchSubdirectories = recursive;
 
             OnUpdate.Invoke(null, EventArgs.Empty);
         }
