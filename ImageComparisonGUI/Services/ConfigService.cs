@@ -9,7 +9,8 @@ namespace ImageComparisonGUI.Services
         public static event EventHandler OnUpdate = delegate { };
 
         //Processing settings
-        public static int MatchThreashold { get; private set; } = 75;
+        public static int MatchThreashold { get; private set; } = 8000;
+        public static int HashDetail { get; private set; } = 20;
 
         //Location settings
         public static string[] SearchLocations { get; private set; } = new string[] { };

@@ -12,6 +12,7 @@
   <UserControl.Resources>
     <sv:BitmapAssetValueConverter x:Key="variableImage" />
     <sv:ReadableFilesizeConverter x:Key="variableFilesize" />
+    <sv:SimilarityConverter x:Key="variableSimilarity" />
   </UserControl.Resources>
 
   <Grid RowDefinitions="*, Auto, Auto, Auto">
@@ -96,11 +97,12 @@
 
     <StackPanel IsVisible="{Binding Displaying}" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
       <TextBlock Text="Similarity: " />
-      <TextBlock Text="{Binding DisplayedMatch.Similarity}" />
+      <TextBlock Text="{Binding DisplayedMatch.Similarity, Converter={StaticResource variableSimilarity}}" />
       <TextBlock Text="%" />
     </StackPanel>
-    
+
     <StackPanel IsVisible="{Binding Displaying}" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 5 0 0" Grid.Row="2" Height="40">
+      <Button Content="Previous" Command="{Binding PreviousCommand}" />
       <StackPanel.Styles>
         <Style Selector="Button">
           <Setter Property="Margin" Value="5 0"/>
@@ -126,7 +128,7 @@
       <TextBlock Text="{Binding StatusText}" IsVisible="{Binding !Idle}" />
       <TextBlock Margin="8 0 10 0" Text="{Binding ImageCountText}" IsVisible="{Binding !Idle}" />
       <ProgressBar IsIndeterminate="{Binding Searching}" Value="{Binding PercentComplete}" IsVisible="{Binding !Idle}" />
-      <Button Content="Search" Command="{Binding SearchCommand}" IsVisible="{Binding Idle}" />
+      <Button Content="Search" Name="SearchButton" IsVisible="{Binding Idle}" />
       <Button Content="Abort" Command="{Binding AbortCommand}" IsVisible="{Binding !Idle}" />
     </StackPanel>
   </Grid>

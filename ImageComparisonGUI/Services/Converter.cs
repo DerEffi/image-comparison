@@ -25,7 +25,13 @@ namespace ImageComparisonGUI.Services
 
             if (value is string path && targetType.IsAssignableFrom(typeof(Bitmap)))
             {
-                return new Bitmap(path);
+                try
+                {
+                    return new Bitmap(path);
+                } catch(Exception)
+                {
+                    return null;
+                }
             }
 
             throw new NotSupportedException();
@@ -80,6 +86,27 @@ namespace ImageComparisonGUI.Services
                 {
                     return $"{size >> 20} MB";
                 }
+            }
+
+            throw new NotSupportedException();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+    public class SimilarityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null)
+                return null;
+
+            if (value is short similarity)
+            {
+                return string.Format("{0:0.0}", (double)similarity / 100);
             }
 
             throw new NotSupportedException();
