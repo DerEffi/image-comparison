@@ -14,7 +14,8 @@ namespace ImageComparisonGUI.Pages
             InitializeComponent();
             Button leftImageButton = this.Find<Button>("LeftImageButton");
             Button rightImageButton = this.Find<Button>("RightImageButton");
-            DataContext = new SearchPageViewModel(leftImageButton, rightImageButton);
+            Button searchButton = this.Find<Button>("SearchButton");
+            DataContext = new SearchPageViewModel(leftImageButton, rightImageButton, searchButton);
         }
     }
 }

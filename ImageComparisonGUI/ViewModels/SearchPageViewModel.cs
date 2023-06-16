@@ -2,7 +2,6 @@
 using Avalonia.Interactivity;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Emgu.CV.Ocl;
 using ImageComparison.Models;
 using ImageComparison.Services;
 using ImageComparisonGUI.Services;
@@ -35,11 +34,12 @@ public partial class SearchPageViewModel : ViewModelBase
 
     #endregion
 
-    public SearchPageViewModel(Button leftImageButton, Button rightImageButton)
+    public SearchPageViewModel(Button leftImageButton, Button rightImageButton, Button searchButton)
     {
         CompareService.OnProgress += OnProgress;
         leftImageButton.DoubleTapped += (object? sender, RoutedEventArgs e) => OpenImage(DisplayedMatch.Image1?.Image.FullName);
         rightImageButton.DoubleTapped += (object? sender, RoutedEventArgs e) => OpenImage(DisplayedMatch.Image2?.Image.FullName);
+        searchButton.Click += Search;
     }
 
     #region Commands
@@ -50,10 +50,10 @@ public partial class SearchPageViewModel : ViewModelBase
         try
         {
             if (side <= 0 && DisplayedMatch.Image1 != null)
-                FileService.DeleteFile(DisplayedMatch.Image1.Image.FullName);
+                FileService.DeleteFile(DisplayedMatch.Image1.Image.FullName, ConfigService.DeleteAction, ConfigService.DeleteTarget, ConfigService.RelativeDeleteTarget);
 
-            if (side >= 0 && DisplayedMatch.Image1 != null)
-                FileService.DeleteFile(DisplayedMatch.Image1.Image.FullName);
+            if (side >= 0 && DisplayedMatch.Image2 != null)
+                FileService.DeleteFile(DisplayedMatch.Image2.Image.FullName, ConfigService.DeleteAction, ConfigService.DeleteTarget, ConfigService.RelativeDeleteTarget);
         } catch { }
 
         NextPair();
@@ -66,57 +66,67 @@ public partial class SearchPageViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    public void Search()
+    public void Previous()
     {
-        try {
-            if (ComparerTask != null && !ComparerTask.IsCompleted)
-                throw new InvalidOperationException();
+        if (displayedMatchIndex > 0)
+        {
+            displayedMatchIndex--;
+            DisplayedMatch = Matches[displayedMatchIndex];
+            ImageCountText = $"{displayedMatchIndex + 1} / {Matches.Count}";
+        }
+    }
 
-            ComparerTask = Task.Run(() =>
+    public void Search(object? sender, RoutedEventArgs e)
+    {
+        if (ComparerTask != null && !ComparerTask.IsCompleted)
+            throw new InvalidOperationException();
+
+        ComparerTask = Task.Run(() =>
+        {
+            Idle = false;
+            Searching = true;
+            StatusText = "Searching";
+            ImageCountText = "";
+
+            List<List<FileInfo>> searchLocations = FileService.GetProcessableFiles(ConfigService.SearchLocations, ConfigService.SearchSubdirectories);
+
+            Searching = true;
+            StatusText = "Analysing";
+            PercentComplete = 0;
+
+            List<List<ImageAnalysis>> analysedImages = CompareService.AnalyseImages(searchLocations, ConfigService.HashDetail, ComparerTaskToken.Token);
+
+            Searching = true;
+            StatusText = "Comparing";
+            ImageCountText = "";
+            PercentComplete = 0;
+
+            Matches = CompareService.SearchForDuplicates(analysedImages, ConfigService.MatchThreashold, ConfigService.SearchMode, ComparerTaskToken.Token);
+
+            displayedMatchIndex = 0;
+            if (Matches != null && Matches.Count > 0)
             {
-                Idle = false;
-                Searching = true;
-                StatusText = "Searching";
-                ImageCountText = "";
-
-                List<List<FileInfo>> searchLocations = FileService.GetProcessableFiles(ConfigService.SearchLocations, ConfigService.SearchSubdirectories);
-
-                Searching = true;
-                StatusText = "Analysing";
-                PercentComplete = 0;
-
-                List<List<ImageAnalysis>> analysedImages = CompareService.AnalyseImages(searchLocations, ComparerTaskToken.Token);
-
-                Searching = true;
-                StatusText = "Comparing";
-                ImageCountText = "";
-                PercentComplete = 0;
-
-                Matches = CompareService.SearchForDuplicates(analysedImages, ConfigService.MatchThreashold, ConfigService.SearchMode, ComparerTaskToken.Token);
-                
-                displayedMatchIndex = 0;
-                if (Matches != null && Matches.Count > 0)
-                {
-                    DisplayedMatch = Matches.First();
-                    StatusText = "Showing Matches: ";
-                    ImageCountText = $"1 / {Matches.Count}";
-                    Displaying = true;
-                } else
-                {
-                    ResetUI();
-                }
-                Searching = false;
-
-            }, ComparerTaskToken.Token)
-            .ContinueWith(task =>
+                DisplayedMatch = Matches.First();
+                StatusText = "Showing Matches: ";
+                ImageCountText = $"1 / {Matches.Count}";
+                Displaying = true;
+            }
+            else
             {
                 ResetUI();
+            }
+            Searching = false;
 
-                ComparerTaskToken.Dispose();
-                ComparerTaskToken = new();
-                GC.Collect();
-            }, TaskContinuationOptions.OnlyOnCanceled);
-        } catch (Exception) { }
+        }, ComparerTaskToken.Token)
+        .ContinueWith(task =>
+        {
+            ResetUI();
+
+            ComparerTaskToken.Dispose();
+            ComparerTaskToken = new();
+            GC.Collect();
+        }, TaskContinuationOptions.OnlyOnCanceled)
+        .ContinueWith(t => { });
     }
 
     [RelayCommand]
@@ -184,9 +194,8 @@ public partial class SearchPageViewModel : ViewModelBase
 
     private void NextPair()
     {
-        if(Matches.Count > displayedMatchIndex)
+        if(Matches.Count > ++displayedMatchIndex)
         {
-            displayedMatchIndex++;
             DisplayedMatch = Matches[displayedMatchIndex];
             ImageCountText = $"{displayedMatchIndex + 1} / {Matches.Count}";
         } else

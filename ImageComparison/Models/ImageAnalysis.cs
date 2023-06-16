@@ -3,6 +3,6 @@
     public class ImageAnalysis
     {
         public FileInfo Image { get; set; }
-        public byte[] Hash { get; set; }
+        public ulong[] Hash { get; set; }
     }
 }

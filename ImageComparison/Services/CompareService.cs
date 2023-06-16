@@ -1,8 +1,8 @@
 ﻿using ImageComparison.Models;
 using System.Timers;
 using System.Collections.Concurrent;
-using CoenM.ImageHash;
-using CoenM.ImageHash.HashAlgorithms;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace ImageComparison.Services
 {
@@ -18,13 +18,12 @@ namespace ImageComparison.Services
         
         public static event EventHandler<ImageComparerEventArgs> OnProgress = delegate {};
 
-        public static List<List<ImageAnalysis>> AnalyseImages(List<List<FileInfo>> searchLocations, CancellationToken token = new())
+        public static List<List<ImageAnalysis>> AnalyseImages(List<List<FileInfo>> searchLocations, int hashDetail, CancellationToken token = new())
         {
             List<ConcurrentBag<ImageAnalysis>> analysed = new();
 
             using (System.Timers.Timer ProgressTimer = new())
             {
-                DifferenceHash algorithm = new(); //ImageHash - when in use comment out EmguCV Hash
                 int target = searchLocations.SelectMany(i => i).Count();
 
                 //dont overload cpu with too many threads, leave one core free
@@ -59,10 +58,10 @@ namespace ImageComparison.Services
                             locationAnalysis.Add(new()
                             {
                                 Image = file,
-                                Hash = ComputeHash(file.FullName, algorithm)
+                                Hash = CalculateHash(file.FullName, hashDetail)
                             });
                         }
-                        catch (Exception) { }
+                        catch (Exception e) { }
                     });
                 });
 
@@ -107,7 +106,7 @@ namespace ImageComparison.Services
                                     if (token.IsCancellationRequested)
                                         return;
 
-                                    short similarity = Convert.ToInt16(Math.Floor(CompareHash.Similarity(image.Hash, comparer.Hash)));
+                                    short similarity = CalculateSimilarity(image.Hash, comparer.Hash);
                                     if (similarity >= matchThreashold)
                                     {
                                         comparisons.Add(new()
@@ -122,7 +121,7 @@ namespace ImageComparison.Services
                         });
                     });
 
-                    return comparisons.OrderByDescending(m => m.Similarity).ToList();
+                    return comparisons.OrderByDescending(m => m.Similarity).ThenBy(m => m.Image1.Image.FullName).ToList();
                 case SearchMode.ListInclusive:
                     return analysedLocations
                         .SelectMany(location => SearchForDuplicates(location, matchThreashold, token))
@@ -168,7 +167,7 @@ namespace ImageComparison.Services
                     if (token.IsCancellationRequested)
                         return;
 
-                    short similarity = Convert.ToInt16(Math.Floor(CompareHash.Similarity(image.Hash, images[i].Hash)));
+                    short similarity = CalculateSimilarity(image.Hash, images[i].Hash);
                     if (similarity >= matchThreashold)
                     {
                         comparisons.Add(new()
@@ -181,16 +180,21 @@ namespace ImageComparison.Services
                 }
             });
 
-            return comparisons.OrderByDescending(m => m.Similarity).ToList();
+            return comparisons.OrderByDescending(m => m.Similarity).ThenBy(m => m.Image1.Image.FullName).ToList();
         }
 
         //Calculate Hash Values by ImageHash (Dr. Neal Krawetz algorithms)
-        private static byte[] ComputeHash(string file, IImageHash algorithm)
+        private static ulong[] CalculateHash(string file, int detail)
         {
             using (Stream stream = File.OpenRead(file))
             {
-                return BitConverter.GetBytes(algorithm.Hash(stream));
+                return HashService.DHash(Image.Load<Rgba32>(stream), detail);
             }
+        }
+
+        private static short CalculateSimilarity(ulong[] hash1, ulong[] hash2)
+        {
+            return HashService.Similarity(hash1, hash2);
         }
     }
 }
