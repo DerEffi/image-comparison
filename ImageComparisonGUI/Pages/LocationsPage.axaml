@@ -19,7 +19,7 @@
         <Setter Property="Margin" Value="10 5 10 10" />
       </Style>
     </Grid.Styles>
-    <ListBox Items="{Binding SearchLocations}" ScrollViewer.VerticalScrollBarVisibility="Auto" Selection="{Binding SearchLocationsSelection}" />
+    <ListBox IsEnabled="{Binding !ConfigLocked}" Items="{Binding SearchLocations}" ScrollViewer.VerticalScrollBarVisibility="Auto" Selection="{Binding SearchLocationsSelection}" />
     <TextBlock IsVisible="{Binding !SearchLocations.Count}" Text="No Search Locations" HorizontalAlignment="Center" VerticalAlignment="Center" />
     <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
       <StackPanel.Styles>
@@ -27,21 +27,25 @@
           <Setter Property="Margin" Value="5 0" />
         </Style>
       </StackPanel.Styles>
-      <Button Content="Remove" IsEnabled="{Binding SelectedSearchLocation, Converter={x:Static ObjectConverters.IsNotNull}}" Command="{Binding RemoveSearchLocationCommand}" />
-      <Button Content="Add" Command="{Binding AddSearchLocationCommand}" />
+      <Button Content="Remove" Command="{Binding RemoveSearchLocationCommand}">
+        <Button.IsEnabled>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="SelectedSearchLocation" Converter="{x:Static ObjectConverters.IsNotNull}" />
+            <Binding Path="!ConfigLocked" />
+          </MultiBinding>
+        </Button.IsEnabled>
+      </Button>
+      <Button IsEnabled="{Binding !ConfigLocked}" Content="Add" Command="{Binding AddSearchLocationCommand}" />
     </StackPanel>
     <Panel HorizontalAlignment="Center" Grid.Row="2">
       <StackPanel HorizontalAlignment="Left">
-        <RadioButton Content="Compare all images" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.All}}" />
-        <RadioButton Content="Compare images only within directories" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.Inclusive}}" />
-        <RadioButton Content="Compare images only in different directories" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.Exclusive}}" />
-        <RadioButton Content="Compare images only in the same Search Location (top directory)" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.ListInclusive}}" />
-        <RadioButton Content="Compare images only in different Search Locations (top directories)" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.ListExclusive}}" />
-        <ToggleSwitch Margin="0 15 0 0" OnContent="Search in all subdirectories" OffContent="{Binding $self.OnContent}" IsChecked="{Binding Recursive}" />
+        <RadioButton IsEnabled="{Binding !ConfigLocked}" Content="Compare all images" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.All}}" Command="{Binding SaveCommand}" />
+        <RadioButton IsEnabled="{Binding !ConfigLocked}" Content="Compare images only within directories" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.Inclusive}}" Command="{Binding SaveCommand}" />
+        <RadioButton IsEnabled="{Binding !ConfigLocked}" Content="Compare images only in different directories" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.Exclusive}}" Command="{Binding SaveCommand}" />
+        <RadioButton IsEnabled="{Binding !ConfigLocked}" Content="Compare images only in the same Search Location (top directory)" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.ListInclusive}}" Command="{Binding SaveCommand}" />
+        <RadioButton IsEnabled="{Binding !ConfigLocked}" Content="Compare images only in different Search Locations (top directories)" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.ListExclusive}}" Command="{Binding SaveCommand}" />
+        <ToggleSwitch IsEnabled="{Binding !ConfigLocked}" Margin="0 15 0 0" OnContent="Search in all subdirectories" OffContent="{Binding $self.OnContent}" IsChecked="{Binding Recursive}" Command="{Binding SaveCommand}" />
       </StackPanel>
     </Panel>
-    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="3">
-      <Button Content="Save" Command="{Binding SaveCommand}" />
-    </StackPanel>
   </Grid>
 </UserControl>

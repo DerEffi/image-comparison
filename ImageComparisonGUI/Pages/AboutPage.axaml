@@ -9,7 +9,7 @@
   <StackPanel>
     <StackPanel.Styles>
       <Style Selector="StackPanel">
-        <Setter Property="Margin" Value="0 0 0 40"/>
+        <Setter Property="Margin" Value="0 0 0 25"/>
       </Style>
     </StackPanel.Styles>
 
@@ -29,13 +29,6 @@
     </StackPanel>
 
     <StackPanel>
-      <TextBlock Text="Underlying Algorithms for Image Analysis from Emgu.CV:" />
-      <Button Classes="Hyperlink" Command="{Binding OpenHyperlink}" CommandParameter="https://www.emgu.com">
-        <TextBlock Text="https://www.emgu.com" />
-      </Button>
-    </StackPanel>
-
-    <StackPanel>
       <TextBlock Text="{Binding VersionText}" />
       <TextBlock Text="Open Source Application - Feel free to share and contribute:" />
 
@@ -51,5 +44,23 @@
         <TextBlock Text="https://dereffi.de" />        
       </Button>
     </StackPanel>
+    
+    <StackPanel>
+      <TextBlock Margin="0 15 0 0" Text="Underlying Algorithms for Image Analysis: DifferenceHash by David Oftedal and Dr. Neal Krawetz:" />
+      <Button Classes="Hyperlink" Command="{Binding OpenHyperlink}" CommandParameter="http://http://01101001.net/differencehash.php">
+        <TextBlock Text="http://http://01101001.net/differencehash.php" />
+      </Button>
+      <Button Classes="Hyperlink" Command="{Binding OpenHyperlink}" CommandParameter="https://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html">
+        <TextBlock Text="https://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html" />
+      </Button>
+    </StackPanel>
+    
+    <StackPanel>
+      <TextBlock Text="Modified Implementation of CoenM:" />
+      <Button Classes="Hyperlink" Command="{Binding OpenHyperlink}" CommandParameter="https://github.com/coenm/ImageHash/">
+        <TextBlock Text="https://github.com/coenm/ImageHash/" />
+      </Button>
+    </StackPanel>
+    
   </StackPanel>
 </UserControl>

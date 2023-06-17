@@ -17,12 +17,12 @@ public partial class LocationsPageViewModel : ViewModelBase
     [ObservableProperty] private int? selectedSearchLocation = null;
     [ObservableProperty] private SearchMode selectedSearchMode = ConfigService.SearchMode;
     [ObservableProperty] private bool recursive = ConfigService.SearchSubdirectories;
+    [ObservableProperty] private bool configLocked = ConfigService.IsLocked;
 
-    public SelectionModel<string> SearchLocationsSelection { get; }
+    public SelectionModel<string> SearchLocationsSelection { get; } = new();
 
     public LocationsPageViewModel()
     {
-        SearchLocationsSelection = new();
         SearchLocationsSelection.SelectionChanged += SearchLocationsSelectionChanged;
 
         ConfigService.OnUpdate += OnConfigUpdate;
@@ -37,7 +37,10 @@ public partial class LocationsPageViewModel : ViewModelBase
     public void RemoveSearchLocation()
     {
         if (SelectedSearchLocation != null)
+        {
             SearchLocations.RemoveAt(SelectedSearchLocation ?? 0);
+            ConfigService.UpdateSearchLocations(SelectedSearchMode, SearchLocations.ToArray(), recursive);
+        }
     }
 
     [RelayCommand]
@@ -45,8 +48,11 @@ public partial class LocationsPageViewModel : ViewModelBase
     {
         OpenFolderDialog dialog = new OpenFolderDialog();
         string? location = await dialog.ShowAsync(MainWindow.Instance);
-        if(location != null && !SearchLocations.Contains(location))
+        if (location != null && !SearchLocations.Contains(location))
+        {
             SearchLocations.Add(location);
+            ConfigService.UpdateSearchLocations(SelectedSearchMode, SearchLocations.ToArray(), recursive);
+        }
     }
 
     [RelayCommand]
@@ -61,5 +67,6 @@ public partial class LocationsPageViewModel : ViewModelBase
         SelectedSearchLocation = null;
         SelectedSearchMode = ConfigService.SearchMode;
         Recursive = ConfigService.SearchSubdirectories;
+        ConfigLocked = ConfigService.IsLocked;
     }
 }
