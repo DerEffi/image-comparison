@@ -3,6 +3,7 @@ using System.Timers;
 using System.Collections.Concurrent;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using System.Reflection.Metadata.Ecma335;
 
 namespace ImageComparison.Services
 {
@@ -121,7 +122,7 @@ namespace ImageComparison.Services
                         });
                     });
 
-                    return comparisons.OrderByDescending(m => m.Similarity).ThenBy(m => m.Image1.Image.FullName).ToList();
+                    return SortMatches(comparisons);
                 case SearchMode.ListInclusive:
                     return analysedLocations
                         .SelectMany(location => SearchForDuplicates(location, matchThreashold, token))
@@ -180,7 +181,7 @@ namespace ImageComparison.Services
                 }
             });
 
-            return comparisons.OrderByDescending(m => m.Similarity).ThenBy(m => m.Image1.Image.FullName).ToList();
+            return SortMatches(comparisons);
         }
 
         //Calculate Hash Values by ImageHash (Dr. Neal Krawetz algorithms)
@@ -195,6 +196,21 @@ namespace ImageComparison.Services
         private static short CalculateSimilarity(ulong[] hash1, ulong[] hash2)
         {
             return HashService.Similarity(hash1, hash2);
+        }
+
+        private static List<ImageMatch> SortMatches(ConcurrentBag<ImageMatch> comparisons)
+        {
+            List<ImageMatch> matches = comparisons.ToList();
+            matches.Sort((a,b) =>
+            {
+                int result = b.Similarity - a.Similarity;
+                if (result == 0)
+                    return string.Compare(a.Image1.Image.FullName, b.Image1.Image.FullName);
+
+                return result;
+            });
+
+            return matches;
         }
     }
 }
