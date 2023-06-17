@@ -16,6 +16,9 @@
   </UserControl.Resources>
 
   <Grid RowDefinitions="*, Auto, Auto, Auto">
+
+    <Button Content="Start Search" FontSize="14" Name="SearchButton" IsVisible="{Binding Idle}" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.RowSpan="4" />
+    
     <Grid Grid.Row="0" ColumnDefinitions="*, *" RowDefinitions="*, Auto, Auto, Auto, Auto" Name="image0_grid">
 
       <Button Name="LeftImageButton" HorizontalAlignment="Center" Classes="Hyperlink NoAnimation" IsVisible="{Binding Displaying}" Margin="15 0">
@@ -128,7 +131,6 @@
       <TextBlock Text="{Binding StatusText}" IsVisible="{Binding !Idle}" />
       <TextBlock Margin="8 0 10 0" Text="{Binding ImageCountText}" IsVisible="{Binding !Idle}" />
       <ProgressBar IsIndeterminate="{Binding Searching}" Value="{Binding PercentComplete}" IsVisible="{Binding !Idle}" />
-      <Button Content="Search" Name="SearchButton" IsVisible="{Binding Idle}" />
       <Button Content="Abort" Command="{Binding AbortCommand}" IsVisible="{Binding !Idle}" />
     </StackPanel>
   </Grid>

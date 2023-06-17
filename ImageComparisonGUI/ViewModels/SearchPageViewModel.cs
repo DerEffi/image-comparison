@@ -50,10 +50,10 @@ public partial class SearchPageViewModel : ViewModelBase
         try
         {
             if (side <= 0 && DisplayedMatch.Image1 != null)
-                FileService.DeleteFile(DisplayedMatch.Image1.Image.FullName, ConfigService.DeleteAction, ConfigService.DeleteTarget, ConfigService.RelativeDeleteTarget);
+                DeleteFile(DisplayedMatch.Image1.Image.FullName);
 
             if (side >= 0 && DisplayedMatch.Image2 != null)
-                FileService.DeleteFile(DisplayedMatch.Image2.Image.FullName, ConfigService.DeleteAction, ConfigService.DeleteTarget, ConfigService.RelativeDeleteTarget);
+                DeleteFile(DisplayedMatch.Image2.Image.FullName);
         } catch { }
 
         NextPair();
@@ -204,6 +204,22 @@ public partial class SearchPageViewModel : ViewModelBase
         {
             ResetUI();
         }
+    }
+
+    private void DeleteFile(string path)
+    {
+        try
+        {
+            FileService.DeleteFile(path, ConfigService.DeleteAction, ConfigService.DeleteTarget, ConfigService.RelativeDeleteTarget);
+            List<ImageMatch> validMatches = Matches.GetRange(0, displayedMatchIndex + 1);
+            for(int i = displayedMatchIndex + 1; i < Matches.Count; i++)
+            {
+                if(Matches[i].Image1.Image.FullName != path && Matches[i].Image2.Image.FullName != path)
+                    validMatches.Add(Matches[i]);
+            }
+            Matches = new(validMatches);
+        }
+        catch { }
     }
 
     #endregion

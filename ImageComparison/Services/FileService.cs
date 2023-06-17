@@ -1,5 +1,6 @@
 ﻿using ImageComparison.Models;
 using Microsoft.VisualBasic.FileIO;
+using System.Collections.Immutable;
 
 namespace ImageComparison.Services
 {
