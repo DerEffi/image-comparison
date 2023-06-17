@@ -87,6 +87,7 @@ public partial class SearchPageViewModel : ViewModelBase
             Searching = true;
             StatusText = "Searching";
             ImageCountText = "";
+            ConfigService.Lock();
 
             List<List<FileInfo>> searchLocations = FileService.GetProcessableFiles(ConfigService.SearchLocations, ConfigService.SearchSubdirectories);
 
@@ -186,6 +187,7 @@ public partial class SearchPageViewModel : ViewModelBase
         ImageCountText = "";
         PercentComplete = 0;
         Idle = true;
+        ConfigService.Unlock();
     }
 
     #endregion

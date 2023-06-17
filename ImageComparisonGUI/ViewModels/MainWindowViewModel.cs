@@ -15,6 +15,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel(double width, double height)
     {
         Resize(width, height);
+        ConfigService.Init();
     }
 
     public void Resize(double width, double height)
