@@ -38,4 +38,10 @@
   <ItemGroup>
     <ProjectReference Include="..\ImageComparison\ImageComparison.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Pages\AdjustablesPage.axaml.cs">
+      <DependentUpon>AdjustablesPage.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

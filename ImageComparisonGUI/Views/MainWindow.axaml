@@ -45,9 +45,9 @@
               <pages:LocationsPage />
             </Panel>
           </TabItem>
-          <TabItem Header="Threasholds">
+          <TabItem Header="Adjustables">
             <Panel>
-              <pages:ThreasholdsPage />
+              <pages:AdjustablesPage />
             </Panel>
           </TabItem>
           <TabItem Header="Profiles">
