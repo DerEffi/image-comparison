@@ -24,7 +24,7 @@
             <ExperimentalAcrylicBorder.Material>
               <ExperimentalAcrylicMaterial TintColor="Black" MaterialOpacity=".7" TintOpacity="1" />
             </ExperimentalAcrylicBorder.Material>
-            <TextBlock Text="%Icon%" HorizontalAlignment="Center" Margin="0 40 0 0" />
+            <Image HorizontalAlignment="Center" VerticalAlignment="Top" Source="/Assets/gallery.ico" Height="75" Margin="15" />
           </ExperimentalAcrylicBorder>
           <ExperimentalAcrylicBorder IsHitTestVisible="False">
             <ExperimentalAcrylicBorder.Material>
