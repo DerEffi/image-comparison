@@ -19,7 +19,7 @@ namespace ImageComparison.Services
         
         public static event EventHandler<ImageComparerEventArgs> OnProgress = delegate {};
 
-        public static List<List<ImageAnalysis>> AnalyseImages(List<List<FileInfo>> searchLocations, int hashDetail, CancellationToken token = new())
+        public static List<List<ImageAnalysis>> AnalyseImages(List<List<FileInfo>> searchLocations, int hashDetail, bool hashBothDirections, CancellationToken token = new())
         {
             List<ConcurrentBag<ImageAnalysis>> analysed = new();
 
@@ -59,7 +59,7 @@ namespace ImageComparison.Services
                             locationAnalysis.Add(new()
                             {
                                 Image = file,
-                                Hash = CalculateHash(file.FullName, hashDetail)
+                                Hash = CalculateHash(file.FullName, hashDetail, hashBothDirections)
                             });
                         }
                         catch (Exception e) { }
@@ -185,11 +185,11 @@ namespace ImageComparison.Services
         }
 
         //Calculate Hash Values by ImageHash (Dr. Neal Krawetz algorithms)
-        private static ulong[] CalculateHash(string file, int detail)
+        private static ulong[] CalculateHash(string file, int detail, bool bothDirections)
         {
             using (Stream stream = File.OpenRead(file))
             {
-                return HashService.DHash(Image.Load<Rgba32>(stream), detail);
+                return HashService.DHash(Image.Load<Rgba32>(stream), detail, bothDirections);
             }
         }
 
