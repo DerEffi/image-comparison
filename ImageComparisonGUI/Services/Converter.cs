@@ -104,10 +104,7 @@ namespace ImageComparisonGUI.Services
             if (value == null)
                 return null;
 
-            if (value is short similarity)
-            {
-                return string.Format("{0:0.0}", (double)similarity / 100);
-            }
+            return string.Format("{0:0.0}", System.Convert.ToDouble(value) / 100);
 
             throw new NotSupportedException();
         }

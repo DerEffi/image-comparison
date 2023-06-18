@@ -101,6 +101,20 @@ namespace ImageComparisonGUI.Services
             OnUpdate.Invoke(null, EventArgs.Empty);
         }
 
+        public static void UpdateAdjustables(int matchThreashold, int hashDetail, bool hashBothDirections)
+        {
+            if (!IsLocked)
+            {
+                settings.MatchThreashold = matchThreashold;
+                settings.HashBothDirections = hashBothDirections;
+                settings.HashDetail = hashDetail;
+
+                SaveConfig();
+            }
+
+            OnUpdate.Invoke(null, EventArgs.Empty);
+        }
+
         private static void SaveConfig()
         {
             try

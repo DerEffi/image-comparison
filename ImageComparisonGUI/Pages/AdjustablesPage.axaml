@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ImageComparisonGUI.Pages.AdjustablesPage"
+             xmlns:vm="using:ImageComparisonGUI.ViewModels"
+             xmlns:sv="clr-namespace:ImageComparisonGUI.Services"
+             xmlns:m="clr-namespace:ImageComparison.Models;assembly=ImageComparison"
+             x:DataType="vm:AdjustablesPageViewModel">
+
+  <UserControl.Resources>
+    <sv:SimilarityConverter x:Key="variableSimilarity" />
+  </UserControl.Resources>
+
+  <StackPanel HorizontalAlignment="Center" Orientation="Vertical" Width="500">
+    <StackPanel.Styles>
+      <Style>
+        
+      </Style>
+    </StackPanel.Styles>
+    <TextBlock Text="Display matches above similarity of" />
+    <Grid ColumnDefinitions="*, Auto, Auto">
+      <Slider HorizontalAlignment="Stretch" Name="MatchThreasholdSlider" Value="{Binding MatchThreashold}" Minimum="0"
+        Maximum="9990" />
+      <TextBlock Width="40" TextAlignment="Right" VerticalAlignment="Center" Margin="15 2 0 0" Grid.Column="1" Text="{Binding MatchThreashold, Converter={StaticResource variableSimilarity}}" />
+      <TextBlock VerticalAlignment="Center" Margin="1 2 0 0" Grid.Column="2" Text="%" />
+    </Grid>
+
+    <TextBlock Text="Hash detail" Margin="0 50 0 0" />
+    <Grid ColumnDefinitions="*, Auto, Auto">
+      <Slider HorizontalAlignment="Stretch" Name="HashDetailSlider" Value="{Binding HashDetail}" Minimum="6" Maximum="32" />
+      <TextBlock Width="52" TextAlignment="Right" VerticalAlignment="Center" Margin="15 2 0 0" Grid.Column="1" Text="{Binding HashDetail}" />
+    </Grid>
+
+    <ToggleSwitch IsEnabled="{Binding !ConfigLocked}" Margin="0 5 0 0" OnContent="Compare pixels by rows and columns" OffContent="Compare pixels by columns only" IsChecked="{Binding HashBothDirections}" Command="{Binding SaveCommand}" />
+
+    <TextBlock FontStyle="Italic" FontWeight="Light" TextWrapping="Wrap" Text="* Choosing a higher degree of detail can eliminate false positives by comparing more information between images. Choosing the detail too high and the app might have trouble recognizing similarities due to compression" Margin="0 15 0 0" />
+  </StackPanel>
+</UserControl>

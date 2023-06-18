@@ -9,7 +9,7 @@ namespace ImageComparisonGUI.Models
     {
         //Processing settings
         public int MatchThreashold = 7500;
-        public int HashDetail = 32;
+        public int HashDetail = 20;
         public bool HashBothDirections = true;
 
         //Location settings
