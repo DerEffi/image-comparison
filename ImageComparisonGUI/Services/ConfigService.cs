@@ -37,6 +37,8 @@ namespace ImageComparisonGUI.Services
         public static string DeleteTarget { get => settings.DeleteTarget; }
         public static bool RelativeDeleteTarget { get => settings.RelativeDeleteTarget; }
 
+        public static List<Hotkey> Hotkeys { get => settings.Hotkeys; }
+
         public static void Init()
         {
             LoadConfig();
@@ -132,7 +134,7 @@ namespace ImageComparisonGUI.Services
                 if (dir != null) {
                     Directory.CreateDirectory(dir);
                     using FileStream stream = File.Create(filePath);
-                    byte[] content = new UTF8Encoding(true).GetBytes(JsonConvert.SerializeObject(settings, Formatting.Indented));
+                    byte[] content = settings.GetContent();
                     stream.Write(content, 0, content.Length);
                     stream.Close();
                 }
@@ -158,7 +160,7 @@ namespace ImageComparisonGUI.Services
         {
             if (File.Exists(filePath))
             {
-                Settings? loadedSettings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(filePath));
+                Settings? loadedSettings = Settings.Parse(File.ReadAllText(filePath));
                 if (loadedSettings != null && loadedSettings.GetType() == typeof(Settings))
                 {
                     return loadedSettings;
@@ -221,12 +223,7 @@ namespace ImageComparisonGUI.Services
                 if (string.IsNullOrEmpty(name))
                     throw new ArgumentException();
 
-                string profilesDir = Path.Combine(DataDirectory, ProfilesDirectory);
-                Directory.CreateDirectory(profilesDir);
-                using FileStream stream = File.Create(Path.Combine(profilesDir, name + ".json"));
-                byte[] content = new UTF8Encoding(true).GetBytes(JsonConvert.SerializeObject(settings, Formatting.Indented));
-                stream.Write(content, 0, content.Length);
-                stream.Close();
+                SaveConfig(Path.Combine(DataDirectory, ProfilesDirectory, name + ".json"));
 
                 LoadProfiles();
 

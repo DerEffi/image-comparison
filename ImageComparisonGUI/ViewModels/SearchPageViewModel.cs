@@ -4,6 +4,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ImageComparison.Models;
 using ImageComparison.Services;
+using ImageComparisonGUI.Models;
+using ImageComparisonGUI.Pages;
 using ImageComparisonGUI.Services;
 using System;
 using System.Collections.Generic;
@@ -34,15 +36,26 @@ public partial class SearchPageViewModel : ViewModelBase
 
     #endregion
 
-    public SearchPageViewModel(Button leftImageButton, Button rightImageButton, Button searchButton)
+    public SearchPageViewModel(SearchPage userControl)
     {
         CompareService.OnProgress += OnProgress;
-        leftImageButton.DoubleTapped += (object? sender, RoutedEventArgs e) => OpenImage(DisplayedMatch.Image1?.Image.FullName);
-        rightImageButton.DoubleTapped += (object? sender, RoutedEventArgs e) => OpenImage(DisplayedMatch.Image2?.Image.FullName);
-        searchButton.Click += Search;
+
+        Button leftImageButton = userControl.Find<Button>("LeftImageButton");
+        if (leftImageButton != null)
+            leftImageButton.DoubleTapped += (object? sender, RoutedEventArgs e) => OpenImage(DisplayedMatch.Image1?.Image.FullName);
+        
+        Button rightImageButton = userControl.Find<Button>("RightImageButton");
+        if(rightImageButton != null)
+            rightImageButton.DoubleTapped += (object? sender, RoutedEventArgs e) => OpenImage(DisplayedMatch.Image2?.Image.FullName);
+        
+        Button searchButton = userControl.Find<Button>("SearchButton");
+        if(searchButton != null)
+            searchButton.Click += Search;
+
+        HotkeyService.OnHotkey += OnHotkey;
     }
 
-    #region Commands
+    #region RelayCommands
 
     [RelayCommand]
     private void DeleteImage(int side)
@@ -73,6 +86,79 @@ public partial class SearchPageViewModel : ViewModelBase
             displayedMatchIndex--;
             DisplayedMatch = Matches[displayedMatchIndex];
             ImageCountText = $"{displayedMatchIndex + 1} / {Matches.Count}";
+        }
+    }
+
+    [RelayCommand]
+    public void Abort()
+    {
+        if(ComparerTask != null && !ComparerTask.IsCompleted)
+        {
+            ComparerTaskToken.Cancel();
+        } else
+        {
+            ResetUI();
+        }
+    }
+
+    [RelayCommand]
+    public void AutoProcess()
+    {
+    
+    }
+
+    [RelayCommand]
+    public void OpenExplorer(string path)
+    {
+        if(File.Exists(path))
+        {
+            Process.Start("explorer.exe", $"/select, \"{path}\"");
+        } else
+        {
+            string? directory = Path.GetDirectoryName(path);
+            if (directory != null && Directory.Exists(directory))
+                Process.Start("explorer", directory);
+        }
+    }
+
+    #endregion
+
+    #region Data Functions
+
+    public void OnHotkey(object? sender, HotkeyEventArgs e)
+    {
+        if(e.SelectedPage == "Search")
+        {
+            try
+            {
+                switch (e.PressedHotkey)
+                {
+                    case HotkeyTarget.SearchStart:
+                        Search(null, new());
+                        break;
+                    case HotkeyTarget.SearchAbort:
+                        Abort();
+                        break;
+                    case HotkeyTarget.SearchPrevious:
+                        Previous();
+                        break;
+                    case HotkeyTarget.SearchNoMatch:
+                        NoMatch();
+                        break;
+                    case HotkeyTarget.SearchDeleteLeft:
+                        DeleteImage(-1);
+                        break;
+                    case HotkeyTarget.SearchDeleteRight:
+                        DeleteImage(1);
+                        break;
+                    case HotkeyTarget.SearchDeleteBoth:
+                        DeleteImage(0);
+                        break;
+                    case HotkeyTarget.SearchAuto:
+                        AutoProcess();
+                        break;
+                }
+            } catch { }
         }
     }
 
@@ -130,50 +216,24 @@ public partial class SearchPageViewModel : ViewModelBase
         .ContinueWith(t => { });
     }
 
-    [RelayCommand]
-    public void Abort()
+    public void OnProgress(object? sender, ImageComparerEventArgs e)
     {
-        if(ComparerTask != null && !ComparerTask.IsCompleted)
+        if (e.Target > 0)
+            PercentComplete = Convert.ToInt32((decimal.Divide(e.Current, e.Target) * 100));
+        ImageCountText = $"{e.Current} / {e.Target}";
+        Searching = false;
+    }
+
+    private void NextPair()
+    {
+        if(Matches.Count > ++displayedMatchIndex)
         {
-            ComparerTaskToken.Cancel();
+            DisplayedMatch = Matches[displayedMatchIndex];
+            ImageCountText = $"{displayedMatchIndex + 1} / {Matches.Count}";
         } else
         {
             ResetUI();
         }
-    }
-
-    [RelayCommand]
-    public void AutoProcess()
-    {
-    
-    }
-
-    [RelayCommand]
-    public void OpenExplorer(string path)
-    {
-        if(File.Exists(path))
-        {
-            Process.Start("explorer.exe", $"/select, \"{path}\"");
-        } else
-        {
-            string? directory = Path.GetDirectoryName(path);
-            if (directory != null && Directory.Exists(directory))
-                Process.Start("explorer", directory);
-        }
-    }
-
-    public void OpenImage(string? path)
-    {
-        if (File.Exists(path))
-            Process.Start("explorer", $"\"{path}\"");
-    }
-
-    public void OnProgress(object? sender, ImageComparerEventArgs e)
-    {
-        if(e.Target > 0)
-            PercentComplete = Convert.ToInt32((decimal.Divide(e.Current, e.Target) * 100));
-        ImageCountText = $"{e.Current} / {e.Target}";
-        Searching = false;
     }
 
     public void ResetUI()
@@ -190,20 +250,10 @@ public partial class SearchPageViewModel : ViewModelBase
         ConfigService.Unlock();
     }
 
-    #endregion
-
-    #region Data Functions
-
-    private void NextPair()
+    public void OpenImage(string? path)
     {
-        if(Matches.Count > ++displayedMatchIndex)
-        {
-            DisplayedMatch = Matches[displayedMatchIndex];
-            ImageCountText = $"{displayedMatchIndex + 1} / {Matches.Count}";
-        } else
-        {
-            ResetUI();
-        }
+        if (File.Exists(path))
+            Process.Start("explorer", $"\"{path}\"");
     }
 
     private void DeleteFile(string path)
