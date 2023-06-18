@@ -95,7 +95,7 @@ public partial class SearchPageViewModel : ViewModelBase
             StatusText = "Analysing";
             PercentComplete = 0;
 
-            List<List<ImageAnalysis>> analysedImages = CompareService.AnalyseImages(searchLocations, ConfigService.HashDetail, ComparerTaskToken.Token);
+            List<List<ImageAnalysis>> analysedImages = CompareService.AnalyseImages(searchLocations, ConfigService.HashDetail, ConfigService.HashBothDirections, ComparerTaskToken.Token);
 
             Searching = true;
             StatusText = "Comparing";

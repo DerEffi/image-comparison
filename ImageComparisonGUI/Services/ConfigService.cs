@@ -1,6 +1,5 @@
 ﻿using ImageComparison.Models;
 using ImageComparisonGUI.Models;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -26,6 +25,7 @@ namespace ImageComparisonGUI.Services
         //Processing settings
         public static int MatchThreashold { get => settings.MatchThreashold; }
         public static int HashDetail { get => settings.HashDetail; }
+        public static bool HashBothDirections { get => settings.HashBothDirections; }
 
         //Location settings
         public static string[] SearchLocations { get => settings.SearchLocations; }
