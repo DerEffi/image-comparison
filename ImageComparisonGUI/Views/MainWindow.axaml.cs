@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using ImageComparisonGUI.Services;
 using ImageComparisonGUI.ViewModels;
@@ -9,16 +10,13 @@ namespace ImageComparisonGUI.Views;
 
 public partial class MainWindow : Window
 {
-    private static MainWindow instance;
-    public static MainWindow Instance { get => instance; }
+    public static MainWindow Instance { get; private set; }
 
     public MainWindow()
     {
-        instance = this;
+        Instance = this;
         InitializeComponent();
-        DataContext = new MainWindowViewModel(ClientSize.Width, ClientSize.Height);
-        ClientSizeProperty.Changed.Subscribe(size => Resize(size.NewValue.Value.Width, size.NewValue.Value.Height));
-        Opened += (object? sender, EventArgs e) => { Resize(ClientSize.Width, ClientSize.Height); };
+        DataContext = new MainWindowViewModel(this, ClientSizeProperty);
     }
 
     private void InitializeComponent()
@@ -28,11 +26,5 @@ public partial class MainWindow : Window
 #if DEBUG
         this.AttachDevTools();
 #endif
-    }
-
-    private void Resize(double width, double height)
-    {
-        MainWindowViewModel vm = DataContext as MainWindowViewModel ?? new MainWindowViewModel(width, height);
-        vm.Resize(width, height);
     }
 }
