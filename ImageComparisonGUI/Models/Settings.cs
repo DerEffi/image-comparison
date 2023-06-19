@@ -41,7 +41,7 @@ namespace ImageComparisonGUI.Models
             },
             new() {
                 Key = Key.A,
-                Modifiers = KeyModifiers.Control | KeyModifiers.Shift,
+                Modifiers = KeyModifiers.Control,
                 Target = HotkeyTarget.SearchAbort
             },
             new() {
@@ -75,7 +75,7 @@ namespace ImageComparisonGUI.Models
         {
             try
             {
-                Settings? settings = JsonConvert.DeserializeObject<Settings>(content);
+                Settings? settings = JsonConvert.DeserializeObject<Settings>(content, new JsonSerializerSettings() { ObjectCreationHandling = ObjectCreationHandling.Replace });
                 if (settings != null)
                 {
                     settings.DistinguishHotkeys();
@@ -99,8 +99,9 @@ namespace ImageComparisonGUI.Models
         /// <summary>
         /// Removes double Hotkey targets and double key combinations in place
         /// </summary>
-        private void DistinguishHotkeys()
+        public void DistinguishHotkeys()
         {
+            this.Hotkeys.RemoveAll(h => h.Key == Key.None);
             this.Hotkeys = this.Hotkeys.DistinctBy(h => h.Target).DistinctBy(h => $"{h.Modifiers}-{h.Key}").ToList();
         }
     }

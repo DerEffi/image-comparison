@@ -8,7 +8,7 @@ namespace ImageComparisonGUI.Models
 {
     public class HotkeyEventArgs
     {
-        public HotkeyTarget PressedHotkey = HotkeyTarget.None;
+        public Hotkey PressedHotkey = new();
         public string SelectedPage = "";
     }
 }

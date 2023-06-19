@@ -1,5 +1,6 @@
 ﻿using ImageComparison.Models;
 using ImageComparisonGUI.Models;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -37,7 +38,7 @@ namespace ImageComparisonGUI.Services
         public static string DeleteTarget { get => settings.DeleteTarget; }
         public static bool RelativeDeleteTarget { get => settings.RelativeDeleteTarget; }
 
-        public static List<Hotkey> Hotkeys { get => settings.Hotkeys; }
+        public static List<Hotkey> Hotkeys { get { settings.DistinguishHotkeys(); return settings.Hotkeys; } }
 
         public static void Init()
         {
@@ -113,6 +114,16 @@ namespace ImageComparisonGUI.Services
 
                 SaveConfig();
             }
+
+            OnUpdate.Invoke(null, EventArgs.Empty);
+        }
+
+        public static void UpdateHotkeys(List<Hotkey> hotkeys)
+        {
+            settings.Hotkeys = hotkeys.ToList();
+            settings.DistinguishHotkeys();
+
+            SaveConfig();
 
             OnUpdate.Invoke(null, EventArgs.Empty);
         }

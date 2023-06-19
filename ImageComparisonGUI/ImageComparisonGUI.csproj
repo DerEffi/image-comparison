@@ -43,5 +43,8 @@
     <Compile Update="Pages\AdjustablesPage.axaml.cs">
       <DependentUpon>AdjustablesPage.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Pages\HotkeysPage.axaml.cs">
+      <DependentUpon>HotkeysPage.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>
