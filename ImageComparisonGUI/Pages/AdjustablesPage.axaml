@@ -21,7 +21,7 @@
     </StackPanel.Styles>
     <TextBlock Text="Display matches above similarity of" />
     <Grid ColumnDefinitions="*, Auto, Auto">
-      <Slider HorizontalAlignment="Stretch" Name="MatchThreasholdSlider" Value="{Binding MatchThreashold}" Minimum="0"
+      <Slider IsEnabled="{Binding !ConfigLocked}" HorizontalAlignment="Stretch" Name="MatchThreasholdSlider" Value="{Binding MatchThreashold}" Minimum="0"
         Maximum="9990" />
       <TextBlock Width="40" TextAlignment="Right" VerticalAlignment="Center" Margin="15 2 0 0" Grid.Column="1" Text="{Binding MatchThreashold, Converter={StaticResource variableSimilarity}}" />
       <TextBlock VerticalAlignment="Center" Margin="1 2 0 0" Grid.Column="2" Text="%" />
@@ -29,7 +29,7 @@
 
     <TextBlock Text="Hash detail" Margin="0 50 0 0" />
     <Grid ColumnDefinitions="*, Auto, Auto">
-      <Slider HorizontalAlignment="Stretch" Name="HashDetailSlider" Value="{Binding HashDetail}" Minimum="6" Maximum="32" />
+      <Slider IsEnabled="{Binding !ConfigLocked}" HorizontalAlignment="Stretch" Name="HashDetailSlider" Value="{Binding HashDetail}" Minimum="6" Maximum="32" />
       <TextBlock Width="52" TextAlignment="Right" VerticalAlignment="Center" Margin="15 2 0 0" Grid.Column="1" Text="{Binding HashDetail}" />
     </Grid>
 

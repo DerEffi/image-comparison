@@ -13,13 +13,27 @@ namespace ImageComparisonGUI.Services
 
         public static void OnKeyInput(object? sender, KeyEventArgs e)
         {
+            //Don't invoke on modifier key only
+            if((int)e.Key >= 116 && (int)e.Key <= 121)
+                return;
+
             Hotkey? hotkey = ConfigService.Hotkeys.FirstOrDefault(h => h.Modifiers == e.KeyModifiers && h.Key == e.Key);
 
             if (hotkey != null)
             {
                 OnHotkey(null, new()
                 {
-                    PressedHotkey = hotkey.Target,
+                    PressedHotkey = hotkey,
+                    SelectedPage = selectedPage
+                });
+            } else if(selectedPage == "Hotkeys") {
+                OnHotkey(null, new()
+                {
+                    PressedHotkey = new()
+                    {
+                        Key = e.Key,
+                        Modifiers = e.KeyModifiers
+                    },
                     SelectedPage = selectedPage
                 });
             }

@@ -12,12 +12,17 @@ namespace ImageComparisonGUI.Models
     public class Hotkey
     {
         [JsonConverter(typeof(StringEnumConverter))]
-        public Key Key;
+        public Key Key = Key.None;
 
         [JsonConverter(typeof(StringEnumConverter))]
-        public KeyModifiers Modifiers;
+        public KeyModifiers Modifiers = KeyModifiers.None;
 
         [JsonConverter(typeof(StringEnumConverter))]
-        public HotkeyTarget Target;
+        public HotkeyTarget Target = HotkeyTarget.None;
+
+        public Hotkey Clone()
+        {
+            return (Hotkey)MemberwiseClone();
+        }
     }
 }

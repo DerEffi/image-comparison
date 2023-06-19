@@ -1,9 +1,13 @@
-﻿using Avalonia.Data;
+﻿using Avalonia.Collections;
+using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Media.Imaging;
+using ImageComparisonGUI.Models;
 using System;
+using System.Collections;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 
 namespace ImageComparisonGUI.Services
 {
@@ -57,6 +61,19 @@ namespace ImageComparisonGUI.Services
         }
     }
 
+    public class NotEnumToBooleanConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return !value?.Equals(parameter);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
     public class ReadableFilesizeConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -107,6 +124,37 @@ namespace ImageComparisonGUI.Services
             return string.Format("{0:0.0}", System.Convert.ToDouble(value) / 100);
 
             throw new NotSupportedException();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+    public class DisplayHotkeyConverter : IValueConverter
+    {
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            if (value == null || parameter == null)
+                return null;
+
+            if(value is AvaloniaList<Hotkey> hotkeys && parameter is string needle && !string.IsNullOrEmpty(needle))
+            {
+                HotkeyTarget target;
+                if (Enum.TryParse<HotkeyTarget>(needle, out target)) {
+                    Hotkey? hotkey = hotkeys.FirstOrDefault(h => h.Target == target);
+                    if (hotkey != null)
+                    {
+                        string modifiers = hotkey.Modifiers.ToString().Replace("None", "").Replace(", ", " + ");
+                        if (!string.IsNullOrEmpty(modifiers))
+                            modifiers += " + ";
+                        return $"{modifiers}{hotkey.Key}";
+                    }
+                }
+            }
+
+            return "None";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

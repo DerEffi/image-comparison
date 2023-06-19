@@ -131,7 +131,7 @@ public partial class SearchPageViewModel : ViewModelBase
         {
             try
             {
-                switch (e.PressedHotkey)
+                switch (e.PressedHotkey.Target)
                 {
                     case HotkeyTarget.SearchStart:
                         Search(null, new());
