@@ -1,4 +1,5 @@
 ﻿using ImageComparison.Models;
+using ImageComparison.Services;
 using ImageComparisonGUI.Models;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
@@ -16,7 +17,6 @@ namespace ImageComparisonGUI.Services
 
         private static readonly string settingsFileName = "settings.json";
         public static readonly string ProfilesDirectory = "Profiles";
-        public static readonly string DataDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DerEffi", "ImageComparison");
         private static Settings settings = new();
         private static List<Profile> profiles = new List<Profile>();
         public static List<string> Profiles { get => profiles.Select(p => p.Name).ToList(); }
@@ -132,7 +132,7 @@ namespace ImageComparisonGUI.Services
         {
             try
             {
-                SaveConfig(Path.Combine(DataDirectory, settingsFileName));
+                SaveConfig(Path.Combine(FileService.DataDirectory, settingsFileName));
             }
             catch (Exception) { }
         }
@@ -156,7 +156,7 @@ namespace ImageComparisonGUI.Services
         {
             try
             {
-                string settingsFile = Path.Combine(DataDirectory, settingsFileName);
+                string settingsFile = Path.Combine(FileService.DataDirectory, settingsFileName);
                 Settings? loadedSettings = LoadProfileFromFile(settingsFile);
                 if (loadedSettings != null)
                 {
@@ -184,7 +184,7 @@ namespace ImageComparisonGUI.Services
         {
             try
             {
-                string profilesDir = Path.Combine(DataDirectory, ProfilesDirectory);
+                string profilesDir = Path.Combine(FileService.DataDirectory, ProfilesDirectory);
                 Directory.CreateDirectory(profilesDir);
                 profiles = Directory
                     .GetFiles(profilesDir, "*.json")
@@ -215,7 +215,7 @@ namespace ImageComparisonGUI.Services
         {
             try
             {
-                string file = Path.Combine(DataDirectory, ProfilesDirectory, name + ".json");
+                string file = Path.Combine(FileService.DataDirectory, ProfilesDirectory, name + ".json");
                 if (File.Exists(file))
                 {
                     File.Delete(file);
@@ -234,7 +234,7 @@ namespace ImageComparisonGUI.Services
                 if (string.IsNullOrEmpty(name))
                     throw new ArgumentException();
 
-                SaveConfig(Path.Combine(DataDirectory, ProfilesDirectory, name + ".json"));
+                SaveConfig(Path.Combine(FileService.DataDirectory, ProfilesDirectory, name + ".json"));
 
                 LoadProfiles();
 

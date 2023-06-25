@@ -10,6 +10,8 @@ namespace ImageComparison.Services
 {
     public static class HashService
     {
+        public static int Version = 1;
+
         public static ulong[] DHash(Image<Rgba32> image, int detail = 8, bool bothDirections = false)
         {
             if (image == null)

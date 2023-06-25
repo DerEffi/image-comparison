@@ -175,13 +175,18 @@ public partial class SearchPageViewModel : ViewModelBase
             ImageCountText = "";
             ConfigService.Lock();
 
+            string hashVersion = $"V{HashService.Version}D{ConfigService.HashDetail}{(ConfigService.HashBothDirections ? "B" : "U")}";
+            ulong scantime = (ulong)(DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds;
+
             List<List<FileInfo>> searchLocations = FileService.GetProcessableFiles(ConfigService.SearchLocations, ConfigService.SearchSubdirectories);
 
             Searching = true;
             StatusText = "Analysing";
             PercentComplete = 0;
 
-            List<List<ImageAnalysis>> analysedImages = CompareService.AnalyseImages(searchLocations, ConfigService.HashDetail, ConfigService.HashBothDirections, ComparerTaskToken.Token);
+            List<CacheItem> cachedAnalysis = CacheService.GetImages(hashVersion);
+            List<List<ImageAnalysis>> analysedImages = CompareService.AnalyseImages(searchLocations, ConfigService.HashDetail, ConfigService.HashBothDirections, cachedAnalysis, ComparerTaskToken.Token);
+            CacheService.UpdateImages(analysedImages.SelectMany(i => i).ToList(), hashVersion, scantime);
 
             Searching = true;
             StatusText = "Comparing";
