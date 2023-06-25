@@ -75,6 +75,7 @@ public partial class SearchPageViewModel : ViewModelBase
     [RelayCommand]
     public void NoMatch()
     {
+        CacheService.AddNoMatch(displayedMatch.Image1.Image.FullName, displayedMatch.Image2.Image.FullName);
         NextPair();
     }
 
@@ -193,7 +194,8 @@ public partial class SearchPageViewModel : ViewModelBase
             ImageCountText = "";
             PercentComplete = 0;
 
-            Matches = CompareService.SearchForDuplicates(analysedImages, ConfigService.MatchThreashold, ConfigService.SearchMode, ComparerTaskToken.Token);
+            List<NoMatch> nomatches = CacheService.GetNoMatches();
+            Matches = CompareService.SearchForDuplicates(analysedImages, ConfigService.MatchThreashold, ConfigService.SearchMode, nomatches, ComparerTaskToken.Token);
 
             displayedMatchIndex = 0;
             if (Matches != null && Matches.Count > 0)

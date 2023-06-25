@@ -62,7 +62,7 @@ namespace ImageComparison.Services
                             locationAnalysis.Add(new()
                             {
                                 Image = file,
-                                Hash = cachedImage != null && cachedImage.scantime > (ulong)(file.LastWriteTime - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds ? cachedImage.hashArray : CalculateHash(file.FullName, hashDetail, hashBothDirections)
+                                Hash = cachedImage != null && cachedImage.hash != null && cachedImage.scantime > (ulong)(file.LastWriteTime - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds ? cachedImage.hashArray : CalculateHash(file.FullName, hashDetail, hashBothDirections)
                             });
                         }
                         catch (Exception e) { }
@@ -81,8 +81,10 @@ namespace ImageComparison.Services
             return analysed.Select(a => a.ToList()).ToList();
         }
 
-        public static List<ImageMatch> SearchForDuplicates(List<List<ImageAnalysis>> analysedLocations, int matchThreashold, SearchMode mode, CancellationToken token = new())
+        public static List<ImageMatch> SearchForDuplicates(List<List<ImageAnalysis>> analysedLocations, int matchThreashold, SearchMode mode, List<NoMatch>? nomatches, CancellationToken token = new())
         {
+            nomatches ??= new();
+
             switch(mode)
             {
                 case SearchMode.ListExclusive:
@@ -111,7 +113,7 @@ namespace ImageComparison.Services
                                         return;
 
                                     short similarity = CalculateSimilarity(image.Hash, comparer.Hash);
-                                    if (similarity >= matchThreashold)
+                                    if (similarity >= matchThreashold && !IsNoMatch(nomatches, image.Image.FullName, comparer.Image.FullName))
                                     {
                                         comparisons.Add(new()
                                         {
@@ -128,7 +130,7 @@ namespace ImageComparison.Services
                     return SortMatches(comparisons);
                 case SearchMode.ListInclusive:
                     return analysedLocations
-                        .SelectMany(location => SearchForDuplicates(location, matchThreashold, token))
+                        .SelectMany(location => SearchForDuplicates(location, matchThreashold, nomatches, token))
                         .ToList();
                 case SearchMode.Exclusive:
                     return SearchForDuplicates(
@@ -142,22 +144,25 @@ namespace ImageComparison.Services
                         .ToList(),
                     matchThreashold,
                     SearchMode.ListExclusive,
+                    nomatches,
                     token);
                 case SearchMode.Inclusive:
                     return analysedLocations
                         .SelectMany(images => {
                             return images
                                 .GroupBy(image => image.Image.DirectoryName)
-                                .SelectMany(directory => SearchForDuplicates(directory.ToList(), matchThreashold, token));
+                                .SelectMany(directory => SearchForDuplicates(directory.ToList(), matchThreashold, nomatches, token));
                         })
                         .ToList();
                 default:
-                    return SearchForDuplicates(analysedLocations.SelectMany(images => images).ToList(), matchThreashold, token);
+                    return SearchForDuplicates(analysedLocations.SelectMany(images => images).ToList(), matchThreashold, nomatches, token);
             }
         }
 
-        public static List<ImageMatch> SearchForDuplicates(List<ImageAnalysis> images, int matchThreashold, CancellationToken token = new())
+        public static List<ImageMatch> SearchForDuplicates(List<ImageAnalysis> images, int matchThreashold, List<NoMatch> nomatches, CancellationToken token = new())
         {
+            nomatches ??= new();
+
             ConcurrentBag<ImageMatch> comparisons = new();
 
             //dont overload cpu with too many threads, leave one core free
@@ -172,7 +177,7 @@ namespace ImageComparison.Services
                         return;
 
                     short similarity = CalculateSimilarity(image.Hash, images[i].Hash);
-                    if (similarity >= matchThreashold)
+                    if (similarity >= matchThreashold && !IsNoMatch(nomatches, image.Image.FullName, images[i].Image.FullName))
                     {
                         comparisons.Add(new()
                         {
@@ -214,6 +219,20 @@ namespace ImageComparison.Services
             });
 
             return matches;
+        }
+
+        private static bool IsNoMatch(List<NoMatch> nomatches, string a, string b)
+        {
+            if(nomatches.Count == 0)
+                return false;
+
+            int order = string.Compare(a, b);
+            if (order == 0)
+                return true;
+            else if (order < 0)
+                (b, a) = (a, b);
+
+            return nomatches.Any(n => n.a == a && n.b == b);
         }
     }
 }
