@@ -19,8 +19,10 @@ namespace ImageComparison.Services
         
         public static event EventHandler<ImageComparerEventArgs> OnProgress = delegate {};
 
-        public static List<List<ImageAnalysis>> AnalyseImages(List<List<FileInfo>> searchLocations, int hashDetail, bool hashBothDirections, CancellationToken token = new())
+        public static List<List<ImageAnalysis>> AnalyseImages(List<List<FileInfo>> searchLocations, int hashDetail, bool hashBothDirections, List<CacheItem>? cachedAnalysis, CancellationToken token = new())
         {
+            cachedAnalysis ??= new List<CacheItem>();
+
             List<ConcurrentBag<ImageAnalysis>> analysed = new();
 
             using (System.Timers.Timer ProgressTimer = new())
@@ -56,10 +58,11 @@ namespace ImageComparison.Services
 
                         try
                         {
+                            CacheItem? cachedImage = cachedAnalysis.FirstOrDefault(c => c.path == file.FullName);
                             locationAnalysis.Add(new()
                             {
                                 Image = file,
-                                Hash = CalculateHash(file.FullName, hashDetail, hashBothDirections)
+                                Hash = cachedImage != null && cachedImage.scantime > (ulong)(file.LastWriteTime - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds ? cachedImage.hashArray : CalculateHash(file.FullName, hashDetail, hashBothDirections)
                             });
                         }
                         catch (Exception e) { }

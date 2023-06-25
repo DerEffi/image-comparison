@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
+using ImageComparison.Services;
 using ImageComparisonGUI.Services;
 using ImageComparisonGUI.Views;
 using SkiaSharp;
@@ -19,6 +20,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel(MainWindow window, DirectProperty<TopLevel, Size> ClientSizeProperty)
     {
         ConfigService.Init();
+        CacheService.Init();
 
         ClientSizeProperty.Changed.Subscribe(size => Resize(size.NewValue.Value.Width, size.NewValue.Value.Height));
         window.Opened += (object? sender, EventArgs e) => { Resize(window.ClientSize.Width, window.ClientSize.Height); };

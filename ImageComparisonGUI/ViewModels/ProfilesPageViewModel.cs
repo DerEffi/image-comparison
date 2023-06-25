@@ -2,6 +2,7 @@
 using Avalonia.Controls.Selection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ImageComparison.Services;
 using ImageComparisonGUI.Services;
 using System;
 using System.Diagnostics;
@@ -65,7 +66,7 @@ public partial class ProfilesPageViewModel : ViewModelBase
     [RelayCommand]
     public void OpenProfileDirectory()
     {
-        string profileDirectory = Path.Combine(ConfigService.DataDirectory, ConfigService.ProfilesDirectory);
+        string profileDirectory = Path.Combine(FileService.DataDirectory, ConfigService.ProfilesDirectory);
         if(!Directory.Exists(profileDirectory))
             Directory.CreateDirectory(profileDirectory);    
         Process.Start("explorer", $"\"{profileDirectory}\"");

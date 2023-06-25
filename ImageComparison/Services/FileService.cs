@@ -6,6 +6,8 @@ namespace ImageComparison.Services
 {
     public static class FileService
     {
+        public static readonly string DataDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DerEffi", "ImageComparison");
+
         public static void DeleteFile(string path, DeleteAction deleteAction = DeleteAction.Delete, string target = "Duplicates\\", bool relativeTarget = true)
         {
             if (path == null || !File.Exists(path))
