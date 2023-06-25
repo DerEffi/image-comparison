@@ -11,10 +11,13 @@ namespace ImageComparison.Models
         public string path;
         public ulong scantime;
         public ulong size;
-        public byte[] hash;
+        public byte[]? hash;
 
         public ulong[] hashArray {
             get {
+                if (hash == null)
+                    return Array.Empty<ulong>();
+
                 ulong[] result = new ulong[(int)Math.Ceiling((decimal)hash.Length / 8)];
 
                 for (int i = 0; i * 8 < hash.Length; i++)

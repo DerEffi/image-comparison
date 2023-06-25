@@ -20,8 +20,8 @@ namespace ImageComparison.Services
                 Directory.CreateDirectory(FileService.DataDirectory);
                 connection = new SqliteConnection($"Data Source={Path.Combine(FileService.DataDirectory, "Cache.db")}");
                 connection.Open();
-                connection.Execute("CREATE TABLE IF NOT EXISTS file (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, path TEXT NOT NULL COLLATE NOCASE, scantime INTEGER NOT NULL, size INTEGER, hashtype TEXT, hash BLOB, UNIQUE(path, hashtype))");
-                connection.Execute("CREATE TABLE IF NOT EXISTS nomatch (a INTEGER REFERENCES file(id) ON DELETE CASCADE ON UPDATE NO ACTION DEFERRABLE INITIALLY DEFERRED, b INTEGER REFERENCES file(id) ON DELETE CASCADE ON UPDATE NO ACTION DEFERRABLE INITIALLY DEFERRED, UNIQUE(a, b))");
+                connection.Execute("CREATE TABLE IF NOT EXISTS file (path TEXT NOT NULL COLLATE NOCASE PRIMARY KEY, scantime INTEGER NOT NULL, size INTEGER, hashtype TEXT, hash BLOB, UNIQUE(path, hashtype))");
+                connection.Execute("CREATE TABLE IF NOT EXISTS nomatch (a TEXT NOT NULL COLLATE NOCASE, b TEXT NOT NULL COLLATE NOCASE, UNIQUE(a, b))");
                 connection.Execute("CREATE INDEX IF NOT EXISTS idxf_ht ON file(hashtype)");
                 connection.Close();
             } catch { }
@@ -71,11 +71,44 @@ namespace ImageComparison.Services
                     transaction.Commit();
                 }
             }
-            catch (Exception e)
-            {
-            }
+            catch { }
 
             connection.Close();
+        }
+
+        public static void AddNoMatch(string a, string b)
+        {
+            try
+            {
+                int order = string.Compare(a, b);
+                if (order == 0)
+                    return;
+                else if (order < 0)
+                    (b, a) = (a, b);
+
+                connection.Open();
+                connection.Execute("INSERT INTO nomatch (a, b) VALUES (@a, @b) ON CONFLICT(a, b) DO NOTHING", new { a, b });
+            }
+            catch { }
+
+            connection.Close();
+        }
+
+        public static List<NoMatch> GetNoMatches()
+        {
+            List<NoMatch> nomatches = new();
+
+            try
+            {
+                connection.Open();
+
+                nomatches = connection.Query<NoMatch>("SELECT * FROM nomatch").ToList();
+            }
+            catch { }
+
+            connection.Close();
+
+            return nomatches;
         }
     }
 }
