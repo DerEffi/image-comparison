@@ -1,11 +1,6 @@
 ﻿using Dapper;
 using ImageComparison.Models;
 using Microsoft.Data.Sqlite;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ImageComparison.Services
 {
@@ -94,6 +89,42 @@ namespace ImageComparison.Services
             connection.Close();
         }
 
+        public static void AddNoMatches(List<ImageMatch> nomatches)
+        {
+            try
+            {
+                connection.Open();
+                using (SqliteTransaction transaction = connection.BeginTransaction())
+                using (SqliteCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "INSERT INTO nomatch (a, b) VALUES (@a, @b) ON CONFLICT(a, b) DO NOTHING";
+                    command.Parameters.AddWithValue("@a", "");
+                    command.Parameters.AddWithValue("@b", "");
+
+                    nomatches.ForEach(nomatch =>
+                    {
+                        string a, b;
+                        int order = string.Compare(nomatch.Image1.Image.FullName, nomatch.Image2.Image.FullName);
+                        if (order == 0)
+                            return;
+                        else if (order < 0)
+                            (b, a) = (nomatch.Image1.Image.FullName, nomatch.Image2.Image.FullName);
+                        else
+                            (a, b) = (nomatch.Image1.Image.FullName, nomatch.Image2.Image.FullName);
+
+                        command.Parameters["@a"].Value = a;
+                        command.Parameters["@b"].Value = b;
+                        command.ExecuteNonQuery();
+                    });
+
+                    transaction.Commit();
+                }
+            }
+            catch { }
+
+            connection.Close();
+        }
+
         public static List<NoMatch> GetNoMatches()
         {
             List<NoMatch> nomatches = new();
@@ -109,6 +140,28 @@ namespace ImageComparison.Services
             connection.Close();
 
             return nomatches;
+        }
+
+        public static void ClearImageCache()
+        {
+            try
+            {
+                connection.Open();
+                connection.Execute("DELETE FROM file");
+            } catch { }
+
+            connection.Close();
+        }
+
+        public static void ClearNoMatchCache()
+        {
+            try
+            {
+                connection.Open();
+                connection.Execute("DELETE FROM nomatch");
+            } catch { }
+
+            connection.Close();
         }
     }
 }
