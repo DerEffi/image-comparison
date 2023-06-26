@@ -75,7 +75,8 @@ public partial class SearchPageViewModel : ViewModelBase
     [RelayCommand]
     public void NoMatch()
     {
-        CacheService.AddNoMatch(displayedMatch.Image1.Image.FullName, displayedMatch.Image2.Image.FullName);
+        if(ConfigService.CacheNoMatch)
+            CacheService.AddNoMatch(displayedMatch.Image1.Image.FullName, displayedMatch.Image2.Image.FullName);
         NextPair();
     }
 
@@ -185,20 +186,27 @@ public partial class SearchPageViewModel : ViewModelBase
             StatusText = "Analysing";
             PercentComplete = 0;
 
-            List<CacheItem> cachedAnalysis = CacheService.GetImages(hashVersion);
+            List<CacheItem> cachedAnalysis = ConfigService.CacheImages ? CacheService.GetImages(hashVersion) : new();
             List<List<ImageAnalysis>> analysedImages = CompareService.AnalyseImages(searchLocations, ConfigService.HashDetail, ConfigService.HashBothDirections, cachedAnalysis, ComparerTaskToken.Token);
-            CacheService.UpdateImages(analysedImages.SelectMany(i => i).ToList(), hashVersion, scantime);
+            if(ConfigService.CacheImages)
+                CacheService.UpdateImages(analysedImages.SelectMany(i => i).ToList(), hashVersion, scantime);
 
             Searching = true;
             StatusText = "Comparing";
             ImageCountText = "";
             PercentComplete = 0;
 
-            List<NoMatch> nomatches = CacheService.GetNoMatches();
+            List<NoMatch> nomatches = ConfigService.CacheNoMatch ? CacheService.GetNoMatches() : new();
             Matches = CompareService.SearchForDuplicates(analysedImages, ConfigService.MatchThreashold, ConfigService.SearchMode, nomatches, ComparerTaskToken.Token);
 
             displayedMatchIndex = 0;
-            if (Matches != null && Matches.Count > 0)
+            if(ConfigService.FillNoMatchCache)
+            {
+                CacheService.AddNoMatches(Matches);
+                ConfigService.UpdateCache(ConfigService.CacheImages, ConfigService.CacheNoMatch, false);
+                ResetUI();
+            }
+            else if (Matches != null && Matches.Count > 0)
             {
                 DisplayedMatch = Matches.First();
                 StatusText = "Showing Matches: ";

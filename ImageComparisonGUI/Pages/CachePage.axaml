@@ -3,6 +3,26 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="ImageComparisonGUI.Pages.CachePage">
-  Cache
+             x:Class="ImageComparisonGUI.Pages.CachePage"
+             xmlns:vm="using:ImageComparisonGUI.ViewModels"
+             xmlns:sv="clr-namespace:ImageComparisonGUI.Services"
+             xmlns:m="clr-namespace:ImageComparison.Models;assembly=ImageComparison"
+             x:DataType="vm:CachePageViewModel">
+  <StackPanel>
+    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+      <StackPanel.Styles>
+        <Style Selector="ToggleSwitch, Button">
+          <Setter Property="Margin" Value="10" />
+        </Style>
+      </StackPanel.Styles>
+
+      <ToggleSwitch IsEnabled="{Binding !ConfigLocked}" OnContent="Use Image Cache" OffContent="{Binding $self.OnContent}" IsChecked="{Binding CacheImages}" Command="{Binding SaveCommand}" />
+      <ToggleSwitch IsEnabled="{Binding !ConfigLocked}" OnContent="Use NoMatch Cache" OffContent="{Binding $self.OnContent}" IsChecked="{Binding CacheNoMatch}" Command="{Binding SaveCommand}" />
+      <Button IsEnabled="{Binding !ConfigLocked}" Content="Clear Image Cache" Command="{Binding ClearImageCache}" />
+      <Button IsEnabled="{Binding !ConfigLocked}" Content="Clear NoMatch Cache" Command="{Binding ClearNoMatchCache}" />
+      <ToggleSwitch IsEnabled="{Binding !ConfigLocked}" OnContent="Fill NoMatch Cache" OffContent="{Binding $self.OnContent}" IsChecked="{Binding FillNoMatchCache}" Command="{Binding SaveCommand}" />
+    </StackPanel>
+
+    <TextBlock Margin="10" FontStyle="Italic" FontWeight="Light" Text="If you need to repopulate your NoMatch Cache you can enable this option to mark every Match found as 'No Match'. Resets after your next Search or on Exit." TextWrapping="Wrap" MaxWidth="500" />
+  </StackPanel>
 </UserControl>

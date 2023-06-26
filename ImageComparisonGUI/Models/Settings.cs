@@ -6,11 +6,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using static Dapper.SqlMapper;
 
 namespace ImageComparisonGUI.Models
 {
     public class Settings
     {
+        //Cache settings
+        public bool CacheNoMatch = true;
+        public bool CacheImages = true;
+
         //Processing settings
         public int MatchThreashold = 7500;
         public int HashDetail = 12;

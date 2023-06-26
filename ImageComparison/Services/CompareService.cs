@@ -1,9 +1,6 @@
 ﻿using ImageComparison.Models;
 using System.Timers;
 using System.Collections.Concurrent;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using System.Reflection.Metadata.Ecma335;
 
 namespace ImageComparison.Services
 {

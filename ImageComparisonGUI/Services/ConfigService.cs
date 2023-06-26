@@ -23,6 +23,11 @@ namespace ImageComparisonGUI.Services
 
         public static bool IsLocked { get; private set; } = false;
 
+        //Cache settings
+        public static bool FillNoMatchCache { get; private set; } = false;
+        public static bool CacheNoMatch { get => settings.CacheNoMatch; }
+        public static bool CacheImages { get => settings.CacheImages; }
+
         //Processing settings
         public static int MatchThreashold { get => settings.MatchThreashold; }
         public static int HashDetail { get => settings.HashDetail; }
@@ -122,6 +127,17 @@ namespace ImageComparisonGUI.Services
         {
             settings.Hotkeys = hotkeys.ToList();
             settings.DistinguishHotkeys();
+
+            SaveConfig();
+
+            OnUpdate.Invoke(null, EventArgs.Empty);
+        }
+
+        public static void UpdateCache(bool cacheImages, bool cacheNoMatch, bool fillNoMatchCache)
+        {
+            settings.CacheImages = cacheImages;
+            settings.CacheNoMatch = cacheNoMatch;
+            FillNoMatchCache = fillNoMatchCache;
 
             SaveConfig();
 
