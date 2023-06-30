@@ -1,13 +1,10 @@
 ﻿using ImageComparison.Models;
 using ImageComparison.Services;
 using ImageComparisonGUI.Models;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace ImageComparisonGUI.Services
 {

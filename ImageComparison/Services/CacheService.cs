@@ -15,7 +15,7 @@ namespace ImageComparison.Services
                 Directory.CreateDirectory(FileService.DataDirectory);
                 connection = new SqliteConnection($"Data Source={Path.Combine(FileService.DataDirectory, "Cache.db")}");
                 connection.Open();
-                connection.Execute("CREATE TABLE IF NOT EXISTS file (path TEXT NOT NULL COLLATE NOCASE PRIMARY KEY, scantime INTEGER NOT NULL, size INTEGER, hashtype TEXT, hash BLOB, UNIQUE(path, hashtype))");
+                connection.Execute("CREATE TABLE IF NOT EXISTS file (path TEXT NOT NULL COLLATE NOCASE, scantime INTEGER NOT NULL, size INTEGER, hashtype TEXT, hash BLOB, UNIQUE(path, hashtype))");
                 connection.Execute("CREATE TABLE IF NOT EXISTS nomatch (a TEXT NOT NULL COLLATE NOCASE, b TEXT NOT NULL COLLATE NOCASE, UNIQUE(a, b))");
                 connection.Execute("CREATE INDEX IF NOT EXISTS idxf_ht ON file(hashtype)");
                 connection.Close();

@@ -47,8 +47,8 @@
     
     <StackPanel>
       <TextBlock Margin="0 15 0 0" Text="Underlying Algorithms for Image Analysis: DifferenceHash by David Oftedal and Dr. Neal Krawetz:" />
-      <Button Classes="Hyperlink" Command="{Binding OpenHyperlink}" CommandParameter="http://http://01101001.net/differencehash.php">
-        <TextBlock Text="http://http://01101001.net/differencehash.php" />
+      <Button Classes="Hyperlink" Command="{Binding OpenHyperlink}" CommandParameter="http://01101001.net/differencehash.php">
+        <TextBlock Text="http://01101001.net/differencehash.php" />
       </Button>
       <Button Classes="Hyperlink" Command="{Binding OpenHyperlink}" CommandParameter="https://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html">
         <TextBlock Text="https://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html" />
