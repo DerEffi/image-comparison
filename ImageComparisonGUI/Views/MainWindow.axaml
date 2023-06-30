@@ -22,13 +22,13 @@
         <DockPanel HorizontalAlignment="Stretch">
           <ExperimentalAcrylicBorder DockPanel.Dock="Left" Width="240">
             <ExperimentalAcrylicBorder.Material>
-              <ExperimentalAcrylicMaterial TintColor="Black" MaterialOpacity=".7" TintOpacity="1" />
+              <ExperimentalAcrylicMaterial TintColor="#111" MaterialOpacity=".9" TintOpacity="1" FallbackColor="#111" />
             </ExperimentalAcrylicBorder.Material>
             <Image HorizontalAlignment="Center" VerticalAlignment="Top" Source="/Assets/gallery.ico" Height="75" Margin="15" />
           </ExperimentalAcrylicBorder>
           <ExperimentalAcrylicBorder IsHitTestVisible="False">
             <ExperimentalAcrylicBorder.Material>
-              <ExperimentalAcrylicMaterial TintColor="#222222" MaterialOpacity="0.4" TintOpacity=".4" />
+              <ExperimentalAcrylicMaterial TintColor="#333" MaterialOpacity=".9" TintOpacity=".1" FallbackColor="#333" />
             </ExperimentalAcrylicBorder.Material>
             <TextBlock Text="{Binding #TabControl.SelectedItem.Header}" Margin="40 20" FontSize="32" FontWeight="Light" />
           </ExperimentalAcrylicBorder>
