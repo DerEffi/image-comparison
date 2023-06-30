@@ -1,0 +1,34 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <StackPanel Spacing="5">        
+        <TextBlock Text="Textbox" />
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+  
+  <Style Selector="TabControl.sidebar > TabItem > :is(Panel)">
+    <Setter Property="Margin" Value="30 30 30 0" />
+    <Setter Property="Height" Value="{Binding TabHeight}" />
+    <Setter Property="Width" Value="{Binding TabWidth}" />
+  </Style>
+
+  <Style Selector="Button.Hyperlink">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Padding" Value="0" />
+  </Style>
+
+  <Style Selector="Button.Hyperlink /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+
+  <Style Selector="Button.Hyperlink > TextBlock">
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="TextDecorations" Value="Underline" />
+  </Style>
+
+  <Style Selector="Button.NoAnimation:pressed">
+    <Setter Property="RenderTransform" Value="scale(1)" />
+  </Style>
+</Styles>

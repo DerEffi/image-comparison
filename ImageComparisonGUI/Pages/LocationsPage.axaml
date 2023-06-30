@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ImageComparisonGUI.Pages.LocationsPage"
+             xmlns:vm="using:ImageComparisonGUI.ViewModels"
+             xmlns:sv="clr-namespace:ImageComparisonGUI.Services"
+             xmlns:m="clr-namespace:ImageComparison.Models;assembly=ImageComparison"
+             x:DataType="vm:LocationsPageViewModel">
+
+  <UserControl.Resources>
+    <sv:EnumToBooleanConverter x:Key="variableEnum" />
+  </UserControl.Resources>
+  
+  <Grid RowDefinitions="*, Auto, Auto, Auto">
+    <Grid.Styles>
+      <Style Selector="StackPanel, Panel">
+        <Setter Property="Margin" Value="10 5 10 10" />
+      </Style>
+    </Grid.Styles>
+    <ListBox IsEnabled="{Binding !ConfigLocked}" Items="{Binding SearchLocations}" ScrollViewer.VerticalScrollBarVisibility="Auto" Selection="{Binding SearchLocationsSelection}" />
+    <TextBlock IsVisible="{Binding !SearchLocations.Count}" Text="No Search Locations" HorizontalAlignment="Center" VerticalAlignment="Center" />
+    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+      <StackPanel.Styles>
+        <Style Selector="Button">
+          <Setter Property="Margin" Value="5 0" />
+        </Style>
+      </StackPanel.Styles>
+      <Button Content="Remove" Command="{Binding RemoveSearchLocationCommand}">
+        <Button.IsEnabled>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="SelectedSearchLocation" Converter="{x:Static ObjectConverters.IsNotNull}" />
+            <Binding Path="!ConfigLocked" />
+          </MultiBinding>
+        </Button.IsEnabled>
+      </Button>
+      <Button IsEnabled="{Binding !ConfigLocked}" Content="Add" Command="{Binding AddSearchLocationCommand}" />
+    </StackPanel>
+    <Panel HorizontalAlignment="Center" Grid.Row="2">
+      <StackPanel HorizontalAlignment="Left">
+        <RadioButton IsEnabled="{Binding !ConfigLocked}" Content="Compare all images" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.All}}" Command="{Binding SaveCommand}" />
+        <RadioButton IsEnabled="{Binding !ConfigLocked}" Content="Compare images only within directories" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.Inclusive}}" Command="{Binding SaveCommand}" />
+        <RadioButton IsEnabled="{Binding !ConfigLocked}" Content="Compare images only in different directories" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.Exclusive}}" Command="{Binding SaveCommand}" />
+        <RadioButton IsEnabled="{Binding !ConfigLocked}" Content="Compare images only in the same Search Location (top directory)" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.ListInclusive}}" Command="{Binding SaveCommand}" />
+        <RadioButton IsEnabled="{Binding !ConfigLocked}" Content="Compare images only in different Search Locations (top directories)" IsChecked="{Binding SelectedSearchMode, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:SearchMode.ListExclusive}}" Command="{Binding SaveCommand}" />
+        <ToggleSwitch IsEnabled="{Binding !ConfigLocked}" Margin="0 15 0 0" OnContent="Search in all subdirectories" OffContent="{Binding $self.OnContent}" IsChecked="{Binding Recursive}" Command="{Binding SaveCommand}" />
+      </StackPanel>
+    </Panel>
+  </Grid>
+</UserControl>

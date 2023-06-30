@@ -1,0 +1,76 @@
+<Window xmlns="https://github.com/avaloniaui"
+				xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+				xmlns:vm="using:ImageComparisonGUI.ViewModels"
+				xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+				xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ImageComparisonGUI.Views"
+        xmlns:pages="clr-namespace:ImageComparisonGUI.Pages"
+				mc:Ignorable="d" d:DesignWidth="950" d:DesignHeight="600"
+				x:Class="ImageComparisonGUI.Views.MainWindow"
+				Icon="/Assets/gallery.ico"
+				Title="Image Comparison"
+        WindowStartupLocation="CenterScreen"
+        FontSize="14"
+        MinHeight="500"
+        MinWidth="950"
+				
+				TransparencyLevelHint="AcrylicBlur"
+				Background="Transparent"
+        ExtendClientAreaToDecorationsHint="True">
+
+		<Panel>
+        <DockPanel HorizontalAlignment="Stretch">
+          <ExperimentalAcrylicBorder DockPanel.Dock="Left" Width="240">
+            <ExperimentalAcrylicBorder.Material>
+              <ExperimentalAcrylicMaterial TintColor="#111" MaterialOpacity=".9" TintOpacity="1" FallbackColor="#111" />
+            </ExperimentalAcrylicBorder.Material>
+            <Image HorizontalAlignment="Center" VerticalAlignment="Top" Source="/Assets/gallery.ico" Height="75" Margin="15" />
+          </ExperimentalAcrylicBorder>
+          <ExperimentalAcrylicBorder IsHitTestVisible="False">
+            <ExperimentalAcrylicBorder.Material>
+              <ExperimentalAcrylicMaterial TintColor="#333" MaterialOpacity=".9" TintOpacity=".1" FallbackColor="#333" />
+            </ExperimentalAcrylicBorder.Material>
+            <TextBlock Text="{Binding #TabControl.SelectedItem.Header}" Margin="40 20" FontSize="32" FontWeight="Light" />
+          </ExperimentalAcrylicBorder>
+        </DockPanel>
+
+        <TabControl x:Name="TabControl" Classes="sidebar" Margin="0 40 0 15">
+          <TabItem Header="Search">
+            <Panel>
+              <pages:SearchPage />
+            </Panel>
+          </TabItem>
+          <TabItem Header="Locations">
+            <Panel>
+              <pages:LocationsPage />
+            </Panel>
+          </TabItem>
+          <TabItem Header="Adjustables">
+            <Panel>
+              <pages:AdjustablesPage />
+            </Panel>
+          </TabItem>
+          <TabItem Header="Profiles">
+            <Panel>
+              <pages:ProfilesPage />
+            </Panel>
+          </TabItem>
+          <TabItem Header="Hotkeys">
+            <Panel>
+              <pages:HotkeysPage />
+            </Panel>
+          </TabItem>
+          <TabItem Header="Cache">
+            <Panel>
+              <pages:CachePage />
+            </Panel>
+          </TabItem>
+          <TabItem Header="About">
+            <Panel>
+              <pages:AboutPage/>
+            </Panel>
+          </TabItem>
+        </TabControl>
+		</Panel>
+
+</Window>

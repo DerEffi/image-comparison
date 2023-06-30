@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <StartupObject>ImageComparisonGUI.Program</StartupObject>
+    <PackageId>DerEffi.$(AssemblyName)</PackageId>
+    <Title>Image Comparison</Title>
+    <Authors>DerEffi</Authors>
+    <PackageProjectUrl>https://github.com/DerEffi/image-comparison</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/DerEffi/image-comparison</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <AssemblyVersion>2023.6.0.0</AssemblyVersion>
+    <ApplicationIcon>Assets\gallery.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+    <None Remove=".gitignore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\gallery.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TrimmerRootDescriptor Include="Roots.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="0.10.21" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.21" />
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.21" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.8" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="XamlNameReferenceGenerator" Version="1.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ImageComparison\ImageComparison.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Pages\AdjustablesPage.axaml.cs">
+      <DependentUpon>AdjustablesPage.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Pages\HotkeysPage.axaml.cs">
+      <DependentUpon>HotkeysPage.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+</Project>

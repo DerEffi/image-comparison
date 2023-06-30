@@ -1,0 +1,66 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vm="using:ImageComparisonGUI.ViewModels"
+             x:DataType="vm:AboutPageViewModel"
+             x:Class="ImageComparisonGUI.Pages.AboutPage">
+  <StackPanel>
+    <StackPanel.Styles>
+      <Style Selector="StackPanel">
+        <Setter Property="Margin" Value="0 0 0 25"/>
+      </Style>
+    </StackPanel.Styles>
+
+    <StackPanel>
+      <TextBlock Text="Image Comparison" FontSize="30" FontWeight="Black" />
+    </StackPanel>
+    
+    <StackPanel>
+      <StackPanel.Styles>
+        <Style Selector="TextBlock">
+          <Setter Property="HorizontalAlignment" Value="Left"/>
+          <Setter Property="MaxWidth" Value="400"/>
+          <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+      </StackPanel.Styles>
+      <TextBlock Text="Application for comparing a large number of images within or between directories to find duplicates and similar images." />
+    </StackPanel>
+
+    <StackPanel>
+      <TextBlock Text="{Binding VersionText}" />
+      <TextBlock Text="Open Source Application - Feel free to share and contribute:" />
+
+      <Button Classes="Hyperlink" Command="{Binding OpenHyperlink}" CommandParameter="https://github.com/DerEffi/image-comparison">
+        <TextBlock Text="https://github.com/DerEffi/image-comparison" />
+      </Button>
+    </StackPanel>
+    
+    <StackPanel>
+      <TextBlock Text="Developed by" />
+      <TextBlock Text="DerEffi" />
+      <Button Classes="Hyperlink" Command="{Binding OpenHyperlink}" CommandParameter="https://dereffi.de">
+        <TextBlock Text="https://dereffi.de" />        
+      </Button>
+    </StackPanel>
+    
+    <StackPanel>
+      <TextBlock Margin="0 15 0 0" Text="Underlying Algorithms for Image Analysis: DifferenceHash by David Oftedal and Dr. Neal Krawetz:" />
+      <Button Classes="Hyperlink" Command="{Binding OpenHyperlink}" CommandParameter="http://01101001.net/differencehash.php">
+        <TextBlock Text="http://01101001.net/differencehash.php" />
+      </Button>
+      <Button Classes="Hyperlink" Command="{Binding OpenHyperlink}" CommandParameter="https://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html">
+        <TextBlock Text="https://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html" />
+      </Button>
+    </StackPanel>
+    
+    <StackPanel>
+      <TextBlock Text="Modified Implementation of CoenM:" />
+      <Button Classes="Hyperlink" Command="{Binding OpenHyperlink}" CommandParameter="https://github.com/coenm/ImageHash/">
+        <TextBlock Text="https://github.com/coenm/ImageHash/" />
+      </Button>
+    </StackPanel>
+    
+  </StackPanel>
+</UserControl>

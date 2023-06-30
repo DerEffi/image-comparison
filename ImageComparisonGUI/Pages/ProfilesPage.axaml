@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ImageComparisonGUI.Pages.ProfilesPage"
+             xmlns:vm="using:ImageComparisonGUI.ViewModels"
+             xmlns:sv="clr-namespace:ImageComparisonGUI.Services"
+             xmlns:m="clr-namespace:ImageComparison.Models;assembly=ImageComparison"
+             x:DataType="vm:ProfilesPageViewModel">
+
+
+  <Grid RowDefinitions="*, Auto, Auto, Auto">
+    <Grid.Styles>
+      <Style Selector="StackPanel, Panel">
+        <Setter Property="Margin" Value="10 5 10 10" />
+      </Style>
+    </Grid.Styles>
+    <ListBox Items="{Binding Profiles}" ScrollViewer.VerticalScrollBarVisibility="Auto" Selection="{Binding ProfilesSelection}" />
+    <TextBlock IsVisible="{Binding !Profiles.Count}" Text="No Profiles found" HorizontalAlignment="Center" VerticalAlignment="Center" />
+    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+      <StackPanel.Styles>
+        <Style Selector="Button">
+          <Setter Property="Margin" Value="5 0" />
+        </Style>
+      </StackPanel.Styles>
+      <Button Content="Remove" Command="{Binding RemoveProfileCommand}" IsEnabled="{Binding SelectedProfile, Converter={x:Static ObjectConverters.IsNotNull}}" />
+      <Button Content="Load" Command="{Binding LoadProfileCommand}">
+        <Button.IsEnabled>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="SelectedProfile" Converter="{x:Static ObjectConverters.IsNotNull}" />
+            <Binding Path="!ConfigLocked" />
+          </MultiBinding>
+        </Button.IsEnabled>
+      </Button>
+      <Button Content="Show in Explorer" Command="{Binding OpenProfileDirectoryCommand}" />
+    </StackPanel>
+    <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+      <TextBox Width="250" AcceptsReturn="False" AcceptsTab="False" Text="{Binding NewProfileName}" Padding="10,2" />
+      <Button IsEnabled="{Binding NewProfileName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" Content="Save Settings" Command="{Binding AddProfileCommand}" />
+    </StackPanel>
+  </Grid>
+</UserControl>
