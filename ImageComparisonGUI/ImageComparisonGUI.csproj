@@ -45,6 +45,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Pages\ProcessingPage.axaml.cs">
+      <DependentUpon>ProcessingPage.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Pages\AdjustablesPage.axaml.cs">
       <DependentUpon>AdjustablesPage.axaml</DependentUpon>
     </Compile>

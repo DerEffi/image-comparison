@@ -50,6 +50,11 @@
               <pages:AdjustablesPage />
             </Panel>
           </TabItem>
+          <TabItem Header="Processing">
+            <Panel>
+              <pages:ProcessingPage />
+            </Panel>
+          </TabItem>
           <TabItem Header="Profiles">
             <Panel>
               <pages:ProfilesPage />

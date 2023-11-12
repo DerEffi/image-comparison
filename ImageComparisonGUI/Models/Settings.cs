@@ -6,12 +6,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using static Dapper.SqlMapper;
 
 namespace ImageComparisonGUI.Models
 {
     public class Settings
     {
+        //Auto Processors
+        public List<string> MatchProcessors = Models.MatchProcessors.Supported;
+        public int MatchProcessorThreashold = 9900;
+
         //Cache settings
         public bool CacheNoMatch = true;
         public bool CacheImages = true;
@@ -84,6 +87,7 @@ namespace ImageComparisonGUI.Models
                 if (settings != null)
                 {
                     settings.DistinguishHotkeys();
+                    settings.EnsureMatchProcessors();
                 }
                 return settings;
             } catch { }
@@ -108,6 +112,21 @@ namespace ImageComparisonGUI.Models
         {
             this.Hotkeys.RemoveAll(h => h.Key == Key.None);
             this.Hotkeys = this.Hotkeys.DistinctBy(h => h.Target).DistinctBy(h => $"{h.Modifiers}-{h.Key}").ToList();
+        }
+
+        /// <summary>
+        /// Removes unsupported Processors and adds missing ones
+        /// </summary>
+        public void EnsureMatchProcessors()
+        {
+            this.MatchProcessors.RemoveAll(p => !Models.MatchProcessors.Supported.Any(s => s == p));
+            if(!this.MatchProcessors.Any(p => p == "None"))
+                this.MatchProcessors.Add("None");
+            Models.MatchProcessors.Supported.ForEach(supported =>
+            {
+                if (!this.MatchProcessors.Any(p => p == supported))
+                    this.MatchProcessors.Add(supported);
+            });
         }
     }
 }
