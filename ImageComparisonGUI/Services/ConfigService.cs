@@ -15,10 +15,14 @@ namespace ImageComparisonGUI.Services
         private static readonly string settingsFileName = "settings.json";
         public static readonly string ProfilesDirectory = "Profiles";
         private static Settings settings = new();
-        private static List<Profile> profiles = new List<Profile>();
+        private static List<Profile> profiles = new();
         public static List<string> Profiles { get => profiles.Select(p => p.Name).ToList(); }
 
         public static bool IsLocked { get; private set; } = false;
+
+        //Auto Processing settings
+        public static List<string> MatchProcessors { get => settings.MatchProcessors; }
+        public static int MatchProcessorThreashold { get => settings.MatchProcessorThreashold; }
 
         //Cache settings
         public static bool FillNoMatchCache { get; private set; } = false;
@@ -126,6 +130,20 @@ namespace ImageComparisonGUI.Services
             settings.DistinguishHotkeys();
 
             SaveConfig();
+
+            OnUpdate.Invoke(null, EventArgs.Empty);
+        }
+
+        public static void UpdateMatchProcessors(List<string> processors, int matchThreashold)
+        {
+            if(!IsLocked)
+            {
+                settings.MatchProcessorThreashold = matchThreashold;
+                settings.MatchProcessors = processors;
+                settings.EnsureMatchProcessors();
+
+                SaveConfig();
+            }
 
             OnUpdate.Invoke(null, EventArgs.Empty);
         }

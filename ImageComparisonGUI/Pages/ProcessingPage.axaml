@@ -1,0 +1,57 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ImageComparisonGUI.Pages.ProcessingPage"
+             xmlns:vm="using:ImageComparisonGUI.ViewModels"
+             xmlns:sv="clr-namespace:ImageComparisonGUI.Services"
+             xmlns:m="clr-namespace:ImageComparison.Models;assembly=ImageComparison"
+             x:DataType="vm:ProcessingPageViewModel">
+
+  <UserControl.Resources>
+    <sv:SimilarityConverter x:Key="variableSimilarity" />
+  </UserControl.Resources>
+
+  <Grid RowDefinitions="*, Auto, Auto, Auto">
+    <Grid.Styles>
+      <Style Selector="StackPanel, Panel">
+        <Setter Property="Margin" Value="10 5 10 10" />
+      </Style>
+    </Grid.Styles>
+    <ListBox Items="{Binding Processors}" ScrollViewer.VerticalScrollBarVisibility="Auto" Selection="{Binding ProcessorSelection}" />
+    <TextBlock IsVisible="{Binding !Processors.Count}" Text="No Auto-Processors found" HorizontalAlignment="Center" VerticalAlignment="Center" />
+    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+      <StackPanel.Styles>
+        <Style Selector="Button">
+          <Setter Property="Margin" Value="5 0" />
+        </Style>
+      </StackPanel.Styles>
+      <Button Content="Down" Command="{Binding MoveDownCommand}">
+        <Button.IsEnabled>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="SelectedProcessor" Converter="{x:Static ObjectConverters.IsNotNull}" />
+            <Binding Path="!ConfigLocked" />
+          </MultiBinding>
+        </Button.IsEnabled>
+      </Button>
+      <Button Content="Up" Command="{Binding MoveUpCommand}">
+        <Button.IsEnabled>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="SelectedProcessor" Converter="{x:Static ObjectConverters.IsNotNull}" />
+            <Binding Path="!ConfigLocked" />
+          </MultiBinding>
+        </Button.IsEnabled>
+      </Button>
+    </StackPanel>
+    <StackPanel Grid.Row="2" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Width="500" Margin="0 30 0 0">
+      <TextBlock TextWrapping="Wrap" HorizontalAlignment="Center" Text="Delete files on matches in this order when auto-processing above a similarity of" />
+      <Grid ColumnDefinitions="*, Auto, Auto">
+        <Slider IsEnabled="{Binding !ConfigLocked}" HorizontalAlignment="Stretch" Name="MatchThreasholdSlider" Value="{Binding MatchThreashold}" Minimum="0"
+          Maximum="9990" />
+        <TextBlock Width="40" TextAlignment="Right" VerticalAlignment="Center" Margin="15 2 0 0" Grid.Column="1" Text="{Binding MatchThreashold, Converter={StaticResource variableSimilarity}}" />
+        <TextBlock VerticalAlignment="Center" Margin="1 2 0 0" Grid.Column="2" Text="%" />
+      </Grid>
+    </StackPanel>
+  </Grid>
+</UserControl>

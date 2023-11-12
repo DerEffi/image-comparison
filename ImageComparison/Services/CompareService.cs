@@ -126,11 +126,11 @@ namespace ImageComparison.Services
 
                     return SortMatches(comparisons);
                 case SearchMode.ListInclusive:
-                    return analysedLocations
+                    return SortMatches(analysedLocations
                         .SelectMany(location => SearchForDuplicates(location, matchThreashold, nomatches, token))
-                        .ToList();
+                        .ToList());
                 case SearchMode.Exclusive:
-                    return SearchForDuplicates(
+                    return SortMatches(SearchForDuplicates(
                         analysedLocations
                             .SelectMany(location =>
                                 location
@@ -142,17 +142,17 @@ namespace ImageComparison.Services
                     matchThreashold,
                     SearchMode.ListExclusive,
                     nomatches,
-                    token);
+                    token));
                 case SearchMode.Inclusive:
-                    return analysedLocations
+                    return SortMatches(analysedLocations
                         .SelectMany(images => {
                             return images
                                 .GroupBy(image => image.Image.DirectoryName)
                                 .SelectMany(directory => SearchForDuplicates(directory.ToList(), matchThreashold, nomatches, token));
                         })
-                        .ToList();
+                        .ToList());
                 default:
-                    return SearchForDuplicates(analysedLocations.SelectMany(images => images).ToList(), matchThreashold, nomatches, token);
+                    return SortMatches(SearchForDuplicates(analysedLocations.SelectMany(images => images).ToList(), matchThreashold, nomatches, token));
             }
         }
 
@@ -186,7 +186,7 @@ namespace ImageComparison.Services
                 }
             });
 
-            return SortMatches(comparisons);
+            return comparisons.ToList();
         }
 
         //Calculate Hash Values by ImageHash (Dr. Neal Krawetz algorithms)
@@ -203,9 +203,13 @@ namespace ImageComparison.Services
             return HashService.Similarity(hash1, hash2);
         }
 
-        private static List<ImageMatch> SortMatches(ConcurrentBag<ImageMatch> comparisons)
+        private static List<ImageMatch> SortMatches(ConcurrentBag<ImageMatch> matches)
         {
-            List<ImageMatch> matches = comparisons.ToList();
+            return SortMatches(matches.ToList());
+        }
+
+        private static List<ImageMatch> SortMatches(List<ImageMatch> matches)
+        {
             matches.Sort((a,b) =>
             {
                 int result = b.Similarity - a.Similarity;
