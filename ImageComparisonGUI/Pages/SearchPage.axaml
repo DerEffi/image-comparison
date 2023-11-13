@@ -116,7 +116,7 @@
           <sys:Int32>0</sys:Int32>
         </Button.CommandParameter>
       </Button>
-      <Button Content="Auto" IsEnabled="False" Command="{Binding AutoProcessCommand}" />
+      <Button Content="Auto-Delete" Command="{Binding AutoProcessCommand}" />
       <Button Content="Next" Command="{Binding NoMatchCommand}" />
     </StackPanel>
     <StackPanel Grid.Row="3" HorizontalAlignment="Right" Margin="20 0" Orientation="Horizontal" Height="40">
@@ -131,6 +131,7 @@
       <TextBlock Text="{Binding StatusText}" IsVisible="{Binding !Idle}" />
       <TextBlock Margin="8 0 10 0" Text="{Binding ImageCountText}" IsVisible="{Binding !Idle}" />
       <ProgressBar IsIndeterminate="{Binding Searching}" Value="{Binding PercentComplete}" IsVisible="{Binding !Idle}" />
+      <Button Content="Auto-Process All" Command="{Binding AutoProcessAllCommand}" IsVisible="{Binding !Idle}" IsEnabled="{Binding IsDisplaying}" />
       <Button Content="Abort" Command="{Binding AbortCommand}" IsVisible="{Binding !Idle}" />
     </StackPanel>
   </Grid>

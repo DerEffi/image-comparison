@@ -50,7 +50,7 @@
               <pages:AdjustablesPage />
             </Panel>
           </TabItem>
-          <TabItem Header="Processing">
+          <TabItem Header="Auto Processing">
             <Panel>
               <pages:ProcessingPage />
             </Panel>
