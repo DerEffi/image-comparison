@@ -21,8 +21,8 @@ namespace ImageComparisonGUI.Services
         public static bool IsLocked { get; private set; } = false;
 
         //Auto Processing settings
-        public static List<string> MatchProcessors { get => settings.MatchProcessors; }
-        public static int MatchProcessorThreashold { get => settings.MatchProcessorThreashold; }
+        public static List<string> AutoProcessors { get => settings.AutoProcessors; }
+        public static int AutoProcessorThreashold { get => settings.AutoProcessorThreashold; }
 
         //Cache settings
         public static bool FillNoMatchCache { get; private set; } = false;
@@ -134,13 +134,13 @@ namespace ImageComparisonGUI.Services
             OnUpdate.Invoke(null, EventArgs.Empty);
         }
 
-        public static void UpdateMatchProcessors(List<string> processors, int matchThreashold)
+        public static void UpdateAutoProcessors(List<string> processors, int threashold)
         {
             if(!IsLocked)
             {
-                settings.MatchProcessorThreashold = matchThreashold;
-                settings.MatchProcessors = processors;
-                settings.EnsureMatchProcessors();
+                settings.AutoProcessorThreashold = threashold;
+                settings.AutoProcessors = processors;
+                settings.EnsureAutoProcessors();
 
                 SaveConfig();
             }

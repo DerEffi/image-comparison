@@ -14,16 +14,16 @@ namespace ImageComparisonGUI.ViewModels;
 
 public partial class ProcessingPageViewModel : ViewModelBase
 {
-    [ObservableProperty] private AvaloniaList<string> processors = new(ConfigService.MatchProcessors);
+    [ObservableProperty] private AvaloniaList<string> processors = new(ConfigService.AutoProcessors);
     [ObservableProperty] private int? selectedProcessor = null;
     [ObservableProperty] private bool configLocked = ConfigService.IsLocked;
-    [ObservableProperty] private int matchThreashold = ConfigService.MatchProcessorThreashold;
+    [ObservableProperty] private int threashold = ConfigService.AutoProcessorThreashold;
 
     public SelectionModel<string> ProcessorSelection { get; } = new();
 
-    public ProcessingPageViewModel(Slider matchThreasholdSlider)
+    public ProcessingPageViewModel(Slider ThreasholdSlider)
     {
-        matchThreasholdSlider.LostFocus += (object? sender, RoutedEventArgs e) => Save();
+        ThreasholdSlider.LostFocus += (object? sender, RoutedEventArgs e) => Save();
         ProcessorSelection.SelectionChanged += ProcessorSelectionChanged;
 
         ConfigService.OnUpdate += OnConfigUpdate;
@@ -58,14 +58,17 @@ public partial class ProcessingPageViewModel : ViewModelBase
 
     private void Save()
     {
-        MatchThreashold -= MatchThreashold % 10;
-        ConfigService.UpdateMatchProcessors(Processors.ToList(), MatchThreashold);
+        Threashold -= Threashold % 10;
+        ConfigService.UpdateAutoProcessors(Processors.ToList(), Threashold);
     }
 
     public void OnConfigUpdate(object? sender, EventArgs e)
     {
-        Processors = new(ConfigService.MatchProcessors);
-        MatchThreashold = ConfigService.MatchProcessorThreashold;
+        int? lastSelectedProcessor = SelectedProcessor;
+        Processors = new(ConfigService.AutoProcessors);
+        Threashold = ConfigService.AutoProcessorThreashold;
         ConfigLocked = ConfigService.IsLocked;
+        if(lastSelectedProcessor != null)
+            ProcessorSelection.Select((int)lastSelectedProcessor);
     }
 }

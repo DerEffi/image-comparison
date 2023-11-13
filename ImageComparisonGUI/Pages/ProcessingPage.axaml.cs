@@ -8,8 +8,8 @@ namespace ImageComparisonGUI.Pages
         public ProcessingPage()
         {
             InitializeComponent();
-            Slider matchThreasholdSlider = this.Find<Slider>("MatchThreasholdSlider");
-            DataContext = new ProcessingPageViewModel(matchThreasholdSlider);
+            Slider ThreasholdSlider = this.Find<Slider>("ThreasholdSlider");
+            DataContext = new ProcessingPageViewModel(ThreasholdSlider);
         }
     }
 }

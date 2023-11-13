@@ -1,5 +1,6 @@
 ﻿using Avalonia.Input;
 using ImageComparison.Models;
+using ImageComparison.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -12,8 +13,8 @@ namespace ImageComparisonGUI.Models
     public class Settings
     {
         //Auto Processors
-        public List<string> MatchProcessors = Models.MatchProcessors.Supported;
-        public int MatchProcessorThreashold = 9900;
+        public List<string> AutoProcessors = AutoProcessorService.Supported;
+        public int AutoProcessorThreashold = 9900;
 
         //Cache settings
         public bool CacheNoMatch = true;
@@ -87,7 +88,7 @@ namespace ImageComparisonGUI.Models
                 if (settings != null)
                 {
                     settings.DistinguishHotkeys();
-                    settings.EnsureMatchProcessors();
+                    settings.EnsureAutoProcessors();
                 }
                 return settings;
             } catch { }
@@ -117,15 +118,15 @@ namespace ImageComparisonGUI.Models
         /// <summary>
         /// Removes unsupported Processors and adds missing ones
         /// </summary>
-        public void EnsureMatchProcessors()
+        public void EnsureAutoProcessors()
         {
-            this.MatchProcessors.RemoveAll(p => !Models.MatchProcessors.Supported.Any(s => s == p));
-            if(!this.MatchProcessors.Any(p => p == "None"))
-                this.MatchProcessors.Add("None");
-            Models.MatchProcessors.Supported.ForEach(supported =>
+            this.AutoProcessors.RemoveAll(p => !AutoProcessorService.Supported.Any(s => s == p));
+            if(!this.AutoProcessors.Any(p => p == "None"))
+                this.AutoProcessors.Add("None");
+            AutoProcessorService.Supported.ForEach(supported =>
             {
-                if (!this.MatchProcessors.Any(p => p == supported))
-                    this.MatchProcessors.Add(supported);
+                if (!this.AutoProcessors.Any(p => p == supported))
+                    this.AutoProcessors.Add(supported);
             });
         }
     }

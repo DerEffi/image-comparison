@@ -7,11 +7,13 @@ using ImageComparison.Services;
 using ImageComparisonGUI.Models;
 using ImageComparisonGUI.Pages;
 using ImageComparisonGUI.Services;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,6 +35,8 @@ public partial class SearchPageViewModel : ViewModelBase
     [ObservableProperty] private string statusText = "";
     [ObservableProperty] private string imageCountText = "";
     [ObservableProperty] private int percentComplete = 0;
+    [ObservableProperty] private int autoProcessSide = 0;
+    [ObservableProperty] private string autoProcessProperty = "None";
 
     #endregion
 
@@ -76,19 +80,14 @@ public partial class SearchPageViewModel : ViewModelBase
     public void NoMatch()
     {
         if(ConfigService.CacheNoMatch)
-            CacheService.AddNoMatch(displayedMatch.Image1.Image.FullName, displayedMatch.Image2.Image.FullName);
+            CacheService.AddNoMatch(DisplayedMatch.Image1.Image.FullName, DisplayedMatch.Image2.Image.FullName);
         NextPair();
     }
 
     [RelayCommand]
     public void Previous()
     {
-        if (displayedMatchIndex > 0)
-        {
-            displayedMatchIndex--;
-            DisplayedMatch = Matches[displayedMatchIndex];
-            ImageCountText = $"{displayedMatchIndex + 1} / {Matches.Count}";
-        }
+        NextPair(false);
     }
 
     [RelayCommand]
@@ -106,7 +105,16 @@ public partial class SearchPageViewModel : ViewModelBase
     [RelayCommand]
     public void AutoProcess()
     {
-    
+        if(AutoProcessProperty != null && AutoProcessProperty != "" && AutoProcessProperty != "None" && AutoProcessSide != 0)
+        {
+            DeleteImage(AutoProcessSide);
+        }
+    }
+
+    [RelayCommand]
+    public void AutoProcessAll()
+    {
+
     }
 
     [RelayCommand]
@@ -211,6 +219,7 @@ public partial class SearchPageViewModel : ViewModelBase
                 DisplayedMatch = Matches.First();
                 StatusText = "Showing Matches: ";
                 ImageCountText = $"1 / {Matches.Count}";
+                PreviewAutoProcessor();
                 Displaying = true;
             }
             else
@@ -239,15 +248,48 @@ public partial class SearchPageViewModel : ViewModelBase
         Searching = false;
     }
 
-    private void NextPair()
+    private void NextPair(bool forward = true)
     {
-        if(Matches.Count > ++displayedMatchIndex)
+        if(
+            (forward && Matches.Count > ++displayedMatchIndex)
+            || (!forward && --displayedMatchIndex >= 0)
+        )
         {
             DisplayedMatch = Matches[displayedMatchIndex];
             ImageCountText = $"{displayedMatchIndex + 1} / {Matches.Count}";
+
+            PreviewAutoProcessor();
         } else
         {
             ResetUI();
+        }
+    }
+
+    public void PreviewAutoProcessor()
+    {
+        try
+        {
+            List<string> autoProcessors = ConfigService.AutoProcessors;
+            int currentProcessor = 0;
+            while (currentProcessor < autoProcessors.Count)
+            {
+                int processingResult = AutoProcessorService.Processors.First(p => p.DisplayName == autoProcessors[currentProcessor]).Process(DisplayedMatch.Image1.Image, DisplayedMatch.Image2.Image);
+                if (processingResult != 0)
+                {
+                    AutoProcessSide = processingResult;
+                    AutoProcessProperty = autoProcessors[currentProcessor];
+                    break;
+                }
+                currentProcessor++;
+            }
+
+            if (currentProcessor >= autoProcessors.Count)
+                throw new OperationCanceledException();
+        }
+        catch (Exception)
+        {
+            AutoProcessSide = 0;
+            AutoProcessProperty = "None";
         }
     }
 
@@ -262,6 +304,8 @@ public partial class SearchPageViewModel : ViewModelBase
         ImageCountText = "";
         PercentComplete = 0;
         Idle = true;
+        AutoProcessSide = 0;
+        AutoProcessProperty = "None";
         ConfigService.Unlock();
     }
 
