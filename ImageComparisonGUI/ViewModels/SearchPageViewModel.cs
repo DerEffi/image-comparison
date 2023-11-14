@@ -7,13 +7,11 @@ using ImageComparison.Services;
 using ImageComparisonGUI.Models;
 using ImageComparisonGUI.Pages;
 using ImageComparisonGUI.Services;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -306,6 +304,10 @@ public partial class SearchPageViewModel : ViewModelBase
             ComparerTaskToken = new();
             GC.Collect();
         }, TaskContinuationOptions.OnlyOnCanceled)
+        .ContinueWith(task =>
+        {
+            ResetUI();
+        }, TaskContinuationOptions.OnlyOnFaulted)
         .ContinueWith(t => { });
     }
 

@@ -1,6 +1,7 @@
 ﻿using ImageComparison.Models;
 using System.Timers;
 using System.Collections.Concurrent;
+using ImageComparison.Services.Hashs;
 
 namespace ImageComparison.Services
 {
@@ -24,6 +25,7 @@ namespace ImageComparison.Services
 
             using (System.Timers.Timer ProgressTimer = new())
             {
+                IHashAlgorithm hashAlgorithm = hashBothDirections ? new DHashDouble(hashDetail) : new DHash(hashDetail);
                 int target = searchLocations.SelectMany(i => i).Count();
 
                 //dont overload cpu with too many threads, leave one core free
@@ -59,7 +61,7 @@ namespace ImageComparison.Services
                             locationAnalysis.Add(new()
                             {
                                 Image = file,
-                                Hash = cachedImage != null && cachedImage.hash != null && cachedImage.scantime > (ulong)(file.LastWriteTime - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds ? cachedImage.hashArray : CalculateHash(file.FullName, hashDetail, hashBothDirections)
+                                Hash = cachedImage != null && cachedImage.hash != null && cachedImage.scantime > (ulong)(file.LastWriteTime - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds ? cachedImage.hashArray : hashAlgorithm.Hash(file.FullName)
                             });
                         }
                         catch (Exception e) { }
@@ -187,15 +189,6 @@ namespace ImageComparison.Services
             });
 
             return comparisons.ToList();
-        }
-
-        //Calculate Hash Values by ImageHash (Dr. Neal Krawetz algorithms)
-        private static ulong[] CalculateHash(string file, int detail, bool bothDirections)
-        {
-            using (Stream stream = File.OpenRead(file))
-            {
-                return HashService.DHash(Image.Load<Rgba32>(stream), detail, bothDirections);
-            }
         }
 
         private static short CalculateSimilarity(ulong[] hash1, ulong[] hash2)
