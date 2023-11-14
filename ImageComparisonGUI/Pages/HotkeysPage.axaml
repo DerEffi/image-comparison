@@ -16,7 +16,7 @@
   </UserControl.Resources>
 
   <StackPanel>
-    <Grid ColumnDefinitions="Auto, Auto, Auto, Auto" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" VerticalAlignment="Top" HorizontalAlignment="Center">
+    <Grid ColumnDefinitions="Auto, Auto, Auto, Auto" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" VerticalAlignment="Top" HorizontalAlignment="Center">
       <Grid.Styles>
         <Style Selector="TextBlock, Button.Keys">
           <Setter Property="Margin" Value="20 0 20 20" />
@@ -87,6 +87,11 @@
       <Button Classes="Keys" Grid.Row="7" Content="{Binding Hotkeys, Converter={StaticResource variableHotkey}, ConverterParameter=SearchDeleteBoth}" IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.SearchDeleteBoth}}" />
       <Button Grid.Row="7" Classes="Set" Content="Set" Command="{Binding ListenForHotkeyCommand}" CommandParameter="SearchDeleteBoth" />
       <Button Grid.Row="7" Classes="Remove" Content="Remove" Command="{Binding RemoveCommand}" CommandParameter="SearchDeleteBoth" />
+
+      <TextBlock Grid.Row="8" Text="Auto-Process All" />
+      <Button Classes="Keys" Grid.Row="8" Content="{Binding Hotkeys, Converter={StaticResource variableHotkey}, ConverterParameter=AutoProcessAll}" IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.AutoProcessAll}}" />
+      <Button Grid.Row="8" Classes="Set" Content="Set" Command="{Binding ListenForHotkeyCommand}" CommandParameter="AutoProcessAll" />
+      <Button Grid.Row="8" Classes="Remove" Content="Remove" Command="{Binding RemoveCommand}" CommandParameter="AutoProcessAll" />
 
     </Grid>
 

@@ -15,6 +15,7 @@ namespace ImageComparisonGUI.Models
         SearchDeleteRight,
         SearchDeleteBoth,
         SearchAuto,
+        AutoProcessAll,
         SearchAbort,
         SearchStart
     }
