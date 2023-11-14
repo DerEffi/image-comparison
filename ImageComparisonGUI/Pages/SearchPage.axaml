@@ -131,7 +131,7 @@
       <TextBlock Text="{Binding StatusText}" IsVisible="{Binding !Idle}" />
       <TextBlock Margin="8 0 10 0" Text="{Binding ImageCountText}" IsVisible="{Binding !Idle}" />
       <ProgressBar IsIndeterminate="{Binding Searching}" Value="{Binding PercentComplete}" IsVisible="{Binding !Idle}" />
-      <Button Content="Auto-Process All" Command="{Binding AutoProcessAllCommand}" IsVisible="{Binding !Idle}" IsEnabled="{Binding IsDisplaying}" />
+      <Button Content="Auto-Process All" Command="{Binding AutoProcessAllCommand}" IsVisible="{Binding !Idle}" IsEnabled="{Binding Displaying}" />
       <Button Content="Abort" Command="{Binding AbortCommand}" IsVisible="{Binding !Idle}" />
     </StackPanel>
   </Grid>
