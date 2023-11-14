@@ -8,72 +8,14 @@ using ImageComparison.Models;
 
 namespace ImageComparison.Services
 {
+    public interface IHashAlgorithm
+    {
+        public ulong[] Hash(string file);
+    }
+
     public static class HashService
     {
-        public static int Version = 1;
-
-        public static ulong[] DHash(Image<Rgba32> image, int detail = 8, bool bothDirections = false)
-        {
-            if (image == null)
-            {
-                throw new ArgumentNullException(nameof(image));
-            }
-
-            int bothDirectionsNumber = Convert.ToInt32(bothDirections);
-
-            image.Mutate(ctx => ctx
-                                .AutoOrient()
-                                .Resize(detail + 1, detail + bothDirectionsNumber)
-                                .Grayscale(GrayscaleMode.Bt601));
-
-            int pixelCount = detail * detail * (bothDirectionsNumber + 1);
-            int currentHashIndex = 0;
-            ulong[] hash = new ulong[(int)Math.Ceiling((double)pixelCount / 64)]; //reserve number of ulongs to hold bits of pixel comparisons
-
-            image.ProcessPixelRows((imageAccessor) =>
-            {
-                ulong mask = 1UL << 63;
-                Span<Rgba32> lastRow = bothDirections ? imageAccessor.GetRowSpan(0) : null;
-
-                for (var y = bothDirectionsNumber; y < detail + bothDirectionsNumber; y++)
-                {
-                    Span<Rgba32> row = imageAccessor.GetRowSpan(y);
-                    Rgba32 leftPixel = row[0];
-
-                    for (var index = 1; index < detail + 1; index++)
-                    {
-                        //if current ulong is full, switch to next and reset mask
-                        if (mask == 0)
-                        {
-                            currentHashIndex++;
-                            mask = 1UL << 63;
-                        }
-
-                        Rgba32 rightPixel = row[index];
-                        if (leftPixel.R < rightPixel.R)
-                        {
-                            hash[currentHashIndex] |= mask;
-                        }
-
-                        leftPixel = rightPixel;
-                        mask >>= 1;
-
-                        if(bothDirections)
-                        {
-                            if(rightPixel.R < lastRow[index].R)
-                                hash[currentHashIndex] |= mask;
-                            mask >>= 1;
-                        }
-                    }
-
-                    if (bothDirections)
-                        lastRow = row;
-                }
-
-            });
-
-            return hash;
-        }
+        public const int Version = 1;
 
         public static short Similarity(ulong[] hash1, ulong[] hash2)
         {
