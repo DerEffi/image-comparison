@@ -242,7 +242,7 @@ public partial class SearchPageViewModel : ViewModelBase
             ImageCountText = "";
             ConfigService.Lock();
 
-            string hashVersion = $"V{HashService.Version}D{ConfigService.HashDetail}{(ConfigService.HashBothDirections ? "B" : "U")}";
+            string hashVersion = $"V{HashService.Version}D{ConfigService.HashDetail}A{(int)ConfigService.HashAlgorithm}";
             ulong scantime = (ulong)(DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds;
 
             ComparerTaskToken.Token.ThrowIfCancellationRequested();
@@ -256,7 +256,7 @@ public partial class SearchPageViewModel : ViewModelBase
             PercentComplete = 0;
 
             List<CacheItem> cachedAnalysis = ConfigService.CacheImages ? CacheService.GetImages(hashVersion) : new();
-            List<List<ImageAnalysis>> analysedImages = CompareService.AnalyseImages(searchLocations, ConfigService.HashDetail, ConfigService.HashBothDirections, cachedAnalysis, ComparerTaskToken.Token);
+            List<List<ImageAnalysis>> analysedImages = CompareService.AnalyseImages(searchLocations, ConfigService.HashDetail, ConfigService.HashAlgorithm, cachedAnalysis, ComparerTaskToken.Token);
             if(ConfigService.CacheImages)
                 CacheService.UpdateImages(analysedImages.SelectMany(i => i).ToList(), hashVersion, scantime);
 

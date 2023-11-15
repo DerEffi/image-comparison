@@ -22,8 +22,8 @@ namespace ImageComparisonGUI.Models
 
         //Processing settings
         public int MatchThreashold = 7500;
-        public int HashDetail = 20;
-        public bool HashBothDirections = true;
+        public HashAlgorithm HashAlgorithm = HashAlgorithm.PHash;
+        public int HashDetail = 8;
 
         //Location settings
         public string[] SearchLocations = Array.Empty<string>();
