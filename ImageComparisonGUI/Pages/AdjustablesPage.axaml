@@ -11,6 +11,7 @@
 
   <UserControl.Resources>
     <sv:SimilarityConverter x:Key="variableSimilarity" />
+    <sv:EnumToBooleanConverter x:Key="variableEnum" />
   </UserControl.Resources>
 
   <StackPanel HorizontalAlignment="Center" Orientation="Vertical" Width="500">
@@ -27,14 +28,19 @@
       <TextBlock VerticalAlignment="Center" Margin="1 2 0 0" Grid.Column="2" Text="%" />
     </Grid>
 
-    <TextBlock Text="Hash detail" Margin="0 50 0 0" />
+    <TextBlock Text="Hash detail" Margin="0 20 0 0" />
     <Grid ColumnDefinitions="*, Auto, Auto">
       <Slider IsEnabled="{Binding !ConfigLocked}" HorizontalAlignment="Stretch" Name="HashDetailSlider" Value="{Binding HashDetail}" Minimum="6" Maximum="32" />
       <TextBlock Width="52" TextAlignment="Right" VerticalAlignment="Center" Margin="15 2 0 0" Grid.Column="1" Text="{Binding HashDetail}" />
     </Grid>
 
-    <ToggleSwitch IsEnabled="{Binding !ConfigLocked}" Margin="0 5 0 0" OnContent="Compare pixels by rows and columns" OffContent="Compare pixels by columns only" IsChecked="{Binding HashBothDirections}" Command="{Binding SaveCommand}" />
+    <TextBlock Text="Hash Algorithm" Margin="0 20 0 10" />
+    <StackPanel>
+      <RadioButton IsEnabled="{Binding !ConfigLocked}" Content="Perceptual Hash (Most accurate)" IsChecked="{Binding HashAlgorithm, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:HashAlgorithm.PHash}}" Command="{Binding SaveCommand}" />
+      <RadioButton IsEnabled="{Binding !ConfigLocked}" Content="Difference Hash (Fastest)" IsChecked="{Binding HashAlgorithm, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:HashAlgorithm.DHash}}" Command="{Binding SaveCommand}" />
+      <RadioButton IsEnabled="{Binding !ConfigLocked}" Content="Double Difference Hash (Compromise)" IsChecked="{Binding HashAlgorithm, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:HashAlgorithm.DHashDouble}}" Command="{Binding SaveCommand}" />
+    </StackPanel>
 
-    <TextBlock FontStyle="Italic" FontWeight="Light" TextWrapping="Wrap" Text="* Choosing a higher degree of detail can eliminate false positives by comparing more information between images. Choosing the detail too high and the app might have trouble recognizing similarities due to compression" Margin="0 15 0 0" />
+    <TextBlock FontStyle="Italic" FontWeight="Light" TextWrapping="Wrap" Text="* Choosing a higher degree of detail can eliminate false positives by comparing more information between images. Choosing the detail too high and the app might have trouble recognizing similarities due to compression. Recommended value for PHash is around 8, for DHashs around 16." Margin="0 15 0 0" />
   </StackPanel>
 </UserControl>

@@ -17,7 +17,7 @@ namespace ImageComparison.Services
         
         public static event EventHandler<ImageComparerEventArgs> OnProgress = delegate {};
 
-        public static List<List<ImageAnalysis>> AnalyseImages(List<List<FileInfo>> searchLocations, int hashDetail, bool hashBothDirections, List<CacheItem>? cachedAnalysis, CancellationToken token = new())
+        public static List<List<ImageAnalysis>> AnalyseImages(List<List<FileInfo>> searchLocations, int hashDetail, HashAlgorithm hashAlgorithm, List<CacheItem>? cachedAnalysis, CancellationToken token = new())
         {
             cachedAnalysis ??= new List<CacheItem>();
 
@@ -25,7 +25,16 @@ namespace ImageComparison.Services
 
             using (System.Timers.Timer ProgressTimer = new())
             {
-                IHashAlgorithm hashAlgorithm = hashBothDirections ? new DHashDouble(hashDetail) : new DHash(hashDetail);
+                IHashAlgorithm hash = new PHash(hashDetail);
+                switch(hashAlgorithm)
+                {
+                    case HashAlgorithm.DHash:
+                        hash = new DHash(hashDetail);
+                        break;
+                    case HashAlgorithm.DHashDouble:
+                        hash = new DHashDouble(hashDetail);
+                        break;
+                }
                 int target = searchLocations.SelectMany(i => i).Count();
 
                 //dont overload cpu with too many threads, leave one core free
@@ -61,7 +70,7 @@ namespace ImageComparison.Services
                             locationAnalysis.Add(new()
                             {
                                 Image = file,
-                                Hash = cachedImage != null && cachedImage.hash != null && cachedImage.scantime > (ulong)(file.LastWriteTime - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds ? cachedImage.hashArray : hashAlgorithm.Hash(file.FullName)
+                                Hash = cachedImage != null && cachedImage.hash != null && cachedImage.scantime > (ulong)(file.LastWriteTime - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds ? cachedImage.hashArray : hash.Hash(file.FullName)
                             });
                         }
                         catch (Exception e) { }

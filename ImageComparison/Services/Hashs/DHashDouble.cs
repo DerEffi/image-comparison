@@ -26,6 +26,7 @@ namespace ImageComparison.Services.Hashs
                 throw new ArgumentNullException(nameof(file));
 
             ulong[] hash = new ulong[hashArraySize];
+            int currentHashIndex = 0;
 
             using (Image<Rgba32> image = Image.Load<Rgba32>(file))
             {
@@ -37,7 +38,6 @@ namespace ImageComparison.Services.Hashs
                     .AutoOrient()
                     .Resize(width, height)
                     .Grayscale(GrayscaleMode.Bt601));
-                int currentHashIndex = 0;
 
                 image.ProcessPixelRows((imageAccessor) =>
                 {

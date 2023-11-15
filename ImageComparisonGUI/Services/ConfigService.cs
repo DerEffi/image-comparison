@@ -32,7 +32,7 @@ namespace ImageComparisonGUI.Services
         //Processing settings
         public static int MatchThreashold { get => settings.MatchThreashold; }
         public static int HashDetail { get => settings.HashDetail; }
-        public static bool HashBothDirections { get => settings.HashBothDirections; }
+        public static HashAlgorithm HashAlgorithm { get => settings.HashAlgorithm; }
 
         //Location settings
         public static string[] SearchLocations { get => settings.SearchLocations; }
@@ -110,12 +110,12 @@ namespace ImageComparisonGUI.Services
             OnUpdate.Invoke(null, EventArgs.Empty);
         }
 
-        public static void UpdateAdjustables(int matchThreashold, int hashDetail, bool hashBothDirections)
+        public static void UpdateAdjustables(int matchThreashold, int hashDetail, HashAlgorithm hashAlgorithm)
         {
             if (!IsLocked)
             {
                 settings.MatchThreashold = matchThreashold;
-                settings.HashBothDirections = hashBothDirections;
+                settings.HashAlgorithm = hashAlgorithm;
                 settings.HashDetail = hashDetail;
 
                 SaveConfig();
