@@ -1,6 +1,7 @@
 ﻿using ImageComparison.Models;
 using Microsoft.VisualBasic.FileIO;
 using System.Collections.Immutable;
+using System.IO;
 
 namespace ImageComparison.Services
 {
@@ -11,28 +12,42 @@ namespace ImageComparison.Services
         public static void DeleteFile(string path, DeleteAction deleteAction = DeleteAction.Delete, string target = "Duplicates\\", bool relativeTarget = true)
         {
             if (path == null || !File.Exists(path))
+            {
+                LogService.Log($"Could not find file for deleting: '{path}'", LogLevel.Warning);
                 throw new FileNotFoundException();
+            }
 
             switch(deleteAction)
             {
                 case DeleteAction.Delete:
                     File.Delete(path);
+                    LogService.Log($"Deleted file: '{path}'");
                     break;
                 case DeleteAction.RecycleBin:
                     FileSystem.DeleteFile(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                    LogService.Log($"Moved file to Recycle Bin: '{path}'");
                     break;
                 case DeleteAction.Move:
 
                     if (string.IsNullOrEmpty(Path.GetDirectoryName(path)))
+                    {
+                        LogService.Log($"Could not find parent folder of '{path}'", LogLevel.Warning);
                         throw new DirectoryNotFoundException();
+                    }
 
                     string targetPath = relativeTarget ? Path.Combine(Path.GetDirectoryName(path), target) : target;
 
                     if (File.Exists(targetPath))
+                    {
+                        LogService.Log($"Can not move file; target already exists: '{targetPath}'", LogLevel.Warning);
                         throw new IOException();
+                    }
 
-                    if(!Directory.Exists(targetPath))
+                    if (!Directory.Exists(targetPath))
+                    {
+                        LogService.Log($"Creating folder '{targetPath}' for moving files");
                         Directory.CreateDirectory(targetPath);
+                    }
 
                     string targetFile = Path.Combine(targetPath + Path.GetFileName(path));
                     int counter = 0;
@@ -42,12 +57,23 @@ namespace ImageComparison.Services
                     }
 
                     File.Move(path, targetFile);
-                    
+
+                    LogService.Log($"Moved '{path}' to '{targetFile}'");
+
                     break;
             }
         }
 
-        public static List<List<FileInfo>> GetProcessableFiles(string[] searchLocations, bool searchSubdirectories)
+        public static List<List<FileInfo>> SearchProcessableFiles(string[] searchLocations, bool searchSubdirectories)
+        {
+            LogService.Log($"Searching for images in {searchLocations.Length} location{(searchLocations.Length > 1 ? "s" : "")}{(searchSubdirectories ? " recursively" : "")}");
+            List<List<FileInfo>> images = GetProcessableFiles(searchLocations, searchSubdirectories);
+            LogService.Log($"Found {images.Sum(i => i.Count)} images");
+
+            return images;
+        }
+
+        private static List<List<FileInfo>> GetProcessableFiles(string[] searchLocations, bool searchSubdirectories)
         {
             List<List<FileInfo>> directories = new();
 
@@ -71,7 +97,9 @@ namespace ImageComparison.Services
 
                     if(searchSubdirectories)
                         directory.AddRange(GetProcessableFiles(Directory.GetDirectories(location), true).SelectMany(i => i));
-                } catch { }
+                } catch {
+                    LogService.Log($"Error searching location '{location}'", LogLevel.Error);
+                }
 
                 if (directory.Count != 0)
                     directories.Add(directory);

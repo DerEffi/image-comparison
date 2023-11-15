@@ -96,12 +96,15 @@ public partial class SearchPageViewModel : ViewModelBase
     {
         if(AutoProcessingTask != null && !AutoProcessingTask.IsCompleted)
         {
+            LogService.Log("Aborting Auto-Processing due to user request", LogLevel.Warning);
             AutoProcessingTaskToken.Cancel();
         } else if(ComparerTask != null && !ComparerTask.IsCompleted)
         {
+            LogService.Log("Aborting image comparison due to user request", LogLevel.Warning);
             ComparerTaskToken.Cancel();
         } else
         {
+            LogService.Log("Aborting Display of found matches due to user request", LogLevel.Warning);
             ResetUI();
         }
     }
@@ -109,7 +112,7 @@ public partial class SearchPageViewModel : ViewModelBase
     [RelayCommand]
     public void AutoProcess()
     {
-        if(AutoProcessProperty != null && AutoProcessProperty != "" && AutoProcessProperty != "None" && AutoProcessSide != 0)
+        if (AutoProcessProperty != null && AutoProcessProperty != "" && AutoProcessProperty != "None" && AutoProcessSide != 0)
         {
             DeleteImage(AutoProcessSide);
         } else
@@ -124,11 +127,13 @@ public partial class SearchPageViewModel : ViewModelBase
         if (AutoProcessingTask != null && !AutoProcessingTask.IsCompleted)
             throw new InvalidOperationException();
 
+        LogService.Log($"Starting Auto-Processor for matches with more than {ConfigService.AutoProcessorThreashold / 100}%");
+
         AutoProcessingTask = Task.Run(() =>
         {
             Displaying = false;
             StatusText = "Auto Processing";
-            while(displayedMatchIndex < Matches.Count)
+            while(displayedMatchIndex < Matches.Count && Matches[displayedMatchIndex].Similarity > ConfigService.AutoProcessorThreashold)
             {
                 DisplayedMatch = Matches[displayedMatchIndex];
                 ImageCountText = $"{displayedMatchIndex + 1} / {Matches.Count}";
@@ -144,14 +149,15 @@ public partial class SearchPageViewModel : ViewModelBase
                         if (AutoProcessSide > 0 && DisplayedMatch.Image2 != null)
                             DeleteFile(DisplayedMatch.Image2.Image.FullName);
                     }
-                    catch { }
+                    catch {
+                        LogService.Log($"Error Auto-Processing current match: '{DisplayedMatch.Image1.Image.FullName}' - '{DisplayedMatch.Image2.Image.FullName}'", LogLevel.Error);
+                    }
                 }
                 else
                 {
                     if (ConfigService.CacheNoMatch)
                         CacheService.AddNoMatch(DisplayedMatch.Image1.Image.FullName, DisplayedMatch.Image2.Image.FullName);
                 }
-                Thread.Sleep(1000);
                 
                 displayedMatchIndex++;
                 AutoProcessingTaskToken.Token.ThrowIfCancellationRequested();
@@ -159,11 +165,15 @@ public partial class SearchPageViewModel : ViewModelBase
         }, AutoProcessingTaskToken.Token)
         .ContinueWith(task =>
         {
+            LogService.Log("Stopped Auto-Processor due to user request", LogLevel.Warning);
+
             AutoProcessingTaskToken.Dispose();
             AutoProcessingTaskToken = new();
             GC.Collect();
         }, TaskContinuationOptions.OnlyOnCanceled)
         .ContinueWith(t => {
+            LogService.Log("Finished Auto processing, displaying remaining matches");
+
             Displaying = true;
             StatusText = "Showing Matches: ";
             displayedMatchIndex--;
@@ -247,7 +257,7 @@ public partial class SearchPageViewModel : ViewModelBase
 
             ComparerTaskToken.Token.ThrowIfCancellationRequested();
 
-            List<List<FileInfo>> searchLocations = FileService.GetProcessableFiles(ConfigService.SearchLocations, ConfigService.SearchSubdirectories);
+            List<List<FileInfo>> searchLocations = FileService.SearchProcessableFiles(ConfigService.SearchLocations, ConfigService.SearchSubdirectories);
 
             ComparerTaskToken.Token.ThrowIfCancellationRequested();
 
@@ -275,12 +285,16 @@ public partial class SearchPageViewModel : ViewModelBase
             displayedMatchIndex = 0;
             if(ConfigService.FillNoMatchCache)
             {
+                LogService.Log("Filling no-match cache with current results due to user request", LogLevel.Warning);
+             
                 CacheService.AddNoMatches(Matches);
                 ConfigService.UpdateCache(ConfigService.CacheImages, ConfigService.CacheNoMatch, false);
                 ResetUI();
             }
             else if (Matches != null && Matches.Count > 0)
             {
+                LogService.Log($"Showing {Matches.Count} matches to user");
+
                 DisplayedMatch = Matches.First();
                 StatusText = "Showing Matches: ";
                 ImageCountText = $"1 / {Matches.Count}";
@@ -298,6 +312,8 @@ public partial class SearchPageViewModel : ViewModelBase
         }, ComparerTaskToken.Token)
         .ContinueWith(task =>
         {
+            LogService.Log("Stopping Search due to user request", LogLevel.Warning);
+
             ResetUI();
 
             ComparerTaskToken.Dispose();
@@ -306,6 +322,8 @@ public partial class SearchPageViewModel : ViewModelBase
         }, TaskContinuationOptions.OnlyOnCanceled)
         .ContinueWith(task =>
         {
+            LogService.Log("Stopping Search due to unresolvable error", LogLevel.Warning);
+
             ResetUI();
         }, TaskContinuationOptions.OnlyOnFaulted)
         .ContinueWith(t => { });
@@ -332,6 +350,7 @@ public partial class SearchPageViewModel : ViewModelBase
             PreviewAutoProcessor();
         } else
         {
+            LogService.Log("No more matches to show, stopping displaying matches");
             ResetUI();
         }
     }

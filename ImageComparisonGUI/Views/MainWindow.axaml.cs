@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
+using ImageComparison.Services;
 using ImageComparisonGUI.Services;
 using ImageComparisonGUI.ViewModels;
 using System;
@@ -17,6 +18,7 @@ public partial class MainWindow : Window
         Instance = this;
         InitializeComponent();
         DataContext = new MainWindowViewModel(this, ClientSizeProperty);
+        LogService.Log("App started");
     }
 
     private void InitializeComponent()

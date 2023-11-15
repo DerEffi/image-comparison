@@ -19,7 +19,11 @@ namespace ImageComparison.Services
                 connection.Execute("CREATE TABLE IF NOT EXISTS nomatch (a TEXT NOT NULL COLLATE NOCASE, b TEXT NOT NULL COLLATE NOCASE, UNIQUE(a, b))");
                 connection.Execute("CREATE INDEX IF NOT EXISTS idxf_ht ON file(hashtype)");
                 connection.Close();
-            } catch { }
+
+                LogService.Log("Initialized cache");
+            } catch {
+                LogService.Log("Error initializing cache", LogLevel.Error);
+            }
         }
 
         public static List<CacheItem> GetImages(string hashtype)
@@ -29,9 +33,12 @@ namespace ImageComparison.Services
             try
             {
                 connection.Open();
-
                 images = connection.Query<CacheItem>("SELECT path, scantime, size, hash FROM file WHERE hashtype = @Hashtype", new { Hashtype = hashtype }).ToList();
-            } catch { }
+
+                LogService.Log($"Loaded {images.Count} images from cache");
+            } catch {
+                LogService.Log("Error loading analysed images from cache", LogLevel.Error);
+            }
 
             connection.Close();
 
@@ -65,8 +72,12 @@ namespace ImageComparison.Services
 
                     transaction.Commit();
                 }
+
+                LogService.Log($"Updated cache with {images.Count} images with hash settings: '{hashtype}'");
             }
-            catch { }
+            catch {
+                LogService.Log($"Error updating cache with {images.Count} images", LogLevel.Error);
+            }
 
             connection.Close();
         }
@@ -83,8 +94,13 @@ namespace ImageComparison.Services
 
                 connection.Open();
                 connection.Execute("INSERT INTO nomatch (a, b) VALUES (@a, @b) ON CONFLICT(a, b) DO NOTHING", new { a, b });
+
+                LogService.Log($"Inserted no-match into cache: '{a}' - '{b}'");
             }
-            catch { }
+            catch
+            {
+                LogService.Log($"Error inserting no-match into cache", LogLevel.Error);
+            }
 
             connection.Close();
         }
@@ -119,8 +135,13 @@ namespace ImageComparison.Services
 
                     transaction.Commit();
                 }
+
+                LogService.Log($"Updated cache with {nomatches.Count} no-matches");
             }
-            catch { }
+            catch
+            {
+                LogService.Log($"Error updating cache with {nomatches.Count} no-matches", LogLevel.Error);
+            }
 
             connection.Close();
         }
@@ -134,8 +155,13 @@ namespace ImageComparison.Services
                 connection.Open();
 
                 nomatches = connection.Query<NoMatch>("SELECT * FROM nomatch").ToList();
+
+                LogService.Log($"Loaded {nomatches.Count} no-matches from cache");
             }
-            catch { }
+            catch
+            {
+                LogService.Log($"Error {nomatches.Count} loading no-matches from cache", LogLevel.Error);
+            }
 
             connection.Close();
 
@@ -148,7 +174,13 @@ namespace ImageComparison.Services
             {
                 connection.Open();
                 connection.Execute("DELETE FROM file");
-            } catch { }
+
+                LogService.Log($"Removed analysed images from cache");
+            }
+            catch
+            {
+                LogService.Log($"Error removing analysed images from cache", LogLevel.Error);
+            }
 
             connection.Close();
         }
@@ -159,7 +191,13 @@ namespace ImageComparison.Services
             {
                 connection.Open();
                 connection.Execute("DELETE FROM nomatch");
-            } catch { }
+
+                LogService.Log($"Removed no-matches from cache");
+            }
+            catch
+            {
+                LogService.Log($"Error removing no-matches from cache", LogLevel.Error);
+            }
 
             connection.Close();
         }

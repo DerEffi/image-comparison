@@ -161,11 +161,7 @@ namespace ImageComparisonGUI.Services
 
         private static void SaveConfig()
         {
-            try
-            {
-                SaveConfig(Path.Combine(FileService.DataDirectory, settingsFileName));
-            }
-            catch (Exception) { }
+            SaveConfig(Path.Combine(FileService.DataDirectory, settingsFileName));
         }
 
         private static void SaveConfig(string filePath)
@@ -180,7 +176,10 @@ namespace ImageComparisonGUI.Services
                     stream.Write(content, 0, content.Length);
                     stream.Close();
                 }
-            } catch(Exception) { }
+                LogService.Log($"Updated settings in '{filePath}'");
+            } catch(Exception) {
+                LogService.Log($"Error writing settings to '{filePath}'", LogLevel.Error);
+            }
         }
 
         private static void LoadConfig()
@@ -195,7 +194,10 @@ namespace ImageComparisonGUI.Services
                     OnUpdate.Invoke(null, EventArgs.Empty);
                 }
 
-            } catch(Exception) { }
+                LogService.Log($"Settings loaded from '{settingsFile}'", LogLevel.Info);
+            } catch(Exception) {
+                LogService.Log($"Error loading settings", LogLevel.Error);
+            }
         }
 
         private static Settings? LoadProfileFromFile(string filePath)
@@ -207,6 +209,9 @@ namespace ImageComparisonGUI.Services
                 {
                     return loadedSettings;
                 }
+            } else
+            {
+                LogService.Log($"No settings found at '{filePath}'", LogLevel.Warning);
             }
             return null;
         }
@@ -223,8 +228,14 @@ namespace ImageComparisonGUI.Services
                     .Where(profile => profile.Settings != null)
                     .ToList();
 
+                LogService.Log($"Loaded {profiles.Count} profiles from '{profilesDir}'", profiles.Count > 0 ? LogLevel.Info : LogLevel.Warning);
+
                 OnUpdate.Invoke(null, EventArgs.Empty);
-            } catch(Exception) { }
+            } catch(Exception)
+            {
+                LogService.Log($"Error loading profiles", LogLevel.Error);
+
+            }
         }
 
         public static void LoadProfile(string name)
@@ -239,7 +250,9 @@ namespace ImageComparisonGUI.Services
 
                 OnUpdate.Invoke(null, EventArgs.Empty);
             }
-            catch(Exception) { }
+            catch(Exception) {
+                LogService.Log($"Error loading profile '{name}'", LogLevel.Error);
+            }
         }
 
         public static void RemoveProfile(string name)
@@ -252,9 +265,14 @@ namespace ImageComparisonGUI.Services
                     File.Delete(file);
                 }
 
+                LogService.Log($"Removed profile '{name}'", LogLevel.Info);
+
                 LoadProfiles();
             }
-            catch (Exception) { }
+            catch (Exception)
+            {
+                LogService.Log($"Error removing profile '{name}'", LogLevel.Error);
+            }
         }
 
         public static void SaveConfigAsProfile(string name)
@@ -267,9 +285,14 @@ namespace ImageComparisonGUI.Services
 
                 SaveConfig(Path.Combine(FileService.DataDirectory, ProfilesDirectory, name + ".json"));
 
+                LogService.Log($"Saved profile '{name}'", LogLevel.Info);
+
                 LoadProfiles();
 
-            } catch(Exception) { }
+            } catch(Exception)
+            {
+                LogService.Log($"Error saving profile '{name}'", LogLevel.Error);
+            }
         }
     }
 }

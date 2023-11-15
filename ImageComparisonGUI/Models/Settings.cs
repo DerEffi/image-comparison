@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 
 namespace ImageComparisonGUI.Models
 {
@@ -22,6 +23,7 @@ namespace ImageComparisonGUI.Models
 
         //Processing settings
         public int MatchThreashold = 7500;
+        [JsonConverter(typeof(StringEnumConverter))]
         public HashAlgorithm HashAlgorithm = HashAlgorithm.PHash;
         public int HashDetail = 8;
 
@@ -91,7 +93,10 @@ namespace ImageComparisonGUI.Models
                     settings.EnsureAutoProcessors();
                 }
                 return settings;
-            } catch { }
+            } catch {
+
+                LogService.Log($"Error parsing settings from file content", LogLevel.Error);
+            }
 
             return null;
         }

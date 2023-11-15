@@ -2,6 +2,7 @@
 using System.Timers;
 using System.Collections.Concurrent;
 using ImageComparison.Services.Hashs;
+using System.IO;
 
 namespace ImageComparison.Services
 {
@@ -19,6 +20,8 @@ namespace ImageComparison.Services
 
         public static List<List<ImageAnalysis>> AnalyseImages(List<List<FileInfo>> searchLocations, int hashDetail, HashAlgorithm hashAlgorithm, List<CacheItem>? cachedAnalysis, CancellationToken token = new())
         {
+            LogService.Log($"Starting image analysation for {searchLocations.Count} location{(searchLocations.Count > 1 ? "s" : "")} with {hashAlgorithm}-{hashDetail}");
+
             cachedAnalysis ??= new List<CacheItem>();
 
             List<ConcurrentBag<ImageAnalysis>> analysed = new();
@@ -45,9 +48,11 @@ namespace ImageComparison.Services
                 ProgressTimer.AutoReset = true;
                 ProgressTimer.Elapsed += (object? source, ElapsedEventArgs e) =>
                 {
+                    int current = analysed.SelectMany(a => a).Count();
+                    LogService.Log($"Analysed {current}/{target} images");
                     OnProgress.Invoke(null, new ImageComparerEventArgs()
                     {
-                        Current = analysed.SelectMany(a => a).Count(),
+                        Current = current,
                         Target = target
                     });
                 };
@@ -62,7 +67,10 @@ namespace ImageComparison.Services
                     Parallel.ForEach(location, new(){ MaxDegreeOfParallelism = threadCount }, file =>
                     {
                         if (token.IsCancellationRequested)
+                        {
+                            LogService.Log("Image analysation canceled by user", LogLevel.Warning);
                             return;
+                        }
 
                         try
                         {
@@ -73,8 +81,12 @@ namespace ImageComparison.Services
                                 Hash = cachedImage != null && cachedImage.hash != null && cachedImage.scantime > (ulong)(file.LastWriteTime - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds ? cachedImage.hashArray : hash.Hash(file.FullName)
                             });
                         }
-                        catch (Exception e) { }
+                        catch (Exception e) {
+                            LogService.Log($"Could not analyse '{file.FullName}'", LogLevel.Error);
+                        }
                     });
+
+                    LogService.Log($"Analysed location with {locationAnalysis.Count} images");
                 });
 
                 ProgressTimer.Stop();
@@ -91,6 +103,8 @@ namespace ImageComparison.Services
 
         public static List<ImageMatch> SearchForDuplicates(List<List<ImageAnalysis>> analysedLocations, int matchThreashold, SearchMode mode, List<NoMatch>? nomatches, CancellationToken token = new())
         {
+            LogService.Log($"Comparing images from {analysedLocations.Count} locations in mode '{mode}'");
+
             nomatches ??= new();
 
             switch(mode)
@@ -108,7 +122,10 @@ namespace ImageComparison.Services
                     Parallel.ForEach(analysedLocations, new() { MaxDegreeOfParallelism = filesPerLocation <= analysedLocations.Count ? threadCount : 1 }, (images, state, currentLocation) =>
                     {
                         if (token.IsCancellationRequested)
+                        {
+                            LogService.Log("Image comparison canceled by user", LogLevel.Warning);
                             return;
+                        }
 
                         Parallel.ForEach(images, new() { MaxDegreeOfParallelism = filesPerLocation > analysedLocations.Count ? threadCount : 1 }, (image) =>
                         {
@@ -118,7 +135,10 @@ namespace ImageComparison.Services
                                 analysedLocations[location].ForEach(comparer =>
                                 {
                                     if (token.IsCancellationRequested)
+                                    {
+                                        LogService.Log("Image comparison canceled by user", LogLevel.Warning);
                                         return;
+                                    }
 
                                     short similarity = CalculateSimilarity(image.Hash, comparer.Hash);
                                     if (similarity >= matchThreashold && !IsNoMatch(nomatches, image.Image.FullName, comparer.Image.FullName))
@@ -180,9 +200,11 @@ namespace ImageComparison.Services
             {
                 for (int i = Convert.ToInt32(index) + 1; i < images.Count; i++)
                 {
-
                     if (token.IsCancellationRequested)
+                    {
+                        LogService.Log("Image comparison canceled by user", LogLevel.Warning);
                         return;
+                    }
 
                     short similarity = CalculateSimilarity(image.Hash, images[i].Hash);
                     if (similarity >= matchThreashold && !IsNoMatch(nomatches, image.Image.FullName, images[i].Image.FullName))
@@ -212,6 +234,8 @@ namespace ImageComparison.Services
 
         private static List<ImageMatch> SortMatches(List<ImageMatch> matches)
         {
+            LogService.Log($"Sorting {matches.Count} found matches");
+
             matches.Sort((a,b) =>
             {
                 int result = b.Similarity - a.Similarity;
