@@ -20,9 +20,9 @@
 
 		<Panel>
         <DockPanel HorizontalAlignment="Stretch">
-          <ExperimentalAcrylicBorder DockPanel.Dock="Left" Width="240">
+          <ExperimentalAcrylicBorder DockPanel.Dock="Left" Width="240" IsHitTestVisible="False">
             <ExperimentalAcrylicBorder.Material>
-              <ExperimentalAcrylicMaterial TintColor="#111" MaterialOpacity=".9" TintOpacity="1" FallbackColor="#111" />
+              <ExperimentalAcrylicMaterial BackgroundSource="Digger" TintColor="#111" MaterialOpacity=".9" TintOpacity="1" FallbackColor="#111" />
             </ExperimentalAcrylicBorder.Material>
             <Image HorizontalAlignment="Center" VerticalAlignment="Top" Source="/Assets/gallery.ico" Height="75" Margin="15" />
           </ExperimentalAcrylicBorder>

@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using System;
+using System.Collections.Generic;
 
 namespace ImageComparisonGUI
 {
@@ -16,7 +17,7 @@ namespace ImageComparisonGUI
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
-                .With(new Win32PlatformOptions { UseWindowsUIComposition = true })
+                .With(new Win32PlatformOptions { CompositionMode = new List<Win32CompositionMode>() { Win32CompositionMode.WinUIComposition } })
                 .LogToTrace();
     }
 }

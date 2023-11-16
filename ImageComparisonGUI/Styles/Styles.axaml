@@ -23,7 +23,7 @@
     <Setter Property="Background" Value="Transparent" />
   </Style>
 
-  <Style Selector="Button.Hyperlink > TextBlock">
+  <Style Selector="Button.Hyperlink > TextBlock, Button.Hyperlink > SelectableTextBlock">
     <Setter Property="Cursor" Value="Hand" />
     <Setter Property="TextDecorations" Value="Underline" />
   </Style>

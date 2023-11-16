@@ -6,12 +6,25 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Platforms>AnyCPU;x64</Platforms>
+    <AssemblyVersion>2023.11.0.0</AssemblyVersion>
+    <StartupObject>ImageComparison.Program</StartupObject>
+    <Title>Image Comparison</Title>
+    <Authors>DerEffi</Authors>
+    <PackageId>DerEffi.$(AssemblyName)</PackageId>
+    <PackageProjectUrl>https://github.com/DerEffi/image-comparison</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/DerEffi/image-comparison</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <ApplicationIcon>Assets\gallery.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.0.143" />
+    <Content Include="Assets\gallery.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.21" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.4.0" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.8" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.0.2" />
   </ItemGroup>
 

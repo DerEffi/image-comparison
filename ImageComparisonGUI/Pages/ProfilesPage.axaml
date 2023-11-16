@@ -16,7 +16,7 @@
         <Setter Property="Margin" Value="10 5 10 10" />
       </Style>
     </Grid.Styles>
-    <ListBox Items="{Binding Profiles}" ScrollViewer.VerticalScrollBarVisibility="Auto" Selection="{Binding ProfilesSelection}" />
+    <ListBox ItemsSource="{Binding Profiles}" ScrollViewer.VerticalScrollBarVisibility="Auto" Selection="{Binding ProfilesSelection}" />
     <TextBlock IsVisible="{Binding !Profiles.Count}" Text="No Profiles found" HorizontalAlignment="Center" VerticalAlignment="Center" />
     <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
       <StackPanel.Styles>

@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -46,11 +47,11 @@ public partial class SearchPageViewModel : ViewModelBase
 
         Button leftImageButton = userControl.Find<Button>("LeftImageButton");
         if (leftImageButton != null)
-            leftImageButton.DoubleTapped += (object? sender, RoutedEventArgs e) => OpenImage(DisplayedMatch.Image1?.Image.FullName);
+            leftImageButton.DoubleTapped += (object? sender, TappedEventArgs e) => OpenImage(DisplayedMatch.Image1?.Image.FullName);
         
         Button rightImageButton = userControl.Find<Button>("RightImageButton");
         if(rightImageButton != null)
-            rightImageButton.DoubleTapped += (object? sender, RoutedEventArgs e) => OpenImage(DisplayedMatch.Image2?.Image.FullName);
+            rightImageButton.DoubleTapped += (object? sender, TappedEventArgs e) => OpenImage(DisplayedMatch.Image2?.Image.FullName);
         
         Button searchButton = userControl.Find<Button>("SearchButton");
         if(searchButton != null)

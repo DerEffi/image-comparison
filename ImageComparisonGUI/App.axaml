@@ -1,13 +1,20 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:ImageComparisonGUI"
-             x:Class="ImageComparisonGUI.App" Name="Image Comparison">
+             x:Class="ImageComparisonGUI.App"
+             Name="Image Comparison"
+             RequestedThemeVariant="Dark">
     <Application.DataTemplates>
         <local:ViewLocator/>
     </Application.DataTemplates>
 
     <Application.Styles>
-        <FluentTheme Mode="Dark"/>
+      <FluentTheme>
+
+        <FluentTheme.Palettes>
+          <ColorPaletteResources x:Key="Dark" Accent="#FFAC1C1C" />
+        </FluentTheme.Palettes>
+      </FluentTheme>
       <StyleInclude Source="/Styles/Styles.axaml" />
       <StyleInclude Source="/Styles/SideBar.axaml" />
     </Application.Styles>

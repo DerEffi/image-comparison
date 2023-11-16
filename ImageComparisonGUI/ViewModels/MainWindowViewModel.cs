@@ -22,8 +22,11 @@ public partial class MainWindowViewModel : ViewModelBase
         ConfigService.Init();
         CacheService.Init();
 
-        ClientSizeProperty.Changed.Subscribe(size => Resize(size.NewValue.Value.Width, size.NewValue.Value.Height));
+        ResizeObserver resizeObserver = new ResizeObserver();
+        resizeObserver.OnUpdate += Resize;
+        ClientSizeProperty.Changed.Subscribe(resizeObserver);
         window.Opened += (object? sender, EventArgs e) => { Resize(window.ClientSize.Width, window.ClientSize.Height); };
+        
         window.KeyDown += HotkeyService.OnKeyInput;
         TabControl tabs = window.Find<TabControl>("TabControl");
         if (tabs != null)
@@ -33,9 +36,31 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
+    public void Resize(object? sender, ResizeEventArgs e)
+    {
+        Resize(e.Size.Width, e.Size.Height);
+    }
+
     public void Resize(double width, double height)
     {
-        TabWidth = width - 300;
-        TabHeight = height - 140;
+        TabWidth = width - 302;
+        TabHeight = height - 142;
     }
+}
+
+public class ResizeObserver : IObserver<AvaloniaPropertyChangedEventArgs<Size>>
+{
+    public event EventHandler<ResizeEventArgs> OnUpdate = delegate { };
+
+    public void OnCompleted() { }
+    public void OnError(Exception e) { }
+    public void OnNext(AvaloniaPropertyChangedEventArgs<Size> size)
+    {
+        OnUpdate.Invoke(null, new() { Size = size.NewValue.Value });
+    }
+}
+
+public class ResizeEventArgs : EventArgs
+{
+    public Size Size { get; set; }
 }
