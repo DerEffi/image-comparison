@@ -20,7 +20,7 @@
       </Style>
     </Grid.Styles>
     <TextBlock HorizontalAlignment="Center" Text="Order to delete files on auto-process" Margin="10" />
-    <ListBox Grid.Row="1" Items="{Binding Processors}" ScrollViewer.VerticalScrollBarVisibility="Auto" Selection="{Binding ProcessorSelection}" />
+    <ListBox Grid.Row="1" ItemsSource="{Binding Processors}" ScrollViewer.VerticalScrollBarVisibility="Auto" Selection="{Binding ProcessorSelection}" />
     <TextBlock Grid.Row="1" IsVisible="{Binding !Processors.Count}" Text="No Auto-Processors found" HorizontalAlignment="Center" VerticalAlignment="Center" />
     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
       <StackPanel.Styles>

@@ -12,7 +12,7 @@
     <PackageProjectUrl>https://github.com/DerEffi/image-comparison</PackageProjectUrl>
     <RepositoryUrl>https://github.com/DerEffi/image-comparison</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>2023.6.0.0</AssemblyVersion>
+    <AssemblyVersion>2023.11.0.0</AssemblyVersion>
     <ApplicationIcon>Assets\gallery.ico</ApplicationIcon>
   </PropertyGroup>
 
@@ -30,14 +30,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.21" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.21" />
+    <PackageReference Include="Avalonia" Version="11.0.5" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.5" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.21" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.8" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.5" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.5" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="XamlNameReferenceGenerator" Version="1.6.1" />
   </ItemGroup>
 
   <ItemGroup>

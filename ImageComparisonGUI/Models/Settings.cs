@@ -126,6 +126,17 @@ namespace ImageComparisonGUI.Models
         public void EnsureAutoProcessors()
         {
             this.AutoProcessors.RemoveAll(p => !AutoProcessorService.Supported.Any(s => s == p));
+
+            //Remove second occurance of each duplicate
+            List<int> duplicates = new();
+            for(int i = 1; i < this.AutoProcessors.Count; i++)
+            {
+                if(this.AutoProcessors.GetRange(0, i).Any(p => p == this.AutoProcessors[i]))
+                    duplicates.Add(i);
+            }
+            duplicates.Reverse();
+            duplicates.ForEach(d => this.AutoProcessors.RemoveAt(d));
+            
             if(!this.AutoProcessors.Any(p => p == "None"))
                 this.AutoProcessors.Add("None");
             AutoProcessorService.Supported.ForEach(supported =>

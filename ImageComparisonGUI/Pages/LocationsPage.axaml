@@ -19,7 +19,7 @@
         <Setter Property="Margin" Value="10 5 10 10" />
       </Style>
     </Grid.Styles>
-    <ListBox IsEnabled="{Binding !ConfigLocked}" Items="{Binding SearchLocations}" ScrollViewer.VerticalScrollBarVisibility="Auto" Selection="{Binding SearchLocationsSelection}" />
+    <ListBox IsEnabled="{Binding !ConfigLocked}" ItemsSource="{Binding SearchLocations}" ScrollViewer.VerticalScrollBarVisibility="Auto" Selection="{Binding SearchLocationsSelection}" />
     <TextBlock IsVisible="{Binding !SearchLocations.Count}" Text="No Search Locations" HorizontalAlignment="Center" VerticalAlignment="Center" />
     <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
       <StackPanel.Styles>

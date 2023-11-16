@@ -39,8 +39,9 @@ public partial class ProcessingPageViewModel : ViewModelBase
     {
         if (SelectedProcessor != null && SelectedProcessor < (Processors.Count - 1))
         {
-            Processors.Move((int)SelectedProcessor, (int)++SelectedProcessor);
-            ProcessorSelection.Select((int)SelectedProcessor);
+            int newLocation = (int)SelectedProcessor + 1;
+            Processors.Move((int)SelectedProcessor, newLocation);
+            ProcessorSelection.Select(newLocation);
             Save();
         }
     }
@@ -50,8 +51,9 @@ public partial class ProcessingPageViewModel : ViewModelBase
     {
         if(SelectedProcessor != null && SelectedProcessor > 0)
         {
-            Processors.Move((int)SelectedProcessor, (int)--SelectedProcessor);
-            ProcessorSelection.Select((int)SelectedProcessor);
+            int newLocation = (int)SelectedProcessor - 1;
+            Processors.Move((int)SelectedProcessor, newLocation);
+            ProcessorSelection.Select(newLocation);
             Save();
         }
     }

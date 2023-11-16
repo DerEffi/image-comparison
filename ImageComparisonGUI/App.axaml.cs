@@ -1,9 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-using ImageComparisonGUI.Services;
 using ImageComparisonGUI.Views;
 
 namespace ImageComparisonGUI
@@ -21,7 +19,13 @@ namespace ImageComparisonGUI
             {
                 // Line below is needed to remove Avalonia data validation.
                 // Without this line you will get duplicate validations from both Avalonia and CT
-                ExpressionObserver.DataValidators.RemoveAll(x => x is DataAnnotationsValidationPlugin);
+                for (int i = BindingPlugins.DataValidators.Count - 1; i >= 0; i--)
+                {
+                    if (BindingPlugins.DataValidators[i] is DataAnnotationsValidationPlugin)
+                    {
+                        BindingPlugins.DataValidators.RemoveAt(i);
+                    }
+                }
                 desktop.MainWindow = new MainWindow();
             }
 
