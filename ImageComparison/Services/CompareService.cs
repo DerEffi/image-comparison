@@ -15,7 +15,13 @@ namespace ImageComparison.Services
     public static class CompareService
     {
         public readonly static string[] SupportedFileTypes = { ".bmp", ".dib", ".jpg", ".jpeg", ".jpe", ".png", ".pbm", ".pgm", ".ppm", ".sr", ".ras", ".tiff", ".tif", ".exr", ".jp2" };
-        
+#if DEBUG
+        //only use single thread for breakpoints
+        public static readonly int threadCount = 8;
+#else
+        //dont overload cpu with too many threads, leave one core free
+        public static readonly int threadCount = Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1;
+#endif
         public static event EventHandler<ImageComparerEventArgs> OnProgress = delegate {};
 
         public static List<List<ImageAnalysis>> AnalyseImages(List<List<FileInfo>> searchLocations, int hashDetail, HashAlgorithm hashAlgorithm, List<CacheItem>? cachedAnalysis, CancellationToken token = new())
@@ -28,20 +34,13 @@ namespace ImageComparison.Services
 
             using (System.Timers.Timer ProgressTimer = new())
             {
-                IHashAlgorithm hash = new PHash(hashDetail);
-                switch(hashAlgorithm)
+                IHashAlgorithm hash = hashAlgorithm switch
                 {
-                    case HashAlgorithm.DHash:
-                        hash = new DHash(hashDetail);
-                        break;
-                    case HashAlgorithm.DHashDouble:
-                        hash = new DHashDouble(hashDetail);
-                        break;
-                }
+                    HashAlgorithm.DHash => new DHash(hashDetail),
+                    HashAlgorithm.DHashDouble => new DHashDouble(hashDetail),
+                    _ => new PHash(hashDetail)
+                };
                 int target = searchLocations.SelectMany(i => i).Count();
-
-                //dont overload cpu with too many threads, leave one core free
-                int threadCount = Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1;
              
                 //update caller with current progress with events
                 ProgressTimer.Interval = 500;
@@ -112,9 +111,6 @@ namespace ImageComparison.Services
                 case SearchMode.ListExclusive:
                     //calculate if many locations or many files within each location given
                     double filesPerLocation = ((double)analysedLocations.Count * analysedLocations.SelectMany(i => i).Count()) / analysedLocations.Count;
-
-                    //dont overload cpu with too many threads, leave one core free
-                    int threadCount = Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1;
 
                     ConcurrentBag<ImageMatch> comparisons = new();
                     
@@ -192,9 +188,6 @@ namespace ImageComparison.Services
             nomatches ??= new();
 
             ConcurrentBag<ImageMatch> comparisons = new();
-
-            //dont overload cpu with too many threads, leave one core free
-            int threadCount = Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1;
 
             Parallel.ForEach(images, new() { MaxDegreeOfParallelism = threadCount }, (image, state, index) =>
             {

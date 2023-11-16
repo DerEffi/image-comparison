@@ -46,7 +46,7 @@
       </Button>
     </StackPanel>
     <StackPanel Grid.Row="3" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Width="500" Margin="0 30 0 0">
-      <TextBlock TextWrapping="Wrap" HorizontalAlignment="Center" Text="Stop 'Auto-Process All' below similarity" />
+      <TextBlock TextWrapping="Wrap" HorizontalAlignment="Center" Text="Stop 'Auto-Process All' below similarity (min. recommended > 85%)" />
       <Grid ColumnDefinitions="*, Auto, Auto">
         <Slider IsEnabled="{Binding !ConfigLocked}" HorizontalAlignment="Stretch" Name="ThreasholdSlider" Value="{Binding Threashold}" Minimum="0"
           Maximum="9990" />

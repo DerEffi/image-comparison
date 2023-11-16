@@ -37,10 +37,10 @@
     <TextBlock Text="Hash Algorithm" Margin="0 20 0 10" />
     <StackPanel>
       <RadioButton IsEnabled="{Binding !ConfigLocked}" Content="Perceptual Hash (Most accurate)" IsChecked="{Binding HashAlgorithm, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:HashAlgorithm.PHash}}" Command="{Binding SaveCommand}" />
-      <RadioButton IsEnabled="{Binding !ConfigLocked}" Content="Difference Hash (Fastest)" IsChecked="{Binding HashAlgorithm, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:HashAlgorithm.DHash}}" Command="{Binding SaveCommand}" />
       <RadioButton IsEnabled="{Binding !ConfigLocked}" Content="Double Difference Hash (Compromise)" IsChecked="{Binding HashAlgorithm, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:HashAlgorithm.DHashDouble}}" Command="{Binding SaveCommand}" />
+      <RadioButton IsEnabled="{Binding !ConfigLocked}" Content="Difference Hash (Fastest / Not recommended)" IsChecked="{Binding HashAlgorithm, Converter={StaticResource variableEnum}, ConverterParameter={x:Static m:HashAlgorithm.DHash}}" Command="{Binding SaveCommand}" />
     </StackPanel>
 
-    <TextBlock FontStyle="Italic" FontWeight="Light" TextWrapping="Wrap" Text="* Choosing a higher degree of detail can eliminate false positives by comparing more information between images. Choosing the detail too high and the app might have trouble recognizing similarities due to compression. Recommended value for PHash is around 8, for DHashs around 16." Margin="0 15 0 0" />
+    <TextBlock FontStyle="Italic" FontWeight="Light" TextWrapping="Wrap" Text="* Choosing a higher degree of detail can eliminate false positives by comparing more information between images. Choosing the detail too high and the app might have trouble recognizing similarities due to compression. Recommended value for PHash is 8 or higher, for DHashs around 16." Margin="0 15 0 0" />
   </StackPanel>
 </UserControl>

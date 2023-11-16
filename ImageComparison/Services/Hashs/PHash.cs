@@ -11,20 +11,29 @@ namespace ImageComparison.Services.Hashs
 {
     public class PHash : IHashAlgorithm
     {
-        private static readonly double _sqrt2 = 1 / Math.Sqrt(2);
-        
-        private readonly int imageSize;
-        private readonly int hashArraySize;
-
-        private readonly List<Vector<double>>[] _dctCoeffsSimd;
+        private readonly static double _sqrt2 = 1 / Math.Sqrt(2);
+        private readonly static int stride = Vector<double>.Count;
         private readonly double _sqrt2DivSize;
 
+        private readonly int detail;
+        private readonly int imageSize;
+        private readonly int hashSize;
+        private readonly int hashArraySize;
+        private readonly int firstTerm;
+
+        private readonly List<Vector<double>>[] _dctCoeffsSimd;
+
         public PHash(int detail) {
-            imageSize = 64;
-            hashArraySize = 1;
+            this.detail = detail;
+            this.imageSize = detail * 8;
+            while (imageSize % stride != 0)
+                imageSize++;
+            this.hashSize = detail * detail;
+            this.hashArraySize = (int)Math.Ceiling((double)hashSize / 64);
+            this.firstTerm = imageSize / 2 - 1;
 
             _sqrt2DivSize = Math.Sqrt(2D / imageSize);
-            _dctCoeffsSimd = GenerateDctCoeffsSimd();
+            _dctCoeffsSimd = GenerateDctCoeffsSimd(imageSize);
         }
 
         public ulong[] Hash(string file)
@@ -62,33 +71,33 @@ namespace ImageComparison.Services.Hashs
                 }
 
                 // Calculate the DCT for each column.
-                for (var x = 0; x < 8; x++)
+                for (var x = 0; x < imageSize; x++)
                 {
                     for (var y = 0; y < imageSize; y++)
                     {
                         sequence[y] = rows[y, x];
                     }
 
-                    Dct1D_SIMD(sequence, matrix, x, limit: 8);
+                    Dct1D_SIMD(sequence, matrix, x, limit: detail);
                 }
 
-                // Only use the top 8x8 values.
-                var top8X8 = new double[imageSize];
-                for (var y = 0; y < 8; y++)
+                // Only use the low frequencies (first values deppending on detail).
+                double[] lowFreq = new double[hashSize];
+                for (var y = 0; y < detail; y++)
                 {
-                    for (var x = 0; x < 8; x++)
+                    for (var x = 0; x < detail; x++)
                     {
-                        top8X8[(y * 8) + x] = matrix[y, x];
+                        lowFreq[(y * detail) + x] = matrix[y, x];
                     }
                 }
 
                 // Get Median.
-                var median = CalculateMedian64Values(top8X8);
+                var median = lowFreq.OrderBy(value => value).Skip(firstTerm).Take(2).Average();
 
                 // Calculate hash.
-                var mask = 1UL << (imageSize - 1);
+                var mask = 1UL << 63;
 
-                for (var i = 0; i < imageSize; i++)
+                for (var i = 0; i < hashSize; i++)
                 {
                     //if current ulong is full, switch to next and reset mask
                     if (mask == 0)
@@ -97,7 +106,7 @@ namespace ImageComparison.Services.Hashs
                         mask = 1UL << 63;
                     }
                     
-                    if (top8X8[i] > median)
+                    if (lowFreq[i] > median)
                     {
                         hash[currentHashIndex] |= mask;
                     }
@@ -108,28 +117,20 @@ namespace ImageComparison.Services.Hashs
 
             return hash;
         }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private double CalculateMedian64Values(IReadOnlyCollection<double> values)
-        {
-            Debug.Assert(values.Count == 64, "This DCT method works with 64 doubles.");
-            return values.OrderBy(value => value).Skip(31).Take(2).Average();
-        }
 
-        private List<Vector<double>>[] GenerateDctCoeffsSimd()
+        private static List<Vector<double>>[] GenerateDctCoeffsSimd(int size)
         {
-            var results = new List<Vector<double>>[imageSize];
-            for (var coef = 0; coef < imageSize; coef++)
+            var results = new List<Vector<double>>[size];
+            for (var coef = 0; coef < size; coef++)
             {
-                var singleResultRaw = new double[imageSize];
-                for (var i = 0; i < imageSize; i++)
+                double[] singleResultRaw = new double[size];
+                for (var i = 0; i < size; i++)
                 {
-                    singleResultRaw[i] = Math.Cos(((2.0 * i) + 1.0) * coef * Math.PI / (2.0 * imageSize));
+                    singleResultRaw[i] = Math.Cos(((2.0 * i) + 1.0) * coef * Math.PI / (2.0 * size));
                 }
 
                 var singleResultList = new List<Vector<double>>();
-                var stride = Vector<double>.Count;
-                Debug.Assert(imageSize % stride == 0, "Size must be a multiple of SIMD stride");
-                for (var i = 0; i < imageSize; i += stride)
+                for (var i = 0; i < size; i += stride)
                 {
                     var v = new Vector<double>(singleResultRaw, i);
                     singleResultList.Add(v);
@@ -144,15 +145,13 @@ namespace ImageComparison.Services.Hashs
         /// <summary>
         /// One dimensional Discrete Cosine Transformation.
         /// </summary>
-        /// <param name="valuesRaw">Should be an array of doubles of length 64.</param>
+        /// <param name="valuesRaw">Should be an array of doubles of length of imageSize.</param>
         /// <param name="coefficients">Coefficients.</param>
         /// <param name="ci">Coefficients index.</param>
         /// <param name="limit">Limit.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void Dct1D_SIMD(double[] valuesRaw, double[,] coefficients, int ci, int limit)
         {
-            Debug.Assert(valuesRaw.Length == 64, "This DCT method works with 64 doubles.");
-
             var valuesList = new List<Vector<double>>();
             var stride = Vector<double>.Count;
             for (var i = 0; i < valuesRaw.Length; i += stride)
