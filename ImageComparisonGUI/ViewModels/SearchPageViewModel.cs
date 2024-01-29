@@ -125,7 +125,7 @@ public partial class SearchPageViewModel : ViewModelBase
     [RelayCommand]
     public void AutoProcessAll()
     {
-        if (AutoProcessingTask != null && !AutoProcessingTask.IsCompleted)
+        if (Matches.Count <= 0 || (AutoProcessingTask != null && !AutoProcessingTask.IsCompleted))
             throw new InvalidOperationException();
 
         LogService.Log($"Starting Auto-Processor for matches with more than {ConfigService.AutoProcessorThreashold / 100}%");
@@ -138,6 +138,7 @@ public partial class SearchPageViewModel : ViewModelBase
             {
                 DisplayedMatch = Matches[displayedMatchIndex];
                 ImageCountText = $"{displayedMatchIndex + 1} / {Matches.Count}";
+                PercentComplete = Convert.ToInt32((decimal.Divide(displayedMatchIndex + 1, Matches.Count) * 100));
                 PreviewAutoProcessor();
 
                 if (AutoProcessProperty != null && AutoProcessProperty != "" && AutoProcessProperty != "None" && AutoProcessSide != 0)
@@ -347,6 +348,7 @@ public partial class SearchPageViewModel : ViewModelBase
         {
             DisplayedMatch = Matches[displayedMatchIndex];
             ImageCountText = $"{displayedMatchIndex + 1} / {Matches.Count}";
+            PercentComplete = Convert.ToInt32((decimal.Divide(displayedMatchIndex + 1, Matches.Count) * 100));
 
             PreviewAutoProcessor();
         } else

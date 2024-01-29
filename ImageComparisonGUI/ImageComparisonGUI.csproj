@@ -14,6 +14,7 @@
     <RepositoryType>git</RepositoryType>
     <AssemblyVersion>2023.11.0.0</AssemblyVersion>
     <ApplicationIcon>Assets\gallery.ico</ApplicationIcon>
+    <Version>$(AssemblyVersion)</Version>
   </PropertyGroup>
 
   <ItemGroup>

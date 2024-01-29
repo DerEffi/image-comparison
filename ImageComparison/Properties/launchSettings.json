@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ImageComparison": {
+      "commandName": "Project",
+      "commandLineArgs": "--help"
+    }
+  }
+}

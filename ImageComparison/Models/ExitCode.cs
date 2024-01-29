@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace ImageComparison.Models
 {
-    public enum LogLevel
+    public enum ExitCode
     {
-        Info,
-        Warning,
-        Error,
-        Quiet
+        Success = 0,
+        GeneralError = 1,
+        Warning = 11,
+        PermissionDenied = 126,
+        BadRequest = 127
     }
 }

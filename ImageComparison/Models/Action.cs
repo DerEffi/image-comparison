@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace ImageComparison.Models
 {
-    public enum LogLevel
+    public enum Action
     {
-        Info,
-        Warning,
-        Error,
-        Quiet
+        Search,
+        Move,
+        Bin,
+        Delete,
+        NoMatch
     }
 }
