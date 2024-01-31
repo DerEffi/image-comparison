@@ -136,28 +136,28 @@ public partial class SearchPageViewModel : ViewModelBase
             StatusText = "Auto Processing";
             while(displayedMatchIndex < Matches.Count && Matches[displayedMatchIndex].Similarity > ConfigService.AutoProcessorThreashold)
             {
-                DisplayedMatch = Matches[displayedMatchIndex];
+                ImageMatch processingMatch = Matches[displayedMatchIndex];
                 ImageCountText = $"{displayedMatchIndex + 1} / {Matches.Count}";
                 PercentComplete = Convert.ToInt32((decimal.Divide(displayedMatchIndex + 1, Matches.Count) * 100));
-                PreviewAutoProcessor();
+                PreviewAutoProcessor(processingMatch);
 
                 if (AutoProcessProperty != null && AutoProcessProperty != "" && AutoProcessProperty != "None" && AutoProcessSide != 0)
                 {
                     try
                     {
-                        if (AutoProcessSide < 0 && DisplayedMatch.Image1 != null)
-                            DeleteFile(DisplayedMatch.Image1.Image.FullName);
-                        else if (AutoProcessSide > 0 && DisplayedMatch.Image2 != null)
-                            DeleteFile(DisplayedMatch.Image2.Image.FullName);
+                        if (AutoProcessSide < 0 && processingMatch.Image1 != null)
+                            DeleteFile(processingMatch.Image1.Image.FullName);
+                        else if (AutoProcessSide > 0 && processingMatch.Image2 != null)
+                            DeleteFile(processingMatch.Image2.Image.FullName);
                     }
                     catch {
-                        LogService.Log($"Error Auto-Processing current match: '{DisplayedMatch.Image1.Image.FullName}' - '{DisplayedMatch.Image2.Image.FullName}'", LogLevel.Error);
+                        LogService.Log($"Error Auto-Processing current match: '{processingMatch.Image1.Image.FullName}' - '{processingMatch.Image2.Image.FullName}'", LogLevel.Error);
                     }
                 }
                 else
                 {
                     if (ConfigService.CacheNoMatch)
-                        CacheService.AddNoMatch(DisplayedMatch.Image1.Image.FullName, DisplayedMatch.Image2.Image.FullName);
+                        CacheService.AddNoMatch(processingMatch.Image1.Image.FullName, processingMatch.Image2.Image.FullName);
                 }
                 
                 displayedMatchIndex++;
@@ -299,7 +299,7 @@ public partial class SearchPageViewModel : ViewModelBase
                 DisplayedMatch = Matches.First();
                 StatusText = "Showing Matches: ";
                 ImageCountText = $"1 / {Matches.Count}";
-                PreviewAutoProcessor();
+                PreviewAutoProcessor(DisplayedMatch);
                 Displaying = true;
             }
             else
@@ -349,7 +349,7 @@ public partial class SearchPageViewModel : ViewModelBase
             ImageCountText = $"{displayedMatchIndex + 1} / {Matches.Count}";
             PercentComplete = Convert.ToInt32((decimal.Divide(displayedMatchIndex + 1, Matches.Count) * 100));
 
-            PreviewAutoProcessor();
+            PreviewAutoProcessor(DisplayedMatch);
         } else
         {
             LogService.Log("No more matches to show, stopping displaying matches");
@@ -357,7 +357,7 @@ public partial class SearchPageViewModel : ViewModelBase
         }
     }
 
-    public void PreviewAutoProcessor()
+    public void PreviewAutoProcessor(ImageMatch previewMatch)
     {
         try
         {
@@ -365,7 +365,7 @@ public partial class SearchPageViewModel : ViewModelBase
             int currentProcessor = 0;
             while (currentProcessor < autoProcessors.Count)
             {
-                int processingResult = AutoProcessorService.Processors.First(p => p.DisplayName == autoProcessors[currentProcessor]).Process(DisplayedMatch.Image1.Image, DisplayedMatch.Image2.Image);
+                int processingResult = AutoProcessorService.Processors.First(p => p.DisplayName == autoProcessors[currentProcessor]).Process(previewMatch.Image1.Image, previewMatch.Image2.Image);
                 if (processingResult != 0)
                 {
                     AutoProcessSide = processingResult;
