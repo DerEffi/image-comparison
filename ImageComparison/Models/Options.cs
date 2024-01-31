@@ -10,6 +10,7 @@ namespace ImageComparison.Models
     public class Options
     {
         [Option('a', "action", Required = true, HelpText = @"Action to perform on found matches for the specified settings
+
     Search    : Search matches and return as list
     Move      : Moves matches into target folder
     Bin       : Moves matches to bin
@@ -19,8 +20,20 @@ namespace ImageComparison.Models
                 as incorrect. They wont be deleted/shown in future executions by using the specified cache")]
         public Action Action { get; set; } = Action.Search;
 
-        [Option('l', "locations", Required = false, HelpText = "List of locations to process")]
-        public List<string> Locations { get; set; } = new();
+        [Option('l', "locations", Required = true, HelpText = "List of locations to process")]
+        public IEnumerable<string> Locations { get; set; } = new List<string>();
+
+        [Option('p', "processors", Required = false, HelpText = @"List/Order of Processors to decide what image to delete
+
+    Higher Resolution   : more pixels (width * height)
+    Bigger Filesize     : bigger file on disk
+    Newer File          : later 'last modified' date
+    Right File          : second picture / longer filepath
+    Lower Resolution    : less pixels (width * height)
+    Smaller Filesize    : smaller file on disk
+    Older File          : earlier 'last modified' date
+    Left File           : first picture / shorter filepath")]
+        public IEnumerable<string> Processors { get; set; } = new List<string>();
 
         [Option('m', "mode", Required = false, HelpText = @"Search mode, which images to compare to another
 
@@ -43,27 +56,30 @@ namespace ImageComparison.Models
         public int HashDetail { get; set; } = 8;
 
         [Option('h', "hash", Required = false, HelpText = @"Hash Algorithm used for comparison
+
     PHash         : most accurate (default)
     DHashDouble   : compromise
     DHash         : fastest")]
         public HashAlgorithm HashAlgorithm { get; set; } = HashAlgorithm.PHash;
 
         [Option('o', "output", Required = false, HelpText = @"Output level, to use the output from search mode recommended to error or quiet
-    Info      : Displays all logs (default)
+
+    Info      : Displays all logs
     Warning   : Displays only warn and error messages
+                (default)
     Error     : Displays only error messages
                 Will still exit with the respective codes on warn and error
     Quiet     : Supresses all logs except search result
                 Will still exit with the respective codes on warn and error")]
-        public LogLevel LogLevel { get; set; } = LogLevel.Info;
+        public LogLevel LogLevel { get; set; } = LogLevel.Warning;
 
-        [Option('t', "target", Required = false, HelpText = "Target folder to move images to")]
+        [Option('t', "target", Required = false, HelpText = "Target folder to move images to\nRelative Paths are resolved from the image itself")]
         public string Target { get; set; } = "";
 
         [Option('c', "cache", Required = false, HelpText = "Cache file for analysed images\nor nomatches")]
         public string Cache { get; set; } = "";
 
-        [Option('f', "force", Required = false, HelpText = "Force execution and ignore errors")]
+        [Option('f', "force", Required = false, HelpText = "Force execution and ignore warnings and errors")]
         public bool Force { get; set; } = false;
 
     }

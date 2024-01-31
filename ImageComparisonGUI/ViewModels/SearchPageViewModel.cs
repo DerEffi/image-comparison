@@ -147,8 +147,7 @@ public partial class SearchPageViewModel : ViewModelBase
                     {
                         if (AutoProcessSide < 0 && DisplayedMatch.Image1 != null)
                             DeleteFile(DisplayedMatch.Image1.Image.FullName);
-
-                        if (AutoProcessSide > 0 && DisplayedMatch.Image2 != null)
+                        else if (AutoProcessSide > 0 && DisplayedMatch.Image2 != null)
                             DeleteFile(DisplayedMatch.Image2.Image.FullName);
                     }
                     catch {
@@ -254,7 +253,7 @@ public partial class SearchPageViewModel : ViewModelBase
             ImageCountText = "";
             ConfigService.Lock();
 
-            string hashVersion = $"V{HashService.Version}D{ConfigService.HashDetail}A{(int)ConfigService.HashAlgorithm}";
+            string hashVersion = HashService.GetIdentifier(ConfigService.HashDetail, ConfigService.HashAlgorithm);
             ulong scantime = (ulong)(DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds;
 
             ComparerTaskToken.Token.ThrowIfCancellationRequested();

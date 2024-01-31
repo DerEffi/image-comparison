@@ -48,7 +48,6 @@ namespace ImageComparison.Services
                 ProgressTimer.Elapsed += (object? source, ElapsedEventArgs e) =>
                 {
                     int current = analysed.SelectMany(a => a).Count();
-                    LogService.Log($"Analysed {current}/{target} images");
                     OnProgress.Invoke(null, new ImageComparerEventArgs()
                     {
                         Current = current,
@@ -229,6 +228,14 @@ namespace ImageComparison.Services
         {
             LogService.Log($"Sorting {matches.Count} found matches");
 
+            // Sort images within a match
+            matches.ForEach(m =>
+            {
+                if (string.Compare(m.Image1.Image.FullName, m.Image2.Image.FullName) < 0)
+                    (m.Image1, m.Image2) = (m.Image2, m.Image1);
+            });
+
+            // Sort Matches
             matches.Sort((a,b) =>
             {
                 int result = b.Similarity - a.Similarity;

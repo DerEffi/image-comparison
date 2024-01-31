@@ -17,6 +17,11 @@ namespace ImageComparison.Services
     {
         public const int Version = 1;
 
+        public static string GetIdentifier(int detail, HashAlgorithm algorithm)
+        {
+            return $"V{Version}D{detail}A{(int)algorithm}";
+        }
+
         public static short Similarity(ulong[] hash1, ulong[] hash2)
         {
             if((hash2 == null) || hash1.Length != hash2.Length)
