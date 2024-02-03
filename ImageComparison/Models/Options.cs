@@ -37,7 +37,7 @@ namespace ImageComparison.Models
 
         [Option('m', "mode", Required = false, HelpText = @"Search mode, which images to compare to another
 
-    All             : compare all images (default
+    All             : compare all images (default)
     Inclusive       : compare only within directories
     Exclusive       : compare only in different directories
     ListInclusive   : compare only within the same

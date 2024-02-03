@@ -14,7 +14,7 @@ namespace ImageComparison.Services
 
     public static class CompareService
     {
-        public readonly static string[] SupportedFileTypes = { ".bmp", ".dib", ".jpg", ".jpeg", ".jpe", ".png", ".pbm", ".pgm", ".ppm", ".sr", ".ras", ".tiff", ".tif", ".exr", ".jp2" };
+        public readonly static string[] SupportedFileTypes = { ".bmp", ".dib", ".jpg", ".jpeg", ".jpe", ".png", ".pbm", ".pgm", ".ppm", ".sr", ".ras", ".tiff", ".tif", ".exr", ".jp2", ".ico" };
 #if DEBUG
         //only use single thread for breakpoints
         public static readonly int threadCount = 8;
@@ -99,9 +99,10 @@ namespace ImageComparison.Services
             return analysed.Select(a => a.ToList()).ToList();
         }
 
-        public static List<ImageMatch> SearchForDuplicates(List<List<ImageAnalysis>> analysedLocations, int matchThreashold, SearchMode mode, List<NoMatch>? nomatches, CancellationToken token = new())
+        public static List<ImageMatch> SearchForDuplicates(List<List<ImageAnalysis>> analysedLocations, int matchThreashold, SearchMode mode, List<NoMatch>? nomatches, CancellationToken token = new(), bool subsearch = false)
         {
-            LogService.Log($"Comparing images from {analysedLocations.Count} locations in mode '{mode}'");
+            if(!subsearch)
+                LogService.Log($"Comparing images from {analysedLocations.Count} locations in mode '{mode}'");
 
             nomatches ??= new();
 
@@ -150,7 +151,7 @@ namespace ImageComparison.Services
                         });
                     });
 
-                    return SortMatches(comparisons);
+                    return subsearch ? comparisons.ToList() : SortMatches(comparisons);
                 case SearchMode.ListInclusive:
                     return SortMatches(analysedLocations
                         .SelectMany(location => SearchForDuplicates(location, matchThreashold, nomatches, token))
@@ -168,7 +169,8 @@ namespace ImageComparison.Services
                     matchThreashold,
                     SearchMode.ListExclusive,
                     nomatches,
-                    token));
+                    token,
+                    true));
                 case SearchMode.Inclusive:
                     return SortMatches(analysedLocations
                         .SelectMany(images => {
@@ -182,7 +184,7 @@ namespace ImageComparison.Services
             }
         }
 
-        public static List<ImageMatch> SearchForDuplicates(List<ImageAnalysis> images, int matchThreashold, List<NoMatch> nomatches, CancellationToken token = new())
+        private static List<ImageMatch> SearchForDuplicates(List<ImageAnalysis> images, int matchThreashold, List<NoMatch> nomatches, CancellationToken token = new())
         {
             nomatches ??= new();
 

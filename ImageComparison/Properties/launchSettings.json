@@ -2,7 +2,7 @@
   "profiles": {
     "ImageComparison": {
       "commandName": "Project",
-      "commandLineArgs": "--help -a Search -l \"D:\\Bilder\\Eigene Aufnahmen\\2023\" \"D:\\Bilder\\Eigene Aufnahmen\\2024\" -r -o Info -f -p Test Test1 Test2"
+      "commandLineArgs": "--help"
     }
   }
 }
