@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ImageComparison.Models
 {
+    /// <summary>
+    /// Data Structure for stored analysis items in database
+    /// </summary>
     public class CacheItem
     {
         public string path;

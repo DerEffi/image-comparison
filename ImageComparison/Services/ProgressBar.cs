@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 namespace ImageComparison.Services
 {
     /// <summary>
-    /// An ASCII progress bar
+    /// An ASCII progress bar 
+    /// </summary>
     /// 
     /// Credits to DanielSWolf
     /// https://gist.github.com/DanielSWolf/0ab6a96899cc5377bf54
     /// 
-    /// </summary>
     public class ProgressBar : IDisposable, IProgress<double>
     {
         private const int blockCount = 10;

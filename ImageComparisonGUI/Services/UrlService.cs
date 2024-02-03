@@ -19,6 +19,11 @@ namespace ImageComparisonGUI.Services
             return tmp.Scheme == Uri.UriSchemeHttp || tmp.Scheme == Uri.UriSchemeHttps;
         }
 
+        /// <summary>
+        /// Open url in default system browser if url is valid
+        /// </summary>
+        /// <param name="url"></param>
+        /// <exception cref="InvalidDataException"></exception>
         public static void OpenUrl(this string url)
         {
             if (!IsValidUrl(url)) throw new InvalidDataException("invalid url: " + url);
@@ -36,7 +41,7 @@ namespace ImageComparisonGUI.Services
                 return;
             }
 
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) throw new InvalidDataException("invalid url: " + url);
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) throw new NotImplementedException("feature not implemented for OSX");
             Process.Start("open", url);
             return;
         }

@@ -14,16 +14,32 @@ namespace ImageComparison.Services
 
     public static class CompareService
     {
+        /// <summary>
+        /// Fileextensions (".xyz") for all supported file types for analysis
+        /// </summary>
         public readonly static string[] SupportedFileTypes = { ".bmp", ".dib", ".jpg", ".jpeg", ".jpe", ".png", ".pbm", ".pgm", ".ppm", ".sr", ".ras", ".tiff", ".tif", ".exr", ".jp2", ".ico" };
 #if DEBUG
         //only use single thread for breakpoints
-        public static readonly int threadCount = 8;
+        private static readonly int threadCount = 1;
 #else
         //dont overload cpu with too many threads, leave one core free
-        public static readonly int threadCount = Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1;
+        private static readonly int threadCount = Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1;
 #endif
+
+        /// <summary>
+        /// Subscribe to periodic updates on image analysis 
+        /// </summary>
         public static event EventHandler<ImageComparerEventArgs> OnProgress = delegate {};
 
+        /// <summary>
+        /// start image analysis
+        /// </summary>
+        /// <param name="searchLocations"></param>
+        /// <param name="hashDetail"></param>
+        /// <param name="hashAlgorithm"></param>
+        /// <param name="cachedAnalysis"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public static List<List<ImageAnalysis>> AnalyseImages(List<List<FileInfo>> searchLocations, int hashDetail, HashAlgorithm hashAlgorithm, List<CacheItem>? cachedAnalysis, CancellationToken token = new())
         {
             LogService.Log($"Starting image analysation for {searchLocations.Count} location{(searchLocations.Count > 1 ? "s" : "")} with {hashAlgorithm}-{hashDetail}");
@@ -42,7 +58,7 @@ namespace ImageComparison.Services
                 };
                 int target = searchLocations.SelectMany(i => i).Count();
              
-                //update caller with current progress with events
+                //update caller with current progress through events
                 ProgressTimer.Interval = 500;
                 ProgressTimer.AutoReset = true;
                 ProgressTimer.Elapsed += (object? source, ElapsedEventArgs e) =>
@@ -72,6 +88,7 @@ namespace ImageComparison.Services
 
                         try
                         {
+                            // retrieve item from cache, if not present calculate new hash
                             CacheItem? cachedImage = cachedAnalysis.FirstOrDefault(c => c.path == file.FullName);
                             locationAnalysis.Add(new()
                             {
@@ -99,6 +116,16 @@ namespace ImageComparison.Services
             return analysed.Select(a => a.ToList()).ToList();
         }
 
+        /// <summary>
+        /// Search in analysed image data for similarities lower than given threashold
+        /// </summary>
+        /// <param name="analysedLocations"></param>
+        /// <param name="matchThreashold"></param>
+        /// <param name="mode"></param>
+        /// <param name="nomatches"></param>
+        /// <param name="token"></param>
+        /// <param name="subsearch">Set to true if calling from within this function</param>
+        /// <returns></returns>
         public static List<ImageMatch> SearchForDuplicates(List<List<ImageAnalysis>> analysedLocations, int matchThreashold, SearchMode mode, List<NoMatch>? nomatches, CancellationToken token = new(), bool subsearch = false)
         {
             if(!subsearch)
@@ -125,6 +152,7 @@ namespace ImageComparison.Services
 
                         Parallel.ForEach(images, new() { MaxDegreeOfParallelism = filesPerLocation > analysedLocations.Count ? threadCount : 1 }, (image) =>
                         {
+                            // only compare to images in other locations after current search location to prevent matching the same 2 images twice
                             for(int location = (int)currentLocation + 1; location < analysedLocations.Count; location++)
                             {
 
@@ -136,7 +164,7 @@ namespace ImageComparison.Services
                                         return;
                                     }
 
-                                    short similarity = CalculateSimilarity(image.Hash, comparer.Hash);
+                                    short similarity = HashService.Similarity(image.Hash, comparer.Hash);
                                     if (similarity >= matchThreashold && !IsNoMatch(nomatches, image.Image.FullName, comparer.Image.FullName))
                                     {
                                         comparisons.Add(new()
@@ -152,11 +180,15 @@ namespace ImageComparison.Services
                     });
 
                     return subsearch ? comparisons.ToList() : SortMatches(comparisons);
+
                 case SearchMode.ListInclusive:
+                    // for each search location start its own separate search
                     return SortMatches(analysedLocations
                         .SelectMany(location => SearchForDuplicates(location, matchThreashold, nomatches, token))
                         .ToList());
+                
                 case SearchMode.Exclusive:
+                    // Group images by their directory and start with them as top-level-locations the search in 'ListExclusive' mode as subsearch 
                     return SortMatches(SearchForDuplicates(
                         analysedLocations
                             .SelectMany(location =>
@@ -171,7 +203,9 @@ namespace ImageComparison.Services
                     nomatches,
                     token,
                     true));
+                
                 case SearchMode.Inclusive:
+                    // Group images by their directory and compare for each directory only the files within
                     return SortMatches(analysedLocations
                         .SelectMany(images => {
                             return images
@@ -179,11 +213,14 @@ namespace ImageComparison.Services
                                 .SelectMany(directory => SearchForDuplicates(directory.ToList(), matchThreashold, nomatches, token));
                         })
                         .ToList());
+                
                 default:
+                    // Merge Lists and compare all images to another
                     return SortMatches(SearchForDuplicates(analysedLocations.SelectMany(images => images).ToList(), matchThreashold, nomatches, token));
             }
         }
 
+        // Search in single list for similarities between images lower than given threashold
         private static List<ImageMatch> SearchForDuplicates(List<ImageAnalysis> images, int matchThreashold, List<NoMatch> nomatches, CancellationToken token = new())
         {
             nomatches ??= new();
@@ -200,7 +237,7 @@ namespace ImageComparison.Services
                         return;
                     }
 
-                    short similarity = CalculateSimilarity(image.Hash, images[i].Hash);
+                    short similarity = HashService.Similarity(image.Hash, images[i].Hash);
                     if (similarity >= matchThreashold && !IsNoMatch(nomatches, image.Image.FullName, images[i].Image.FullName))
                     {
                         comparisons.Add(new()
@@ -216,16 +253,13 @@ namespace ImageComparison.Services
             return comparisons.ToList();
         }
 
-        private static short CalculateSimilarity(ulong[] hash1, ulong[] hash2)
-        {
-            return HashService.Similarity(hash1, hash2);
-        }
-
+        // Sort matches to ensure always the same order on execution
         private static List<ImageMatch> SortMatches(ConcurrentBag<ImageMatch> matches)
         {
             return SortMatches(matches.ToList());
         }
 
+        // Sort matches to ensure always the same order on execution
         private static List<ImageMatch> SortMatches(List<ImageMatch> matches)
         {
             LogService.Log($"Sorting {matches.Count} found matches");
@@ -250,6 +284,7 @@ namespace ImageComparison.Services
             return matches;
         }
 
+        // Determine if match was already saves as No-Match
         private static bool IsNoMatch(List<NoMatch> nomatches, string a, string b)
         {
             if(nomatches.Count == 0)

@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace ImageComparison.Services.Hashs
 {
+    /// <summary>
+    /// Difference Hash implementation with adjustable degree of detail.
+    /// Taking vertical and horizontal differences between pixels into account
+    /// </summary>
     public class DHashDouble : IHashAlgorithm
     {
         private readonly int width;

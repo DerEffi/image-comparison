@@ -7,9 +7,25 @@ namespace ImageComparison.Services
 {
     public static class FileService
     {
+        /// <summary>
+        /// Directory for saving meta data (profiles, settings, cache)
+        /// </summary>
         public static string DataDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DerEffi", "ImageComparison");
+        /// <summary>
+        /// Filename for the cache database
+        /// </summary>
         public static string CacheFile = "Cache.db";
 
+        /// <summary>
+        /// Process file (Move, Bin or Delete)
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="deleteAction"></param>
+        /// <param name="target"></param>
+        /// <param name="relativeTarget"></param>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="DirectoryNotFoundException"></exception>
+        /// <exception cref="IOException"></exception>
         public static void DeleteFile(string path, DeleteAction deleteAction = DeleteAction.Delete, string target = "Duplicates\\", bool relativeTarget = true)
         {
             if (path == null || !File.Exists(path))
@@ -50,6 +66,7 @@ namespace ImageComparison.Services
                         Directory.CreateDirectory(targetPath);
                     }
 
+                    // Append number to the filename to prevent overriding already existing images until free filename is found
                     string targetFile = Path.Combine(targetPath + Path.GetFileName(path));
                     int counter = 0;
                     while (File.Exists(targetFile))
@@ -65,6 +82,12 @@ namespace ImageComparison.Services
             }
         }
 
+        /// <summary>
+        /// Search all given locations for images to analyse
+        /// </summary>
+        /// <param name="searchLocations"></param>
+        /// <param name="searchSubdirectories"></param>
+        /// <returns></returns>
         public static List<List<FileInfo>> SearchProcessableFiles(string[] searchLocations, bool searchSubdirectories)
         {
             LogService.Log($"Searching for images in {searchLocations.Length} location{(searchLocations.Length > 1 ? "s" : "")}{(searchSubdirectories ? " recursively" : "")}");
@@ -74,6 +97,7 @@ namespace ImageComparison.Services
             return images;
         }
 
+        // Recursion function for file search
         private static List<List<FileInfo>> GetProcessableFiles(string[] searchLocations, bool searchSubdirectories)
         {
             List<List<FileInfo>> directories = new();

@@ -47,7 +47,9 @@ namespace ImageComparisonGUI.Services
         }
     }
 
-
+    /// <summary>
+    /// Checks for specific enum value
+    /// </summary>
     public class EnumToBooleanConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -61,6 +63,9 @@ namespace ImageComparisonGUI.Services
         }
     }
 
+    /// <summary>
+    /// Checks if enum is not a given value
+    /// </summary>
     public class NotEnumToBooleanConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -74,6 +79,9 @@ namespace ImageComparisonGUI.Services
         }
     }
 
+    /// <summary>
+    /// Converts number into human readable string
+    /// </summary>
     public class ReadableFilesizeConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -114,6 +122,9 @@ namespace ImageComparisonGUI.Services
         }
     }
 
+    /// <summary>
+    /// Converts internal similarity score into human readable percantage
+    /// </summary>
     public class SimilarityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -132,6 +143,9 @@ namespace ImageComparisonGUI.Services
         }
     }
 
+    /// <summary>
+    /// Converts Saved Hotkey into human readable string
+    /// </summary>
     public class DisplayHotkeyConverter : IValueConverter
     {
         public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)

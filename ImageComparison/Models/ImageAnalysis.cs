@@ -5,6 +5,9 @@
         public FileInfo Image { get; set; }
         public ulong[] Hash { get; set; }
 
+        /// <summary>
+        /// Blob converted hash value for disk/database/cache storage
+        /// </summary>
         public byte[] HashBlob {
             get {
                 byte[] blob = new byte[Hash.Length * 8];

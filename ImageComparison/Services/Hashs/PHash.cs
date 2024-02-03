@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 
 namespace ImageComparison.Services.Hashs
 {
+    /// <summary>
+    /// Perceptual Hash implementation with adjustable degree of detail
+    /// Based on Cosin Tranformations
+    /// </summary>
     public class PHash : IHashAlgorithm
     {
         private readonly static double _sqrt2 = 1 / Math.Sqrt(2);

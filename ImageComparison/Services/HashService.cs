@@ -8,20 +8,39 @@ using ImageComparison.Models;
 
 namespace ImageComparison.Services
 {
+    /// <summary>
+    /// Base Algorithm interface to implement specific algorithms
+    /// </summary>
     public interface IHashAlgorithm
     {
         public ulong[] Hash(string file);
     }
 
+    /// <summary>
+    /// Common functions to process hash values
+    /// </summary>
     public static class HashService
     {
         public const int Version = 1;
 
+        /// <summary>
+        /// Hash identifier for storage on disk/database/cache
+        /// </summary>
+        /// <param name="detail"></param>
+        /// <param name="algorithm"></param>
+        /// <returns></returns>
         public static string GetIdentifier(int detail, HashAlgorithm algorithm)
         {
             return $"V{Version}D{detail}A{(int)algorithm}";
         }
 
+        /// <summary>
+        /// Determines similarity score between 2 images (0 - 10000 -> divide by 100 for percent with 2 decimal places)
+        /// </summary>
+        /// <param name="hash1"></param>
+        /// <param name="hash2"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public static short Similarity(ulong[] hash1, ulong[] hash2)
         {
             if((hash2 == null) || hash1.Length != hash2.Length)
@@ -32,6 +51,7 @@ namespace ImageComparison.Services
             return Convert.ToInt16(Math.Floor((double)(hashLength - HammingDistance(hash1, hash2)) * 10000 / hashLength));
         }
 
+        // Get difference between 2 hashes
         private static int HammingDistance(ulong[] hash1, ulong[] hash2)
         {
             int bitcount = 0;
@@ -42,6 +62,7 @@ namespace ImageComparison.Services
             return bitcount;
         }
 
+        // Number of bits flipped in given number
         private static int HammingWeight(ulong i)
         {
             i -= ((i >> 1) & 0x5555555555555555UL);

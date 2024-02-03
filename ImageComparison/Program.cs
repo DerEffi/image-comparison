@@ -13,6 +13,10 @@ namespace ImageComparison
         public static bool force = false;
         public static ProgressBar? progress = null;
 
+
+        /*
+         * Helptext option definitions
+         */
         private static readonly List<string> preOptions =
             new List<string>(){
                 "\n\nUSAGE:",
@@ -29,6 +33,7 @@ namespace ImageComparison
                 "  127 - Bad Request"
             };
 
+
         public static int Main(string[] args)
         {
             ParserResult<Options> parser = new Parser(with => {
@@ -36,6 +41,7 @@ namespace ImageComparison
                 with.CaseInsensitiveEnumValues = true;
             }).ParseArguments<Options>(args);
             
+            // argument parser success
             parser.WithParsed(options =>
             {
                 logLevel = options.LogLevel;
@@ -43,7 +49,7 @@ namespace ImageComparison
                 LogService.OnLog += OnLog;
                 CompareService.OnProgress += OnProgress;
 
-                // custom validation
+                // custom validation of argument dependecies not covered by library
                 List<string> customErrors = new();
 
                 if (options.Processors.Count() == 0 && (options.Action == Models.Action.Move || options.Action == Models.Action.Bin || options.Action == Models.Action.Delete))
@@ -61,6 +67,7 @@ namespace ImageComparison
                 if (options.Cache.Length == 0 && options.Action == Models.Action.NoMatch)
                     customErrors.Add($"Required option 'c, cache' missing on action '{options.Action}'");
 
+                // console output for custom errors
                 if (customErrors.Count > 0)
                 {
                     ParserResult<Options> errorParser = new Parser(with =>
@@ -87,6 +94,7 @@ namespace ImageComparison
                             .AddPostOptionsLines(postOptions)
                         );
                     });
+
                     return;
                 }
 
@@ -95,22 +103,27 @@ namespace ImageComparison
                     string hashVersion = HashService.GetIdentifier(options.HashDetail, options.HashAlgorithm);
                     ulong scantime = (ulong)(DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds;
 
+                    // scan directories for files
                     options.Locations = options.Locations.Select(l => Path.IsPathRooted(l) ? l : Path.Combine(Assembly.GetExecutingAssembly().Location, l));
                     List<List<FileInfo>> searchLocations = FileService.SearchProcessableFiles(options.Locations.ToArray(), options.Recursive);
 
+                    // get already analysed images from cache (if specified)
                     FileService.DataDirectory = Path.IsPathRooted(options.Cache) ? (Path.GetDirectoryName(options.Cache) ?? FileService.DataDirectory) : Path.Combine(Assembly.GetExecutingAssembly().Location, Path.GetDirectoryName(options.Cache) ?? ".\\");
                     FileService.CacheFile = Path.GetFileName(options.Cache).NullIfEmpty() ?? FileService.CacheFile;
                     if (options.Cache.Length >= 1)
                         CacheService.Init();
                     List<CacheItem> cachedAnalysis = options.Cache.Length >= 1 ? CacheService.GetImages(hashVersion) : new();
 
+                    // analyse all new or modified images
                     List<List<ImageAnalysis>> analysedImages = CompareService.AnalyseImages(searchLocations, options.HashDetail, options.HashAlgorithm, cachedAnalysis);
                     if (options.Cache.Length >= 1)
                         CacheService.UpdateImages(analysedImages.SelectMany(i => i).ToList(), hashVersion, scantime);
 
+                    // sort out all duplicates or nomatches
                     List<NoMatch> nomatches = options.Cache.Length >= 1 ? CacheService.GetNoMatches() : new();
                     List<ImageMatch> Matches = CompareService.SearchForDuplicates(analysedImages, options.Similarity, options.SearchMode, nomatches);
 
+                    // output csv Search results
                     if (options.Action == Models.Action.Search)
                     {
                         if (logLevel < LogLevel.Warning)
@@ -119,17 +132,20 @@ namespace ImageComparison
                         {
                             Console.WriteLine($"\"{m.Image1.Image.FullName}\",\"{m.Image2.Image.FullName}\",{m.Similarity}");
                         });
+
                         return;
                     }
 
+                    // fill cache with found matches
                     if (options.Action == Models.Action.NoMatch)
                     {
                         LogService.Log("Filling no-match cache with current results due to user request", LogLevel.Warning);
                         CacheService.AddNoMatches(Matches);
+
                         return;
                     }
 
-                    // just to be sure that files dont get processed on an unexpected action input
+                    // check action again just to be sure that files dont get processed on an unexpected action input
                     if (options.Action == Models.Action.Move || options.Action == Models.Action.Bin || options.Action == Models.Action.Delete) {
                         DeleteAction deleteAction;
 
@@ -137,6 +153,7 @@ namespace ImageComparison
                         {
                             case Models.Action.Move:
                                 deleteAction = DeleteAction.Move;
+                                // trailing slash because target path needs to be directory
                                 if (!options.Target.EndsWith("\\") && !options.Target.EndsWith("/"))
                                     options.Target += "\\";
                                 break;
@@ -151,11 +168,13 @@ namespace ImageComparison
                         List<string> processedFiles = new();
                         Matches.ForEach(m =>
                         {
+                            // don't delete files if the match or the file itself already has been deleted
                             if(processedFiles.Any(p => p == m.Image1.Image.FullName || p == m.Image2.Image.FullName))
                                 return;
 
                             for (int i = 0; i < options.Processors.Count(); i++)
                             {
+                                // check first distinguishable property in given processors and take action if possible
                                 int processingResult = AutoProcessorService.Processors.First(p => p.DisplayName == options.Processors.ElementAt(i)).Process(m.Image1.Image, m.Image2.Image);
                                 if (processingResult != 0)
                                 {
@@ -182,6 +201,8 @@ namespace ImageComparison
                                     {
                                         LogService.Log($"Error Auto-Processing current match: '{m.Image1.Image.FullName}' - '{m.Image2.Image.FullName}'", LogLevel.Error);
                                     }
+
+                                    break;
                                 }
                             }
                         });
@@ -194,6 +215,7 @@ namespace ImageComparison
                 }
 
             })
+            // console argument parser failure (or help requested)
             .WithNotParsed(errors =>
             {
                 Console.WriteLine(
@@ -215,7 +237,11 @@ namespace ImageComparison
             return (int)exit;
         }
 
-        public static void OnProgress(object? sender, ImageComparerEventArgs e)
+
+        /*
+         * Progress ticker for image analysation progress bar
+         */
+        private static void OnProgress(object? sender, ImageComparerEventArgs e)
         {
             if (e.Target > 0)
             {
@@ -229,6 +255,7 @@ namespace ImageComparison
                 }
             }
         }
+
 
         /*
          * Log implementation for console output

@@ -10,6 +10,9 @@ namespace ImageComparisonGUI.Services
 {
     public static class ConfigService
     {
+        /// <summary>
+        /// Notify on changes in config
+        /// </summary>
         public static event EventHandler OnUpdate = delegate { };
 
         private static readonly string settingsFileName = "settings.json";
@@ -46,24 +49,41 @@ namespace ImageComparisonGUI.Services
 
         public static List<Hotkey> Hotkeys { get { settings.DistinguishHotkeys(); return settings.Hotkeys; } }
 
+        /// <summary>
+        /// Load data from config folder (Once on application start)
+        /// </summary>
         public static void Init()
         {
             LoadConfig();
             LoadProfiles();
         }
 
+        /// <summary>
+        /// Don't allow changes
+        /// </summary>
         public static void Lock()
         {
             IsLocked = true;
             OnUpdate.Invoke(null, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Allow changes
+        /// </summary>
         public static void Unlock()
         {
             IsLocked = false;
             OnUpdate.Invoke(null, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Update processing actions for found images in found matches
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="target"></param>
+        /// <param name="relativeTarget"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="DirectoryNotFoundException"></exception>
         public static void UpdateDeleteAction(DeleteAction action, string? target, bool? relativeTarget)
         {
             if (!IsLocked)
@@ -97,6 +117,12 @@ namespace ImageComparisonGUI.Services
             OnUpdate.Invoke(null, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Change locations to search for images
+        /// </summary>
+        /// <param name="mode"></param>
+        /// <param name="locations"></param>
+        /// <param name="recursive"></param>
         public static void UpdateSearchLocations(SearchMode mode, string[] locations, bool recursive)
         {
             if(!IsLocked) {
@@ -110,6 +136,12 @@ namespace ImageComparisonGUI.Services
             OnUpdate.Invoke(null, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Change parameters for image analysis
+        /// </summary>
+        /// <param name="matchThreashold"></param>
+        /// <param name="hashDetail"></param>
+        /// <param name="hashAlgorithm"></param>
         public static void UpdateAdjustables(int matchThreashold, int hashDetail, HashAlgorithm hashAlgorithm)
         {
             if (!IsLocked)
@@ -124,6 +156,10 @@ namespace ImageComparisonGUI.Services
             OnUpdate.Invoke(null, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Change configured actions on keyboard input
+        /// </summary>
+        /// <param name="hotkeys"></param>
         public static void UpdateHotkeys(List<Hotkey> hotkeys)
         {
             settings.Hotkeys = hotkeys.ToList();
@@ -134,6 +170,11 @@ namespace ImageComparisonGUI.Services
             OnUpdate.Invoke(null, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Change order of properties to determine how to auto process a found match
+        /// </summary>
+        /// <param name="processors"></param>
+        /// <param name="threashold"></param>
         public static void UpdateAutoProcessors(List<string> processors, int threashold)
         {
             if(!IsLocked)
@@ -148,6 +189,12 @@ namespace ImageComparisonGUI.Services
             OnUpdate.Invoke(null, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Change caching settings for image analysis and comparison
+        /// </summary>
+        /// <param name="cacheImages"></param>
+        /// <param name="cacheNoMatch"></param>
+        /// <param name="fillNoMatchCache"></param>
         public static void UpdateCache(bool cacheImages, bool cacheNoMatch, bool fillNoMatchCache)
         {
             settings.CacheImages = cacheImages;
@@ -238,6 +285,10 @@ namespace ImageComparisonGUI.Services
             }
         }
 
+        /// <summary>
+        /// Override current settings with previously saved profile
+        /// </summary>
+        /// <param name="name"></param>
         public static void LoadProfile(string name)
         {
             try
@@ -255,6 +306,10 @@ namespace ImageComparisonGUI.Services
             }
         }
 
+        /// <summary>
+        /// Delete a saved profile
+        /// </summary>
+        /// <param name="name"></param>
         public static void RemoveProfile(string name)
         {
             try
@@ -275,6 +330,10 @@ namespace ImageComparisonGUI.Services
             }
         }
 
+        /// <summary>
+        /// Store current settings as profile on disk
+        /// </summary>
+        /// <param name="name"></param>
         public static void SaveConfigAsProfile(string name)
         {
             try

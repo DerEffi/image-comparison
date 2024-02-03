@@ -8,9 +8,19 @@ using System.Threading.Tasks;
 
 namespace ImageComparison.Services
 {
+    /// <summary>
+    /// Automatic processing of image matches to determine what image to move/delete
+    /// </summary>
     public static class AutoProcessorService
     {
+        /// <summary>
+        /// Names of the implemented processors
+        /// </summary>
         public static List<string> Supported { get => Processors.Select((p) => p.DisplayName).ToList(); }
+
+        /// <summary>
+        /// Processor Implementations
+        /// </summary>
         public readonly static List<AutoProcessor> Processors = new()
         {
             new(){

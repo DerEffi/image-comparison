@@ -22,11 +22,13 @@ public partial class MainWindowViewModel : ViewModelBase
         ConfigService.Init();
         CacheService.Init();
 
+        // Trigger resizing of tab content when user resizes window
         ResizeObserver resizeObserver = new ResizeObserver();
         resizeObserver.OnUpdate += Resize;
         ClientSizeProperty.Changed.Subscribe(resizeObserver);
         window.Opened += (object? sender, EventArgs e) => { Resize(window.ClientSize.Width, window.ClientSize.Height); };
         
+        // change hotkey target when opening new tab
         window.KeyDown += HotkeyService.OnKeyInput;
         TabControl tabs = window.Find<TabControl>("TabControl");
         if (tabs != null)
@@ -36,12 +38,12 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    public void Resize(object? sender, ResizeEventArgs e)
+    private void Resize(object? sender, ResizeEventArgs e)
     {
         Resize(e.Size.Width, e.Size.Height);
     }
 
-    public void Resize(double width, double height)
+    private void Resize(double width, double height)
     {
         TabWidth = width - 302;
         TabHeight = height - 142;

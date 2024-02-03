@@ -60,7 +60,7 @@ public partial class SearchPageViewModel : ViewModelBase
         HotkeyService.OnHotkey += OnHotkey;
     }
 
-    #region RelayCommands
+    #region RelayCommands for button inputs
 
     [RelayCommand]
     private void DeleteImage(int side)
@@ -134,17 +134,21 @@ public partial class SearchPageViewModel : ViewModelBase
         {
             Displaying = false;
             StatusText = "Auto Processing";
+            // go through each image match above threashold 
             while(displayedMatchIndex < Matches.Count && Matches[displayedMatchIndex].Similarity > ConfigService.AutoProcessorThreashold)
             {
                 ImageMatch processingMatch = Matches[displayedMatchIndex];
                 ImageCountText = $"{displayedMatchIndex + 1} / {Matches.Count}";
                 PercentComplete = Convert.ToInt32((decimal.Divide(displayedMatchIndex + 1, Matches.Count) * 100));
+
+                // let auto-processor determine the image to process
                 PreviewAutoProcessor(processingMatch);
 
                 if (AutoProcessProperty != null && AutoProcessProperty != "" && AutoProcessProperty != "None" && AutoProcessSide != 0)
                 {
                     try
                     {
+                        // process image
                         if (AutoProcessSide < 0 && processingMatch.Image1 != null)
                             DeleteFile(processingMatch.Image1.Image.FullName);
                         else if (AutoProcessSide > 0 && processingMatch.Image2 != null)
@@ -200,6 +204,11 @@ public partial class SearchPageViewModel : ViewModelBase
 
     #region Data Functions
 
+    /// <summary>
+    /// Trigger action by keyboard input
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     public void OnHotkey(object? sender, HotkeyEventArgs e)
     {
         if(e.SelectedPage == "Search")
@@ -240,6 +249,12 @@ public partial class SearchPageViewModel : ViewModelBase
         }
     }
 
+    /// <summary>
+    /// search, analyse and compare images
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    /// <exception cref="InvalidOperationException"></exception>
     public void Search(object? sender, RoutedEventArgs e)
     {
         if (ComparerTask != null && !ComparerTask.IsCompleted)
@@ -247,6 +262,7 @@ public partial class SearchPageViewModel : ViewModelBase
 
         ComparerTask = Task.Run(() =>
         {
+            // set ui to search mode
             Idle = false;
             Searching = true;
             StatusText = "Searching";
@@ -258,10 +274,14 @@ public partial class SearchPageViewModel : ViewModelBase
 
             ComparerTaskToken.Token.ThrowIfCancellationRequested();
 
+
+            // get all files to analyse
             List<List<FileInfo>> searchLocations = FileService.SearchProcessableFiles(ConfigService.SearchLocations, ConfigService.SearchSubdirectories);
 
             ComparerTaskToken.Token.ThrowIfCancellationRequested();
 
+
+            // analyse all new/modified images
             Searching = true;
             StatusText = "Analysing";
             PercentComplete = 0;
@@ -273,6 +293,8 @@ public partial class SearchPageViewModel : ViewModelBase
 
             ComparerTaskToken.Token.ThrowIfCancellationRequested();
 
+
+            // compare image hashes and remove duplicates and nomatches
             Searching = true;
             StatusText = "Comparing";
             ImageCountText = "";
@@ -284,6 +306,7 @@ public partial class SearchPageViewModel : ViewModelBase
             ComparerTaskToken.Token.ThrowIfCancellationRequested();
 
             displayedMatchIndex = 0;
+            // fill nomatch cache if option was selected
             if(ConfigService.FillNoMatchCache)
             {
                 LogService.Log("Filling no-match cache with current results due to user request", LogLevel.Warning);
@@ -292,6 +315,7 @@ public partial class SearchPageViewModel : ViewModelBase
                 ConfigService.UpdateCache(ConfigService.CacheImages, ConfigService.CacheNoMatch, false);
                 ResetUI();
             }
+            // display matches after search
             else if (Matches != null && Matches.Count > 0)
             {
                 LogService.Log($"Showing {Matches.Count} matches to user");
@@ -330,7 +354,8 @@ public partial class SearchPageViewModel : ViewModelBase
         .ContinueWith(t => { });
     }
 
-    public void OnProgress(object? sender, ImageComparerEventArgs e)
+    // Update progress bar for image analysis
+    private void OnProgress(object? sender, ImageComparerEventArgs e)
     {
         if (e.Target > 0)
             PercentComplete = Convert.ToInt32((decimal.Divide(e.Current, e.Target) * 100));
@@ -338,6 +363,7 @@ public partial class SearchPageViewModel : ViewModelBase
         Searching = false;
     }
 
+    // Switch to next (or last) image pair in UI
     private void NextPair(bool forward = true)
     {
         if(
@@ -357,7 +383,8 @@ public partial class SearchPageViewModel : ViewModelBase
         }
     }
 
-    public void PreviewAutoProcessor(ImageMatch previewMatch)
+    // Determine what image to process in current match
+    private void PreviewAutoProcessor(ImageMatch previewMatch)
     {
         try
         {
@@ -365,6 +392,7 @@ public partial class SearchPageViewModel : ViewModelBase
             int currentProcessor = 0;
             while (currentProcessor < autoProcessors.Count)
             {
+                // Search first processor with different properties to determin image to delete/move
                 int processingResult = AutoProcessorService.Processors.First(p => p.DisplayName == autoProcessors[currentProcessor]).Process(previewMatch.Image1.Image, previewMatch.Image2.Image);
                 if (processingResult != 0)
                 {
@@ -385,7 +413,7 @@ public partial class SearchPageViewModel : ViewModelBase
         }
     }
 
-    public void ResetUI()
+    private void ResetUI()
     {
         Matches = new();
         DisplayedMatch = new();
@@ -401,7 +429,7 @@ public partial class SearchPageViewModel : ViewModelBase
         ConfigService.Unlock();
     }
 
-    public void OpenImage(string? path)
+    private void OpenImage(string? path)
     {
         if (File.Exists(path))
             Process.Start("explorer", $"\"{path}\"");

@@ -4,10 +4,16 @@ using Microsoft.Data.Sqlite;
 
 namespace ImageComparison.Services
 {
+    /// <summary>
+    /// Interface Service to disk/database cache
+    /// </summary>
     public static class CacheService
     {
         private static SqliteConnection connection;
 
+        /// <summary>
+        /// Ensure Directory and File for the Cache exist
+        /// </summary>
         public static void Init()
         {
             try
@@ -26,6 +32,11 @@ namespace ImageComparison.Services
             }
         }
 
+        /// <summary>
+        /// Retrieve already analysed images from cache for given hashfunction
+        /// </summary>
+        /// <param name="hashtype"></param>
+        /// <returns></returns>
         public static List<CacheItem> GetImages(string hashtype)
         {
             List<CacheItem> images = new();
@@ -45,6 +56,12 @@ namespace ImageComparison.Services
             return images;
         }
 
+        /// <summary>
+        /// Update/Add analysation data
+        /// </summary>
+        /// <param name="images"></param>
+        /// <param name="hashtype"></param>
+        /// <param name="scantime"></param>
         public static void UpdateImages(List<ImageAnalysis> images, string hashtype, ulong scantime)
         {
             try
@@ -82,10 +99,16 @@ namespace ImageComparison.Services
             connection.Close();
         }
 
+        /// <summary>
+        /// Add image pair determined as No-Match to cache
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
         public static void AddNoMatch(string a, string b)
         {
             try
             {
+                // ensure that the images in found pair are always in the same order to prevent duplicates
                 int order = string.Compare(a, b);
                 if (order == 0)
                     return;
@@ -105,6 +128,10 @@ namespace ImageComparison.Services
             connection.Close();
         }
 
+        /// <summary>
+        /// Add list of image pairs as No-Matches to cache
+        /// </summary>
+        /// <param name="nomatches"></param>
         public static void AddNoMatches(List<ImageMatch> nomatches)
         {
             try
@@ -119,6 +146,7 @@ namespace ImageComparison.Services
 
                     nomatches.ForEach(nomatch =>
                     {
+                        // ensure that the images in found pair are always in the same order to prevent duplicates
                         string a, b;
                         int order = string.Compare(nomatch.Image1.Image.FullName, nomatch.Image2.Image.FullName);
                         if (order == 0)
@@ -146,6 +174,10 @@ namespace ImageComparison.Services
             connection.Close();
         }
 
+        /// <summary>
+        /// Retrieve stored No-matches from cache
+        /// </summary>
+        /// <returns></returns>
         public static List<NoMatch> GetNoMatches()
         {
             List<NoMatch> nomatches = new();
@@ -168,6 +200,9 @@ namespace ImageComparison.Services
             return nomatches;
         }
 
+        /// <summary>
+        /// Remove all analysed image data from cache (excluding no-matches)
+        /// </summary>
         public static void ClearImageCache()
         {
             try
@@ -185,6 +220,9 @@ namespace ImageComparison.Services
             connection.Close();
         }
 
+        /// <summary>
+        /// Remove List of image pairs determined as No-Matches
+        /// </summary>
         public static void ClearNoMatchCache()
         {
             try
