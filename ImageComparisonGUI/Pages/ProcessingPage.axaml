@@ -14,45 +14,101 @@
   </UserControl.Resources>
 
   <Grid RowDefinitions="Auto, *, Auto, Auto">
+    
     <Grid.Styles>
       <Style Selector="StackPanel, Panel">
         <Setter Property="Margin" Value="10 5 10 10" />
       </Style>
     </Grid.Styles>
-    <TextBlock HorizontalAlignment="Center" Text="Order to delete files on auto-process" Margin="10" />
-    <ListBox Grid.Row="1" ItemsSource="{Binding Processors}" ScrollViewer.VerticalScrollBarVisibility="Auto" Selection="{Binding ProcessorSelection}" />
-    <TextBlock Grid.Row="1" IsVisible="{Binding !Processors.Count}" Text="No Auto-Processors found" HorizontalAlignment="Center" VerticalAlignment="Center" />
-    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+    
+    <TextBlock
+      HorizontalAlignment="Center"
+      Text="Order to delete files on auto-process"
+      Margin="10" />
+    <ListBox
+      Grid.Row="1"
+      ItemsSource="{Binding Processors}"
+      ScrollViewer.VerticalScrollBarVisibility="Auto"
+      Selection="{Binding ProcessorSelection}" />
+    <TextBlock
+      Grid.Row="1"
+      IsVisible="{Binding !Processors.Count}"
+      Text="No Auto-Processors found"
+      HorizontalAlignment="Center"
+      VerticalAlignment="Center" />
+    
+    <StackPanel
+      Grid.Row="2"
+      Orientation="Horizontal"
+      HorizontalAlignment="Center">
+      
       <StackPanel.Styles>
         <Style Selector="Button">
           <Setter Property="Margin" Value="5 0" />
         </Style>
       </StackPanel.Styles>
+      
       <Button Content="Down" Command="{Binding MoveDownCommand}">
         <Button.IsEnabled>
           <MultiBinding Converter="{x:Static BoolConverters.And}">
-            <Binding Path="SelectedProcessor" Converter="{x:Static ObjectConverters.IsNotNull}" />
+            <Binding
+              Path="SelectedProcessor"
+              Converter="{x:Static ObjectConverters.IsNotNull}" />
             <Binding Path="!ConfigLocked" />
           </MultiBinding>
         </Button.IsEnabled>
       </Button>
+      
       <Button Content="Up" Command="{Binding MoveUpCommand}">
         <Button.IsEnabled>
           <MultiBinding Converter="{x:Static BoolConverters.And}">
-            <Binding Path="SelectedProcessor" Converter="{x:Static ObjectConverters.IsNotNull}" />
+            <Binding
+              Path="SelectedProcessor"
+              Converter="{x:Static ObjectConverters.IsNotNull}" />
             <Binding Path="!ConfigLocked" />
           </MultiBinding>
         </Button.IsEnabled>
       </Button>
+      
     </StackPanel>
-    <StackPanel Grid.Row="3" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Width="500" Margin="0 30 0 0">
-      <TextBlock TextWrapping="Wrap" HorizontalAlignment="Center" Text="Stop 'Auto-Process All' below similarity (min. recommended > 85%)" />
+    
+    <StackPanel
+      Grid.Row="3"
+      Orientation="Vertical"
+      VerticalAlignment="Center"
+      HorizontalAlignment="Center"
+      Width="500"
+      Margin="0 30 0 0">
+      
+      <TextBlock
+        TextWrapping="Wrap"
+        HorizontalAlignment="Center"
+        Text="Stop 'Auto-Process All' below similarity (min. recommended > 85%)" />
+      
       <Grid ColumnDefinitions="*, Auto, Auto">
-        <Slider IsEnabled="{Binding !ConfigLocked}" HorizontalAlignment="Stretch" Name="ThreasholdSlider" Value="{Binding Threashold}" Minimum="0"
+        
+        <Slider
+          IsEnabled="{Binding !ConfigLocked}"
+          HorizontalAlignment="Stretch"
+          Name="ThreasholdSlider"
+          Value="{Binding Threashold}"
+          Minimum="0"
           Maximum="9990" />
-        <TextBlock Width="40" TextAlignment="Right" VerticalAlignment="Center" Margin="15 2 0 0" Grid.Column="1" Text="{Binding Threashold, Converter={StaticResource variableSimilarity}}" />
-        <TextBlock VerticalAlignment="Center" Margin="1 2 0 0" Grid.Column="2" Text="%" />
+        <TextBlock
+          Width="40"
+          TextAlignment="Right"
+          VerticalAlignment="Center"
+          Margin="15 2 0 0"
+          Grid.Column="1"
+          Text="{Binding Threashold, Converter={StaticResource variableSimilarity}}" />
+        <TextBlock
+          VerticalAlignment="Center"
+          Margin="1 2 0 0"
+          Grid.Column="2"
+          Text="%" />
+        
       </Grid>
+      
     </StackPanel>
   </Grid>
 </UserControl>

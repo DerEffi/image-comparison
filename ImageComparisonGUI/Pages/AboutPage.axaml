@@ -14,7 +14,10 @@
     </StackPanel.Styles>
 
     <StackPanel>
-      <TextBlock Text="Image Comparison" FontSize="30" FontWeight="Black" />
+      <TextBlock
+        Text="Image Comparison"
+        FontSize="30"
+        FontWeight="Black" />
     </StackPanel>
     
     <StackPanel>
@@ -29,40 +32,67 @@
     </StackPanel>
 
     <StackPanel>
+      
       <TextBlock Text="{Binding VersionText}" />
       <TextBlock Text="Open Source Application - Feel free to share and contribute:" />
-
-      <Button Classes="Hyperlink" Command="{Binding OpenHyperlinkCommand}" CommandParameter="https://github.com/DerEffi/image-comparison">
+      <Button
+        Classes="Hyperlink"
+        Command="{Binding OpenHyperlinkCommand}"
+        CommandParameter="https://github.com/DerEffi/image-comparison">
         <TextBlock Text="https://github.com/DerEffi/image-comparison" />
       </Button>
+      
     </StackPanel>
     
     <StackPanel>
+      
       <TextBlock Text="Developed by" />
       <TextBlock Text="DerEffi" />
-      <Button Classes="Hyperlink" Command="{Binding OpenHyperlinkCommand}" CommandParameter="https://dereffi.de">
+      <Button
+        Classes="Hyperlink"
+        Command="{Binding OpenHyperlinkCommand}"
+        CommandParameter="https://dereffi.de">
         <TextBlock Text="https://dereffi.de" />        
       </Button>
+    
     </StackPanel>
     
     <StackPanel>
-      <TextBlock Margin="0 15 0 0" Text="Algorithms used for Image Analysis: Difference and Perceptual Hash by David Oftedal and Dr. Neal Krawetz:" />
-      <Button Classes="Hyperlink" Command="{Binding OpenHyperlinkCommand}" CommandParameter="http://01101001.net/differencehash.php">
+      
+      <TextBlock
+        Margin="0 15 0 0"
+        Text="Algorithms used for Image Analysis: Difference and Perceptual Hash by David Oftedal and Dr. Neal Krawetz:" />
+      <Button
+        Classes="Hyperlink"
+        Command="{Binding OpenHyperlinkCommand}"
+        CommandParameter="http://01101001.net/differencehash.php">
         <TextBlock Text="http://01101001.net/differencehash.php" />
       </Button>
-      <Button Classes="Hyperlink" Command="{Binding OpenHyperlinkCommand}" CommandParameter="https://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html">
+      <Button
+        Classes="Hyperlink"
+        Command="{Binding OpenHyperlinkCommand}"
+        CommandParameter="https://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html">
         <TextBlock Text="https://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html" />
       </Button>
-      <Button Classes="Hyperlink" Command="{Binding OpenHyperlinkCommand}" CommandParameter="https://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html">
+      <Button
+        Classes="Hyperlink"
+        Command="{Binding OpenHyperlinkCommand}"
+        CommandParameter="https://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html">
         <TextBlock Text="https://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html" />
       </Button>
+    
     </StackPanel>
     
     <StackPanel>
+      
       <TextBlock Text="Modified the Implementation of CoenM for adjustable hash size:" />
-      <Button Classes="Hyperlink" Command="{Binding OpenHyperlinkCommand}" CommandParameter="https://github.com/coenm/ImageHash/">
+      <Button
+        Classes="Hyperlink"
+        Command="{Binding OpenHyperlinkCommand}"
+        CommandParameter="https://github.com/coenm/ImageHash/">
         <TextBlock Text="https://github.com/coenm/ImageHash/" />
       </Button>
+    
     </StackPanel>
     
   </StackPanel>

@@ -44,8 +44,8 @@ namespace ImageComparison.Services
         {
             LogService.Log($"Starting image analysation for {searchLocations.Count} location{(searchLocations.Count > 1 ? "s" : "")} with {hashAlgorithm}-{hashDetail}");
 
+            DateTime originTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
             cachedAnalysis ??= new List<CacheItem>();
-
             List<ConcurrentBag<ImageAnalysis>> analysed = new();
 
             using (System.Timers.Timer ProgressTimer = new())
@@ -93,7 +93,11 @@ namespace ImageComparison.Services
                             locationAnalysis.Add(new()
                             {
                                 Image = file,
-                                Hash = cachedImage != null && cachedImage.hash != null && cachedImage.scantime > (ulong)(file.LastWriteTime - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds ? cachedImage.hashArray : hash.Hash(file.FullName)
+                                Hash = cachedImage != null
+                                        && cachedImage.hash != null
+                                        && cachedImage.scantime > (ulong)(file.LastWriteTime - originTime).TotalSeconds
+                                       ? cachedImage.hashArray
+                                       : hash.Hash(file.FullName)
                             });
                         }
                         catch (Exception e) {
@@ -179,44 +183,47 @@ namespace ImageComparison.Services
                         });
                     });
 
-                    return subsearch ? comparisons.ToList() : SortMatches(comparisons);
+                    return SortMatches(comparisons);
 
                 case SearchMode.ListInclusive:
                     // for each search location start its own separate search
-                    return SortMatches(analysedLocations
-                        .SelectMany(location => SearchForDuplicates(location, matchThreashold, nomatches, token))
-                        .ToList());
+                    List<ImageMatch> listInclusiveMatches = new();
+                    foreach (List<ImageAnalysis> locationAnalysis in analysedLocations)
+                    {
+                        listInclusiveMatches.AddRange(SearchForDuplicates(locationAnalysis, matchThreashold, nomatches, token));
+                    }
+                    return SortMatches(listInclusiveMatches);
                 
                 case SearchMode.Exclusive:
                     // Group images by their directory and start with them as top-level-locations the search in 'ListExclusive' mode as subsearch 
-                    return SortMatches(SearchForDuplicates(
-                        analysedLocations
-                            .SelectMany(location =>
-                                location
-                                    .GroupBy(directory => directory.Image.DirectoryName)
-                                    .Select(image => image.ToList())
-                                    .ToList()
-                            )
-                        .ToList(),
-                    matchThreashold,
-                    SearchMode.ListExclusive,
-                    nomatches,
-                    token,
-                    true));
+                    List<ImageAnalysis> exclusiveAnalysis = analysedLocations.SelectMany(location => location).ToList();
+                    List<List<ImageAnalysis>> directoryExclusiveAnalysis = exclusiveAnalysis
+                        .GroupBy(directory => directory.Image.DirectoryName)
+                        .Select(image => image.ToList())
+                        .ToList();
+                    return SearchForDuplicates(directoryExclusiveAnalysis, matchThreashold, SearchMode.ListExclusive, nomatches, token, true);
                 
                 case SearchMode.Inclusive:
                     // Group images by their directory and compare for each directory only the files within
-                    return SortMatches(analysedLocations
-                        .SelectMany(images => {
-                            return images
-                                .GroupBy(image => image.Image.DirectoryName)
-                                .SelectMany(directory => SearchForDuplicates(directory.ToList(), matchThreashold, nomatches, token));
-                        })
-                        .ToList());
+                    List<ImageAnalysis> inclusiveAnalysis = analysedLocations.SelectMany(images => images).ToList();
+                    List<List<ImageAnalysis>> directoryGrouping = inclusiveAnalysis
+                        .GroupBy(image => image.Image.DirectoryName)
+                        .Select(group => group.ToList())
+                        .ToList();
+                    List<ImageMatch> inclusiveMatches = new();
+                    foreach (List<ImageAnalysis> directoryAnalysis in directoryGrouping)
+                    {
+                        inclusiveMatches.AddRange(SearchForDuplicates(directoryAnalysis, matchThreashold, nomatches, token).ToList());
+                    }
+                    return SortMatches(inclusiveMatches);
                 
                 default:
                     // Merge Lists and compare all images to another
-                    return SortMatches(SearchForDuplicates(analysedLocations.SelectMany(images => images).ToList(), matchThreashold, nomatches, token));
+                    List<ImageAnalysis> allAnalysis = analysedLocations
+                        .SelectMany(images => images)
+                        .ToList();
+                    List<ImageMatch> allMatches = SearchForDuplicates(allAnalysis, matchThreashold, nomatches, token);
+                    return SortMatches(allMatches);
             }
         }
 

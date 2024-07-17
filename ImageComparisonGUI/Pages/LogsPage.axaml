@@ -8,7 +8,11 @@
              x:Class="ImageComparisonGUI.Pages.LogsPage">
     <Grid ColumnDefinitions="*" RowDefinitions="*" Margin="10">
       <ScrollViewer>
-        <TextBlock Margin="10" TextWrapping="WrapWithOverflow" Text="{Binding Logs}" LineHeight="20" />
+        <TextBlock
+          Margin="10"
+          TextWrapping="WrapWithOverflow"
+          Text="{Binding Logs}"
+          LineHeight="20" />
       </ScrollViewer>
     </Grid>
 </UserControl>
