@@ -31,7 +31,7 @@ public partial class AdjustablesPageViewModel : ViewModelBase
     [RelayCommand]
     private void Save()
     {
-        MatchThreashold -= MatchThreashold % 10;
+        MatchThreashold = (int)(Math.Round((double)MatchThreashold / 10) * 10); //rounding to the nearest 10
         ConfigService.UpdateAdjustables(MatchThreashold, HashDetail, HashAlgorithm);
     }
 
