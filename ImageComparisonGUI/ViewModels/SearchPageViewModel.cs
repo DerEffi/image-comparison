@@ -363,23 +363,29 @@ public partial class SearchPageViewModel : ViewModelBase
         Searching = false;
     }
 
-    // Switch to next (or last) image pair in UI
+    // Switch to next (or previous) image pair in UI until reached the end
     private void NextPair(bool forward = true)
     {
         if(
-            (forward && Matches.Count > ++displayedMatchIndex)
-            || (!forward && --displayedMatchIndex >= 0)
+            (forward && Matches.Count <= displayedMatchIndex + 1)
+            || (!forward && displayedMatchIndex <= 0)
         )
         {
+            //dont do anything going backwards from first picture
+            if (forward)
+            {
+                LogService.Log("No more matches to show, stopping displaying matches");
+                ResetUI();
+            }
+        }
+        else
+        {
+            displayedMatchIndex = displayedMatchIndex + (forward ? 1 : -1);
             DisplayedMatch = Matches[displayedMatchIndex];
             ImageCountText = $"{displayedMatchIndex + 1} / {Matches.Count}";
             PercentComplete = Convert.ToInt32((decimal.Divide(displayedMatchIndex + 1, Matches.Count) * 100));
 
             PreviewAutoProcessor(DisplayedMatch);
-        } else
-        {
-            LogService.Log("No more matches to show, stopping displaying matches");
-            ResetUI();
         }
     }
 
