@@ -17,25 +17,76 @@
 
   <Grid RowDefinitions="*, Auto, Auto, Auto">
 
-    <Button Content="Start Search" FontSize="14" Name="SearchButton" IsVisible="{Binding Idle}" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.RowSpan="4" />
+    <Button
+      Content="Start Search"
+      FontSize="14"
+      Name="SearchButton"
+      IsVisible="{Binding Idle}"
+      VerticalAlignment="Center"
+      HorizontalAlignment="Center"
+      Grid.RowSpan="4" />
     
-    <Grid Grid.Row="0" ColumnDefinitions="*, *" RowDefinitions="*, Auto, Auto, Auto, Auto" Name="image0_grid">
+    <Grid
+      Grid.Row="0"
+      ColumnDefinitions="*, *"
+      RowDefinitions="*, Auto, Auto, Auto, Auto"
+      Name="image0_grid">
 
-      <Button Name="LeftImageButton" HorizontalAlignment="Center" Classes="Hyperlink NoAnimation" IsVisible="{Binding Displaying}" Margin="15 0">
-        <Image Name="LeftImageBox" Source="{Binding DisplayedMatch.Image1.Image.FullName, Converter={StaticResource variableImage}}" />
+      <Button
+        Name="LeftImageButton"
+        HorizontalAlignment="Center"
+        Classes="Hyperlink NoAnimation"
+        IsVisible="{Binding Displaying}"
+        Margin="15 0">
+        <Image
+          Name="LeftImageBox"
+          Source="{Binding DisplayedMatch.Image1.Image.FullName, Converter={StaticResource variableImage}}" />
       </Button>
-      <Button Grid.Column="1" Name="RightImageButton" HorizontalAlignment="Center" Classes="Hyperlink NoAnimation" IsVisible="{Binding Displaying}" Margin="15 0">
-        <Image Name="RightImageBox" Source="{Binding DisplayedMatch.Image2.Image.FullName, Converter={StaticResource variableImage}}" />
+      <Button
+        Grid.Column="1"
+        Name="RightImageButton"
+        HorizontalAlignment="Center"
+        Classes="Hyperlink NoAnimation"
+        IsVisible="{Binding Displaying}"
+        Margin="15 0">
+        <Image
+          Name="RightImageBox"
+          Source="{Binding DisplayedMatch.Image2.Image.FullName, Converter={StaticResource variableImage}}" />
       </Button>
 
-      <Button IsVisible="{Binding Displaying}" Command="{Binding OpenExplorerCommand}" CommandParameter="{Binding DisplayedMatch.Image1.Image.FullName}" Grid.Row="1" Classes="Hyperlink NoAnimation" HorizontalAlignment="Center" Margin="5 3 5 5">
-        <TextBlock Text="{Binding DisplayedMatch.Image1.Image.FullName}" FontSize="12" />
+      <Button
+        IsVisible="{Binding Displaying}"
+        Command="{Binding OpenExplorerCommand}"
+        CommandParameter="{Binding DisplayedMatch.Image1.Image.FullName}"
+        Grid.Row="1"
+        Classes="Hyperlink NoAnimation"
+        HorizontalAlignment="Center"
+        Margin="5 3 5 5">
+        <TextBlock
+          Text="{Binding DisplayedMatch.Image1.Image.FullName}"
+          FontSize="12" />
       </Button>
-      <Button IsVisible="{Binding Displaying}" Command="{Binding OpenExplorerCommand}" CommandParameter="{Binding DisplayedMatch.Image2.Image.FullName}" Grid.Row="1" Grid.Column="1" Classes="Hyperlink NoAnimation" HorizontalAlignment="Center" Margin="5 3 5 5">
-        <TextBlock Text="{Binding DisplayedMatch.Image2.Image.FullName}" FontSize="12" />
+      <Button
+        IsVisible="{Binding Displaying}"
+        Command="{Binding OpenExplorerCommand}"
+        CommandParameter="{Binding DisplayedMatch.Image2.Image.FullName}"
+        Grid.Row="1"
+        Grid.Column="1"
+        Classes="Hyperlink NoAnimation"
+        HorizontalAlignment="Center"
+        Margin="5 3 5 5">
+        <TextBlock
+          Text="{Binding DisplayedMatch.Image2.Image.FullName}"
+          FontSize="12" />
       </Button>
 
-      <StackPanel IsVisible="{Binding Displaying}" Margin="5 2 5 5" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+      <StackPanel
+        IsVisible="{Binding Displaying}"
+        Margin="5 2 5 5"
+        Grid.Row="2"
+        Orientation="Horizontal"
+        HorizontalAlignment="Center">
+      
         <StackPanel Width="220" HorizontalAlignment="Left" Orientation="Horizontal">
           <TextBlock Text="Dimensions:" Margin="0 0 17 0" />
           <TextBlock Text="{Binding #LeftImageBox.Source.Size.Height}"/>
@@ -45,10 +96,18 @@
         </StackPanel>
         <StackPanel Width="100" Orientation="Horizontal">
           <TextBlock Text="Size: " />
-          <TextBlock Text="{Binding DisplayedMatch.Image1.Image.Length, Converter={StaticResource variableFilesize}}" />
+          <TextBlock Text="{Binding DisplayedMatch.Image1.Image.Length, Converter={StaticResource variableFilesize}}" />  
         </StackPanel>
+      
       </StackPanel>
-      <StackPanel IsVisible="{Binding Displaying}" Margin="5 2 5 5" Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+      <StackPanel
+        IsVisible="{Binding Displaying}"
+        Margin="5 2 5 5"
+        Grid.Row="2"
+        Grid.Column="1"
+        Orientation="Horizontal"
+        HorizontalAlignment="Center">
+        
         <StackPanel Width="220" HorizontalAlignment="Left" Orientation="Horizontal">
           <TextBlock Text="Dimensions:" Margin="0 0 17 0" />
           <TextBlock Text="{Binding #RightImageBox.Source.Size.Height}"/>
@@ -60,66 +119,111 @@
           <TextBlock Text="Size: " />
           <TextBlock Text="{Binding DisplayedMatch.Image2.Image.Length, Converter={StaticResource variableFilesize}}" />
         </StackPanel>
+        
       </StackPanel>
-
-      <StackPanel IsVisible="{Binding Displaying}" Grid.Row="3" Width="320" Orientation="Horizontal">
+      <StackPanel
+        IsVisible="{Binding Displaying}"
+        Grid.Row="3"
+        Width="320"
+        Orientation="Horizontal">
         <TextBlock Text="Last Modified: " />
         <TextBlock Text="{Binding DisplayedMatch.Image1.Image.LastWriteTime}" />
       </StackPanel>
-      <StackPanel IsVisible="{Binding Displaying}" Grid.Row="3" Grid.Column="1" Width="320" Orientation="Horizontal">
+      <StackPanel
+        IsVisible="{Binding Displaying}"
+        Grid.Row="3"
+        Grid.Column="1"
+        Width="320"
+        Orientation="Horizontal">
         <TextBlock Text="Last Modified: " />
         <TextBlock Text="{Binding DisplayedMatch.Image2.Image.LastWriteTime}" />
       </StackPanel>
       
-      <StackPanel IsVisible="{Binding Displaying}" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="4" Height="40">
+      <StackPanel
+        IsVisible="{Binding Displaying}"
+        Orientation="Horizontal"
+        HorizontalAlignment="Center"
+        Grid.Row="4"
+        Height="40">
         <StackPanel.Styles>
           <Style Selector="Button">
             <Setter Property="Margin" Value="5"/>
           </Style>
         </StackPanel.Styles>
+        
         <Button Content="Delete" Command="{Binding DeleteImageCommand}">
           <Button.CommandParameter>
             <sys:Int32>-1</sys:Int32>
           </Button.CommandParameter>
         </Button>
+        
       </StackPanel>
-      <StackPanel IsVisible="{Binding Displaying}" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="4" Grid.Column="1" Height="40">
+      <StackPanel
+        IsVisible="{Binding Displaying}"
+        Orientation="Horizontal"
+        HorizontalAlignment="Center"
+        Grid.Row="4"
+        Grid.Column="1"
+        Height="40">
         <StackPanel.Styles>
           <Style Selector="Button">
             <Setter Property="Margin" Value="5"/>
           </Style>
         </StackPanel.Styles>
+        
         <Button Content="Delete" Command="{Binding DeleteImageCommand}">
           <Button.CommandParameter>
             <sys:Int32>1</sys:Int32>
           </Button.CommandParameter>
         </Button>
+        
       </StackPanel>
     
     </Grid>
 
-    <StackPanel IsVisible="{Binding Displaying}" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+    <StackPanel
+      IsVisible="{Binding Displaying}"
+      Grid.Row="1"
+      Orientation="Horizontal"
+      HorizontalAlignment="Center">
+      
       <TextBlock Text="Similarity: " />
       <TextBlock Text="{Binding DisplayedMatch.Similarity, Converter={StaticResource variableSimilarity}}" />
       <TextBlock Text="%" />
+      
     </StackPanel>
 
-    <StackPanel IsVisible="{Binding Displaying}" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 5 0 0" Grid.Row="2" Height="40">
+    <StackPanel
+      IsVisible="{Binding Displaying}"
+      Orientation="Horizontal"
+      HorizontalAlignment="Center"
+      Margin="0 5 0 0"
+      Grid.Row="2"
+      Height="40">
+      
       <Button Content="Previous" Command="{Binding PreviousCommand}" />
       <StackPanel.Styles>
         <Style Selector="Button">
           <Setter Property="Margin" Value="5 0"/>
         </Style>
       </StackPanel.Styles>
+      
       <Button Content="Delete Both" Command="{Binding DeleteImageCommand}">
         <Button.CommandParameter>
           <sys:Int32>0</sys:Int32>
         </Button.CommandParameter>
       </Button>
+      
       <Button Content="Auto-Delete" Command="{Binding AutoProcessCommand}" />
       <Button Content="Next" Command="{Binding NoMatchCommand}" />
+      
     </StackPanel>
-    <StackPanel Grid.Row="3" HorizontalAlignment="Right" Margin="20 0" Orientation="Horizontal" Height="40">
+    <StackPanel
+      Grid.Row="3"
+      HorizontalAlignment="Right"
+      Margin="20 0"
+      Orientation="Horizontal"
+      Height="40">
       <StackPanel.Styles>
         <Style Selector="Button, TextBlock">
           <Setter Property="VerticalAlignment" Value="Center" />
@@ -128,11 +232,28 @@
           <Setter Property="Margin" Value="5 0"/>
         </Style>
       </StackPanel.Styles>
-      <TextBlock Text="{Binding StatusText}" IsVisible="{Binding !Idle}" />
-      <TextBlock Margin="8 0 10 0" Text="{Binding ImageCountText}" IsVisible="{Binding !Idle}" />
-      <ProgressBar IsIndeterminate="{Binding Searching}" Value="{Binding PercentComplete}" IsVisible="{Binding !Idle}" />
-      <Button Content="Auto-Process All" Command="{Binding AutoProcessAllCommand}" IsVisible="{Binding !Idle}" IsEnabled="{Binding Displaying}" />
-      <Button Content="Abort" Command="{Binding AbortCommand}" IsVisible="{Binding !Idle}" />
+      
+      <TextBlock
+        Text="{Binding StatusText}"
+        IsVisible="{Binding !Idle}" />
+      <TextBlock
+        Margin="8 0 10 0"
+        Text="{Binding ImageCountText}"
+        IsVisible="{Binding !Idle}" />
+      <ProgressBar
+        IsIndeterminate="{Binding Searching}"
+        Value="{Binding PercentComplete}"
+        IsVisible="{Binding !Idle}" />
+      <Button
+        Content="Auto-Process All"
+        Command="{Binding AutoProcessAllCommand}"
+        IsVisible="{Binding !Idle}"
+        IsEnabled="{Binding Displaying}" />
+      <Button
+        Content="Abort"
+        Command="{Binding AbortCommand}"
+        IsVisible="{Binding !Idle}" />
+      
     </StackPanel>
   </Grid>
 </UserControl>

@@ -40,10 +40,12 @@ namespace ImageComparison.Services
                     File.Delete(path);
                     LogService.Log($"Deleted file: '{path}'");
                     break;
+
                 case DeleteAction.RecycleBin:
                     FileSystem.DeleteFile(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
                     LogService.Log($"Moved file to Recycle Bin: '{path}'");
                     break;
+
                 case DeleteAction.Move:
 
                     if (string.IsNullOrEmpty(Path.GetDirectoryName(path)))

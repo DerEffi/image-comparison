@@ -60,7 +60,7 @@ public partial class ProcessingPageViewModel : ViewModelBase
 
     private void Save()
     {
-        Threashold -= Threashold % 10;
+        Threashold = (int)(Math.Round((double)Threashold / 10) * 10); //rounding to the nearest 10
         ConfigService.UpdateAutoProcessors(Processors.ToList(), Threashold);
     }
 

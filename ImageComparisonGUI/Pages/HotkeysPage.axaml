@@ -16,7 +16,12 @@
   </UserControl.Resources>
 
   <StackPanel>
-    <Grid ColumnDefinitions="Auto, Auto, Auto, Auto" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" VerticalAlignment="Top" HorizontalAlignment="Center">
+    
+    <Grid
+      ColumnDefinitions="Auto, Auto, Auto, Auto"
+      RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto"
+      VerticalAlignment="Top"
+      HorizontalAlignment="Center">
       <Grid.Styles>
         <Style Selector="TextBlock, Button.Keys">
           <Setter Property="Margin" Value="20 0 20 20" />
@@ -47,55 +52,224 @@
           <Setter Property="Margin" Value="2 0 2 20" />
         </Style>
       </Grid.Styles>
+      
 
-      <TextBlock Grid.Row="0" Text="Start Search" />
-      <Button Classes="Keys" Grid.Row="0" Content="{Binding Hotkeys, Converter={StaticResource variableHotkey}, ConverterParameter=SearchStart}" IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.SearchStart}}" />
-      <Button Grid.Row="0" Classes="Set" Content="Set" Command="{Binding ListenForHotkeyCommand}" CommandParameter="SearchStart" />
-      <Button Grid.Row="0" Classes="Remove" Content="Remove" Command="{Binding RemoveCommand}" CommandParameter="SearchStart" />
+      
+      <TextBlock
+        Grid.Row="0"
+        Text="Start Search" />
+      <Button
+        Classes="Keys"
+        Grid.Row="0"
+        Content="{Binding Hotkeys, Converter={StaticResource variableHotkey}, ConverterParameter=SearchStart}"
+        IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.SearchStart}}" />
+      <Button
+        Grid.Row="0"
+        Classes="Set"
+        Content="Set"
+        Command="{Binding ListenForHotkeyCommand}"
+        CommandParameter="SearchStart" />
+      <Button
+        Grid.Row="0"
+        Classes="Remove"
+        Content="Remove"
+        Command="{Binding RemoveCommand}"
+        CommandParameter="SearchStart" />
 
-      <TextBlock Grid.Row="1" Text="Abort Search" />
-      <Button Classes="Keys" Grid.Row="1" Content="{Binding Hotkeys, Converter={StaticResource variableHotkey}, ConverterParameter=SearchAbort}" IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.SearchAbort}}" />
-      <Button Grid.Row="1" Classes="Set" Content="Set" Command="{Binding ListenForHotkeyCommand}" CommandParameter="SearchAbort" />
-      <Button Grid.Row="1" Classes="Remove" Content="Remove" Command="{Binding RemoveCommand}" CommandParameter="SearchAbort" />
+      
+      
+      <TextBlock
+        Grid.Row="1"
+        Text="Abort Search" />
+      <Button
+        Classes="Keys"
+        Grid.Row="1"
+        Content="{Binding Hotkeys, Converter={StaticResource variableHotkey}, ConverterParameter=SearchAbort}"
+        IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.SearchAbort}}" />
+      <Button
+        Grid.Row="1"
+        Classes="Set"
+        Content="Set"
+        Command="{Binding ListenForHotkeyCommand}"
+        CommandParameter="SearchAbort" />
+      <Button
+        Grid.Row="1"
+        Classes="Remove"
+        Content="Remove"
+        Command="{Binding RemoveCommand}"
+        CommandParameter="SearchAbort" />
 
-      <TextBlock Grid.Row="2" Text="Next" />
-      <Button Classes="Keys" Grid.Row="2" Content="{Binding Hotkeys, Converter={StaticResource variableHotkey}, ConverterParameter=SearchNoMatch}" IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.SearchNoMatch}}" />
-      <Button Grid.Row="2" Classes="Set" Content="Set" Command="{Binding ListenForHotkeyCommand}" CommandParameter="SearchNoMatch" />
-      <Button Grid.Row="2" Classes="Remove" Content="Remove" Command="{Binding RemoveCommand}" CommandParameter="SearchNoMatch" />
+      
+      
+      <TextBlock
+        Grid.Row="2"
+        Text="Next" />
+      <Button
+        Classes="Keys"
+        Grid.Row="2"
+        Content="{Binding Hotkeys, Converter={StaticResource variableHotkey}, ConverterParameter=SearchNoMatch}"
+        IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.SearchNoMatch}}" />
+      <Button
+        Grid.Row="2"
+        Classes="Set"
+        Content="Set"
+        Command="{Binding ListenForHotkeyCommand}"
+        CommandParameter="SearchNoMatch" />
+      <Button
+        Grid.Row="2"
+        Classes="Remove"
+        Content="Remove"
+        Command="{Binding RemoveCommand}"
+        CommandParameter="SearchNoMatch" />
 
-      <TextBlock Grid.Row="3" Text="Previous" />
-      <Button Classes="Keys" Grid.Row="3" Content="{Binding Hotkeys, Converter={StaticResource variableHotkey}, ConverterParameter=SearchPrevious}" IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.SearchPrevious}}" />
-      <Button Grid.Row="3" Classes="Set" Content="Set" Command="{Binding ListenForHotkeyCommand}" CommandParameter="SearchPrevious" />
-      <Button Grid.Row="3" Classes="Remove" Content="Remove" Command="{Binding RemoveCommand}" CommandParameter="SearchPrevious" />
+      
+      
+      <TextBlock
+        Grid.Row="3"
+        Text="Previous" />
+      <Button
+        Classes="Keys"
+        Grid.Row="3"
+        Content="{Binding Hotkeys, Converter={StaticResource variableHotkey}, ConverterParameter=SearchPrevious}"
+        IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.SearchPrevious}}" />
+      <Button
+        Grid.Row="3"
+        Classes="Set"
+        Content="Set"
+        Command="{Binding ListenForHotkeyCommand}"
+        CommandParameter="SearchPrevious" />
+      <Button 
+       Grid.Row="3"
+       Classes="Remove"
+       Content="Remove"
+       Command="{Binding RemoveCommand}"
+       CommandParameter="SearchPrevious" />
 
-      <TextBlock Grid.Row="4" Text="Auto Delete" />
-      <Button Classes="Keys" Grid.Row="4" Content="{Binding Hotkeys, Converter={StaticResource variableHotkey}, ConverterParameter=SearchAuto}" IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.SearchAuto}}" />
-      <Button Grid.Row="4" Classes="Set" Content="Set" Command="{Binding ListenForHotkeyCommand}" CommandParameter="SearchAuto" />
-      <Button Grid.Row="4" Classes="Remove" Content="Remove" Command="{Binding RemoveCommand}" CommandParameter="SearchAuto" />
+      
+      
+      <TextBlock
+        Grid.Row="4"
+        Text="Auto Delete" />
+      <Button
+        Classes="Keys"
+        Grid.Row="4"
+        Content="{Binding Hotkeys, Converter={StaticResource variableHotkey}, ConverterParameter=SearchAuto}"
+        IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.SearchAuto}}" />
+      <Button
+        Grid.Row="4"
+        Classes="Set"
+        Content="Set"
+        Command="{Binding ListenForHotkeyCommand}"
+        CommandParameter="SearchAuto" />
+      <Button
+        Grid.Row="4"
+        Classes="Remove"
+        Content="Remove"
+        Command="{Binding RemoveCommand}"
+        CommandParameter="SearchAuto" />
 
-      <TextBlock Grid.Row="5" Text="Delete Left" />
-      <Button Classes="Keys" Grid.Row="5" Content="{Binding Hotkeys, Converter={StaticResource variableHotkey}, ConverterParameter=SearchDeleteLeft}" IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.SearchDeleteLeft}}" />
-      <Button Grid.Row="5" Classes="Set" Content="Set" Command="{Binding ListenForHotkeyCommand}" CommandParameter="SearchDeleteLeft" />
-      <Button Grid.Row="5" Classes="Remove" Content="Remove" Command="{Binding RemoveCommand}" CommandParameter="SearchDeleteLeft" />
+      
+      
+      <TextBlock
+        Grid.Row="5"
+        Text="Delete Left" />
+      <Button
+        Classes="Keys"
+        Grid.Row="5"
+        Content="{Binding Hotkeys, Converter={StaticResource variableHotkey}, ConverterParameter=SearchDeleteLeft}"
+        IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.SearchDeleteLeft}}" />
+      <Button
+        Grid.Row="5"
+        Classes="Set"
+        Content="Set"
+        Command="{Binding ListenForHotkeyCommand}"
+        CommandParameter="SearchDeleteLeft" />
+      <Button
+        Grid.Row="5"
+        Classes="Remove"
+        Content="Remove"
+        Command="{Binding RemoveCommand}"
+        CommandParameter="SearchDeleteLeft" />
 
-      <TextBlock Grid.Row="6" Text="Delete Right" />
-      <Button Classes="Keys" Grid.Row="6" Content="{Binding Hotkeys, Converter={StaticResource variableHotkey}, ConverterParameter=SearchDeleteRight}" IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.SearchDeleteRight}}" />
-      <Button Grid.Row="6" Classes="Set" Content="Set" Command="{Binding ListenForHotkeyCommand}" CommandParameter="SearchDeleteRight" />
-      <Button Grid.Row="6" Classes="Remove" Content="Remove" Command="{Binding RemoveCommand}" CommandParameter="SearchDeleteRight" />
+      
+      
+      <TextBlock
+        Grid.Row="6"
+        Text="Delete Right" />
+      <Button
+        Classes="Keys"
+        Grid.Row="6"
+        Content="{Binding Hotkeys, Converter={StaticResource variableHotkey}, ConverterParameter=SearchDeleteRight}"
+        IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.SearchDeleteRight}}" />
+      <Button
+        Grid.Row="6"
+        Classes="Set"
+        Content="Set"
+        Command="{Binding ListenForHotkeyCommand}"
+        CommandParameter="SearchDeleteRight" />
+      <Button
+        Grid.Row="6"
+        Classes="Remove"
+        Content="Remove"
+        Command="{Binding RemoveCommand}"
+        CommandParameter="SearchDeleteRight" />
 
-      <TextBlock Grid.Row="7" Text="Delete Both" />
-      <Button Classes="Keys" Grid.Row="7" Content="{Binding Hotkeys, Converter={StaticResource variableHotkey}, ConverterParameter=SearchDeleteBoth}" IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.SearchDeleteBoth}}" />
-      <Button Grid.Row="7" Classes="Set" Content="Set" Command="{Binding ListenForHotkeyCommand}" CommandParameter="SearchDeleteBoth" />
-      <Button Grid.Row="7" Classes="Remove" Content="Remove" Command="{Binding RemoveCommand}" CommandParameter="SearchDeleteBoth" />
+      
+      
+      <TextBlock
+        Grid.Row="7"
+        Text="Delete Both" />
+      <Button
+        Classes="Keys"
+        Grid.Row="7"
+        Content="{Binding Hotkeys, Converter={StaticResource variableHotkey}, ConverterParameter=SearchDeleteBoth}"
+        IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.SearchDeleteBoth}}" />
+      <Button
+        Grid.Row="7"
+        Classes="Set"
+        Content="Set"
+        Command="{Binding ListenForHotkeyCommand}"
+        CommandParameter="SearchDeleteBoth" />
+      <Button
+        Grid.Row="7"
+        Classes="Remove"
+        Content="Remove"
+        Command="{Binding RemoveCommand}"
+        CommandParameter="SearchDeleteBoth" />
 
-      <TextBlock Grid.Row="8" Text="Auto-Process All" />
-      <Button Classes="Keys" Grid.Row="8" Content="{Binding Hotkeys, Converter={StaticResource variableHotkey}, ConverterParameter=AutoProcessAll}" IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.AutoProcessAll}}" />
-      <Button Grid.Row="8" Classes="Set" Content="Set" Command="{Binding ListenForHotkeyCommand}" CommandParameter="AutoProcessAll" />
-      <Button Grid.Row="8" Classes="Remove" Content="Remove" Command="{Binding RemoveCommand}" CommandParameter="AutoProcessAll" />
+      
+      
+      <TextBlock
+        Grid.Row="8"
+        Text="Auto-Process All" />
+      <Button
+        Classes="Keys"
+        Grid.Row="8"
+        Content="{Binding Hotkeys, Converter={StaticResource variableHotkey}, ConverterParameter=AutoProcessAll}"
+        IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.AutoProcessAll}}" />
+      <Button
+        Grid.Row="8"
+        Classes="Set"
+        Content="Set"
+        Command="{Binding ListenForHotkeyCommand}"
+        CommandParameter="AutoProcessAll" />
+      <Button
+        Grid.Row="8"
+        Classes="Remove"
+        Content="Remove"
+        Command="{Binding RemoveCommand}"
+        CommandParameter="AutoProcessAll" />
 
     </Grid>
 
-    <TextBlock IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.None}}" Text="Please enter your new Hotkey" TextWrapping="Wrap" FontStyle="Italic" HorizontalAlignment="Center" Margin="25" Padding="2" />
+    <TextBlock
+      IsVisible="{Binding ListenTarget, Converter={StaticResource notVariableEnum}, ConverterParameter={x:Static m:HotkeyTarget.None}}"
+      Text="Please enter your new Hotkey"
+      TextWrapping="Wrap"
+      FontStyle="Italic"
+      HorizontalAlignment="Center"
+      Margin="25"
+      Padding="2" />
 
   </StackPanel>
 

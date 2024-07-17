@@ -16,6 +16,9 @@ namespace ImageComparison.Models
         public ulong size;
         public byte[]? hash;
 
+        /// <summary>
+        /// stored hash as unsigned long array for math calculations
+        /// </summary>
         public ulong[] hashArray {
             get {
                 if (hash == null)
